@@ -87,7 +87,9 @@ let game = {
     settings: {
         term: "Football",
         team: {
-            refillPlayers: true
+            refillPlayers: true,
+            autoSubstitute: false,
+            substituteStamina: 0.5
         },
         match: {
             speed: 1,

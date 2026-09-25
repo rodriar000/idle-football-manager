@@ -57,6 +57,7 @@ app.component("player", {
     <p>{{formatNumber(player.getBaseDefense())}} <span>DEF</span></p>
     <p><span>AGG</span> {{formatNumber(player.aggressivity * 100)}}</p>
     <p>{{formatNumber(player.stamina * 100)}} <span>STA</span></p>
+    <p class="total" title="Attack + Defense"><span>ATT+DEF</span> {{formatNumber(player.getBaseAttack().add(player.getBaseDefense()))}}</p>
 </div>
 <div class="actions">
     <div v-if="isBought">

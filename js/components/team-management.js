@@ -24,6 +24,9 @@ app.component("team-management", {
         },
         strategyDefensive(){
             return Strategy.DEFENSIVE
+        },
+        teamSettings(){
+            return this.$root.settings.team;
         }
     },
     methods: {
@@ -47,6 +50,11 @@ app.component("team-management", {
     <p>ATT {{formatNumber(totalAttack)}}</p>
     <p>DEF {{formatNumber(totalDefense)}}</p>
     <p>Synergy {{formatNumber(team.getSynergy() * 100)}} %</p>
+    <div class="auto-sub">
+        <label><input type="checkbox" v-model="teamSettings.autoSubstitute"/> Auto Substitutions</label>
+        <label :class="{disabled: !teamSettings.autoSubstitute}">Sub out below {{formatNumber(teamSettings.substituteStamina * 100)}} % Stamina
+            <input type="range" min="0.05" max="0.95" step="0.05" :disabled="!teamSettings.autoSubstitute" v-model.number="teamSettings.substituteStamina"/></label>
+    </div>
 </div>
 <div class="strategies">
     <div class="strategy">

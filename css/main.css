@@ -424,6 +424,28 @@ main{
     margin-right: 1rem;
 }
 
+.team-management .auto-sub{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-left: auto;
+    font-size: 80%;
+}
+
+.team-management .auto-sub label{
+    display: inline-flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.team-management .auto-sub input[type="range"]{
+    margin-left: 0.5rem;
+}
+
+.team-management .auto-sub .disabled{
+    opacity: 0.5;
+}
+
 .team-management .strategy{
     display: flex;
     align-items: center;
@@ -515,6 +537,18 @@ main{
     overflow: hidden;
     white-space: nowrap;
     padding: 0.5rem 0;
+}
+
+.player > .stats p.total{
+    width: 100%;
+    justify-content: center;
+    padding: 0.25rem 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.player > .stats p.total > span{
+    width: auto;
+    margin-right: 0.5rem;
 }
 
 .player > .stats p > span{
@@ -763,6 +797,50 @@ main{
 .match .reward{
     font-size: 200%;
     font-weight: bold;
+}
+
+.match .power{
+    display: flex;
+    align-items: center;
+    font-size: 45%;
+    margin: -1rem 2rem 0;
+}
+
+.match .power > p{
+    width: 33.3%;
+}
+
+.match .power > p:first-child{
+    text-align: left;
+}
+
+.match .power > p:last-child{
+    text-align: right;
+}
+
+.match .power span{
+    display: inline-block;
+    margin: 0 0.5rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+.match .power span.stronger{
+    background-color: var(--color-button-selected);
+    color: var(--color-text-dark);
+}
+
+.match .events .sub-in, .match .events .sub-out{
+    white-space: nowrap;
+}
+
+.match .events .sub-in{
+    color: var(--color-button-selected);
+}
+
+.match .events .sub-out{
+    color: #ff8080;
 }
 
 /*Country*/
@@ -1150,6 +1228,38 @@ main{
 
     .match .stats .score canvas{
         margin: 0 0 0.5rem;
+    }
+
+    .match .power{
+        font-size: 60%;
+        margin: -0.5rem 0 0;
+    }
+
+    .match .power span{
+        display: block;
+        margin: 0.2rem 0;
+    }
+
+    .match .events{
+        font-size: 90%;
+    }
+
+    .match .events div p{
+        flex-wrap: wrap;
+        font-size: 85%;
+    }
+
+    .match .events div:first-child p{
+        text-align: right;
+    }
+
+    .team-management .auto-sub{
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .team-management .auto-sub label{
+        margin: 0.25rem 1rem 0.25rem 0;
     }
 
     .match .speed-controls{

@@ -146,6 +146,24 @@ class Team {
         }
     }
 
+    //swap tired active players for rested bench players; returns [{out, in}]
+    substituteTiredPlayers(minStamina){
+        let subs = [];
+        let tired = this.getActivePlayingPlayers().filter(p => p.currentStamina < minStamina)
+            .sort((p1, p2) => p1.currentStamina - p2.currentStamina);
+        for(let out of tired){
+            let bench = this.getInactivePlayers().filter(p => !p.hasRedCard() && p.currentStamina >= minStamina);
+            if(bench.length === 0){
+                break;
+            }
+            let best = bench.reduce((b, p) => p.getAttack().add(p.getDefense()).gt(b.getAttack().add(b.getDefense())) ? p : b);
+            out.active = false;
+            best.active = true;
+            subs.push({out, in: best});
+        }
+        return subs;
+    }
+
     canPlayNextMatch(){
         return this.getActivePlayingPlayers().length > 0;
     }

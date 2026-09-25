@@ -24,6 +24,21 @@ class Match {
         this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 0, name: player.name, minute});
     }
 
+    addSubstitution(team, playerOut, playerIn, minute){
+        this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 2, name: playerIn.name, nameOut: playerOut.name, minute});
+    }
+
+    checkSubstitutions(){
+        let settings = game.settings.team;
+        let team = this.getPlayerTeam();
+        if(!team || !settings.autoSubstitute){
+            return;
+        }
+        for(let sub of team.substituteTiredPlayers(settings.substituteStamina)){
+            this.addSubstitution(team, sub.out, sub.in, this.getMinute());
+        }
+    }
+
     addRedCard(team, player, minute){
         this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 1, name: player.name, minute});
         player.redCard = 2;
@@ -195,6 +210,7 @@ class Match {
                 for(let p of this.getPlayerTeam().getActivePlayingPlayers()){
                     p.currentStamina = Math.max(0, p.currentStamina - Math.random() * 3e-5 * dt * tm * (1 / p.stamina));
                 }
+                this.checkSubstitutions();
 
                 this.ballX += this.ballSpeed * dt;
                 this.ballSpeed *= 0.2 ** dt;

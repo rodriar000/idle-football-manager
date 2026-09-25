@@ -144,6 +144,8 @@ let functions = {
             game.settings.match.minAutoPlayStamina = loadVal(obj.settings.match.minAutoPlayStamina, 0);
             if(obj.settings.team){
                 game.settings.team.refillPlayers = loadVal(obj.settings.team.refillPlayers, true);
+                game.settings.team.autoSubstitute = obj.settings.team.autoSubstitute ?? false;
+                game.settings.team.substituteStamina = obj.settings.team.substituteStamina ?? 0.5;
             }
             if(obj.settings.players){
                 game.settings.players.shiftToSell = loadVal(obj.settings.players.shiftToSell, false);

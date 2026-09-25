@@ -50,6 +50,12 @@ app.component("match", {
         reward(){
             return this.match.getRewardMoney();
         },
+        team1Stats(){
+            return this.match.team1.getCombinedStats();
+        },
+        team2Stats(){
+            return this.match.team2.getCombinedStats();
+        },
         canPlayNextMatch(){
             return (this.match.time === 0 || this.match.ended) && game.team.canPlayNextMatch();
         }
@@ -69,10 +75,19 @@ app.component("match", {
             <team-logo :logo="match.team2.logo"></team-logo>
         </div>
     </div>
+    <div class="power">
+        <p><span :class="{stronger: team1Stats.attack.gt(team2Stats.defense)}">ATT {{formatNumber(team1Stats.attack)}}</span>
+            <span :class="{stronger: team1Stats.defense.gt(team2Stats.attack)}">DEF {{formatNumber(team1Stats.defense)}}</span></p>
+        <p></p>
+        <p><span :class="{stronger: team2Stats.attack.gt(team1Stats.defense)}">ATT {{formatNumber(team2Stats.attack)}}</span>
+            <span :class="{stronger: team2Stats.defense.gt(team1Stats.attack)}">DEF {{formatNumber(team2Stats.defense)}}</span></p>
+    </div>
 </div>
 <div class="events">
     <div>
-        <p v-for="g in team1Events">{{g.name}} {{g.minute}}'
+        <p v-for="g in team1Events">
+            <template v-if="g.event === 2"><span class="sub-in">▲ {{g.name}}</span>&nbsp;<span class="sub-out">▼ {{g.nameOut}}</span>&nbsp;{{g.minute}}'</template>
+            <template v-else>{{g.name}} {{g.minute}}'</template>
             <img alt="⚽" v-if="g.event === 0" src="images/icons/football.png"/>
             <img alt="🟥" v-else-if="g.event === 1" src="images/icons/red-card.png"/>
         </p>
@@ -83,7 +98,9 @@ app.component("match", {
     <div>
         <p v-for="g in team2Events">
             <img alt="⚽" v-if="g.event === 0" src="images/icons/football.png"/>
-            <img alt="🟥" v-else-if="g.event === 1" src="images/icons/red-card.png"/> {{g.name}} {{g.minute}}'
+            <img alt="🟥" v-else-if="g.event === 1" src="images/icons/red-card.png"/>
+            <template v-if="g.event === 2">{{g.minute}}'&nbsp;<span class="sub-in">▲ {{g.name}}</span>&nbsp;<span class="sub-out">▼ {{g.nameOut}}</span></template>
+            <template v-else>{{g.name}} {{g.minute}}'</template>
         </p>
     </div>
 </div>

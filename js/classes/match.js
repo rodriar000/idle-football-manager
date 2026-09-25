@@ -21,7 +21,9 @@ class Match {
     }
 
     addGoal(team, player, minute){
-        this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 0, name: player.name, minute});
+        //every player of the team can be sent off
+        let name = player ? player.name : "Own Goal";
+        this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 0, name, minute});
     }
 
     addSubstitution(team, playerOut, playerIn, minute){
@@ -107,6 +109,7 @@ class Match {
             game.money = game.money.add(reward);
             this.stadiumReward = reward;
             game.stadium.emptyStadium();
+            this.addToHistory();
 
             for(let p of playerTeam.getActivePlayers()){
                 if(p.hasRedCard()){
@@ -122,6 +125,7 @@ class Match {
                 if(game.league.divisions[game.team.divisionRank].getSortedTeams()[0] === game.team && playerTeam.divisionRank === game.league.divisions.length - 1){
                     game.canEnterNextCountry = true;
                 }
+                Match.createSeasonSummary();
                 game.league.moveTeams();
                 game.playerMarket.refresh();
             }
@@ -141,6 +145,38 @@ class Match {
             this.score2 += Math.random() < power.team2 ** 2.75 / 90;
         }
         this.endGame();
+    }
+
+    //win / draw / lose chances for team1 from the current score and minute.
+    //Live matches don't use simulate()'s formula: measured over many simulated live matches (x60 to x3000 speed, 14 team pairings),
+    //a team scores about 1.42 * (ownPower / otherPower) ^ 3.18 goals per 90 minutes
+    getOutcomeChances(){
+        let power = this.getNormPower();
+        let goalsPerMinute = (own, other) => 1.42 * (own / other) ** 3.18 / 90;
+        let remaining = this.ended ? 0 : Math.max(0, 90 - Math.floor(this.time / 60));
+        let goalDistribution = q => {
+            q = Math.min(1, q);
+            let dist = [1];
+            for(let m = 0; m < remaining; m++){
+                let next = new Array(dist.length + 1).fill(0);
+                for(let g = 0; g < dist.length; g++){
+                    next[g] += dist[g] * (1 - q);
+                    next[g + 1] += dist[g] * q;
+                }
+                dist = next;
+            }
+            return dist;
+        };
+        let d1 = goalDistribution(goalsPerMinute(power.team1, power.team2));
+        let d2 = goalDistribution(goalsPerMinute(power.team2, power.team1));
+        let chances = {win: 0, draw: 0, lose: 0};
+        for(let g1 = 0; g1 < d1.length; g1++){
+            for(let g2 = 0; g2 < d2.length; g2++){
+                let diff = (this.score1 + g1) - (this.score2 + g2);
+                chances[diff > 0 ? "win" : diff < 0 ? "lose" : "draw"] += d1[g1] * d2[g2];
+            }
+        }
+        return chances;
     }
 
     getGameResult(){
@@ -248,6 +284,58 @@ class Match {
         this.gameEvents = obj.gameEvents;
         this.stadiumReward = obj.stadiumReward || new Decimal(0);
         this.ended = obj.ended;
+    }
+
+    //remember the player's matches of the current season
+    addToHistory(){
+        let ownIndex = this.team1 === game.team ? 0 : 1;
+        game.matchHistory.push({
+            matchDay: game.league.divisions[this.divisionRank].matchDay,
+            team1: this.team1.name,
+            team2: this.team2.name,
+            score1: this.score1,
+            score2: this.score2,
+            ownIndex,
+            result: this.getGameResult(),
+            goals: this.gameEvents.filter(e => e.event === 0).map(e => ({teamIndex: e.teamIndex, name: e.name, minute: e.minute})),
+            reward: this.getRewardMoney().add(this.stadiumReward)
+        });
+    }
+
+    //called before teams are promoted / relegated
+    static createSeasonSummary(){
+        let division = game.league.divisions[game.team.divisionRank];
+        let sorted = division.getSortedTeams();
+        let position = sorted.indexOf(game.team) + 1;
+        let outcome = "stayed";
+        if(position <= division.getPromotionRanks()){
+            outcome = "promoted";
+        }
+        else if(position > sorted.length - division.getRelegationRanks()){
+            outcome = "relegated";
+        }
+        else if(position === 1){
+            outcome = "champion";
+        }
+        let scorers = {};
+        for(let m of game.matchHistory){
+            for(let g of m.goals.filter(g => g.teamIndex === m.ownIndex)){
+                scorers[g.name] = (scorers[g.name] || 0) + 1;
+            }
+        }
+        game.lastSeason = {
+            divisionName: division.getName(),
+            divisionNumber: game.league.divisions.length - division.rank,
+            position,
+            teams: sorted.length,
+            outcome,
+            stats: Object.assign({}, game.team.divisionStats),
+            points: game.team.getPoints(),
+            money: game.matchHistory.reduce((sum, m) => sum.add(m.reward), new Decimal(0)),
+            topScorers: Object.entries(scorers).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, goals]) => ({name, goals}))
+        };
+        game.showSeasonSummary = true;
+        game.matchHistory = [];
     }
 
     static from(match){

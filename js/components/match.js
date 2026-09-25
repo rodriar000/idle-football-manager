@@ -50,6 +50,12 @@ app.component("match", {
         reward(){
             return this.match.getRewardMoney();
         },
+        chances(){
+            //only depends on the minute, not every frame
+            this.match.score1; this.match.score2; Math.floor(this.match.time / 60);
+            let c = this.match.getOutcomeChances();
+            return this.match.team2 === game.team ? {win: c.lose, draw: c.draw, lose: c.win} : c;
+        },
         team1Stats(){
             return this.match.team1.getCombinedStats();
         },
@@ -74,6 +80,12 @@ app.component("match", {
             <p>{{match.team2.name}}</p>
             <team-logo :logo="match.team2.logo"></team-logo>
         </div>
+    </div>
+    <p class="win-chance-label">{{match.ended ? "Final Result" : "Chances for " + $root.team.name + " (estimate)"}}</p>
+    <div class="win-chance">
+        <div class="win" :style="{width: chances.win * 100 + '%'}" :title="'Win ' + (chances.win * 100).toFixed(0) + '%'">Win {{(chances.win * 100).toFixed(0)}}%</div>
+        <div class="draw" :style="{width: chances.draw * 100 + '%'}" :title="'Draw ' + (chances.draw * 100).toFixed(0) + '%'">Draw {{(chances.draw * 100).toFixed(0)}}%</div>
+        <div class="lose" :style="{width: chances.lose * 100 + '%'}" :title="'Lose ' + (chances.lose * 100).toFixed(0) + '%'">Lose {{(chances.lose * 100).toFixed(0)}}%</div>
     </div>
     <div class="power">
         <p><span :class="{stronger: team1Stats.attack.gt(team2Stats.defense)}">ATT {{formatNumber(team1Stats.attack)}}</span>

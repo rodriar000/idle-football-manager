@@ -321,6 +321,21 @@ header ul li:hover{
     text-decoration: underline;
 }
 
+header ul li.active{
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+kbd{
+    display: inline-block;
+    padding: 0 0.35em;
+    border: 1px solid var(--color-text);
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: 90%;
+}
+
 /*Main*/
 
 main{
@@ -843,6 +858,174 @@ main{
     color: #ff8080;
 }
 
+.match .win-chance{
+    display: flex;
+    width: 60%;
+    max-width: 600px;
+    height: 1.4rem;
+    margin: 0 auto;
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 45%;
+    line-height: 1.4rem;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+.match .win-chance div{
+    overflow: hidden;
+    white-space: nowrap;
+    transition: width 500ms;
+}
+
+.match .win-chance .win{
+    background-color: var(--color-button-selected);
+    color: var(--color-text-dark);
+}
+
+.match .win-chance .draw{
+    background-color: #9e9e9e;
+    color: var(--color-text-dark);
+}
+
+.match .win-chance .lose{
+    background-color: #d84a4a;
+}
+
+.match .win-chance-label{
+    font-size: 40%;
+    margin: 1rem 0 0.25rem;
+    opacity: 0.8;
+}
+
+/*Match History*/
+
+.match-history{
+    width: 80%;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding-bottom: 2rem;
+}
+
+.match-history h3{
+    text-align: center;
+    font-size: 150%;
+    margin-bottom: 0.5rem;
+}
+
+.match-history .empty{
+    text-align: center;
+    opacity: 0.8;
+}
+
+.match-history .row{
+    display: flex;
+    align-items: center;
+    background-color: var(--color-card);
+    color: var(--color-text-dark);
+    border-radius: 6px;
+    margin: 0.35rem 0;
+    padding: 0.35rem 0.5rem;
+}
+
+.match-history .matchday{
+    width: 2rem;
+    font-weight: bold;
+    opacity: 0.6;
+}
+
+.match-history .result{
+    width: 1.8rem;
+    height: 1.8rem;
+    line-height: 1.8rem;
+    text-align: center;
+    border-radius: 4px;
+    font-weight: 900;
+    margin-right: 0.75rem;
+    flex-shrink: 0;
+}
+
+.match-history .result.W{
+    background-color: var(--color-button-selected);
+}
+
+.match-history .result.D{
+    background-color: #9e9e9e;
+}
+
+.match-history .result.L{
+    background-color: #d84a4a;
+    color: var(--color-text);
+}
+
+.match-history .teams{
+    flex: 1;
+}
+
+.match-history .teams .own{
+    font-weight: bold;
+}
+
+.match-history .teams small{
+    display: block;
+    opacity: 0.75;
+}
+
+.match-history .reward-money{
+    font-weight: bold;
+    margin-left: 0.5rem;
+    white-space: nowrap;
+}
+
+/*Season Window*/
+
+.window-season .body{
+    text-align: center;
+}
+
+.window-season .season-division{
+    font-size: 120%;
+    margin-top: 0.5rem;
+}
+
+.window-season .position{
+    font-size: 300%;
+    font-weight: 900;
+}
+
+.window-season .outcome{
+    display: inline-block;
+    padding: 0.25rem 1rem;
+    border-radius: 6px;
+    font-weight: bold;
+    background-color: #9e9e9e;
+}
+
+.window-season .outcome.promoted, .window-season .outcome.champion{
+    background-color: var(--color-button-selected);
+}
+
+.window-season .outcome.relegated{
+    background-color: #d84a4a;
+    color: var(--color-text);
+}
+
+.window-season .stats{
+    margin: 1rem 0;
+}
+
+.window-season .stats p, .window-season .scorers p{
+    margin: 0.25rem 0;
+}
+
+.window-season .scorers h4{
+    margin-top: 0.5rem;
+}
+
+.team-management .best-eleven{
+    font-size: 80%;
+    padding: 0.25rem 0.75rem;
+}
+
 /*Country*/
 
 .tab-countries .next-country{
@@ -1228,6 +1411,20 @@ main{
 
     .match .stats .score canvas{
         margin: 0 0 0.5rem;
+    }
+
+    .match .win-chance{
+        width: 90%;
+        font-size: 60%;
+    }
+
+    .match .win-chance-label{
+        font-size: 60%;
+    }
+
+    .match-history{
+        width: calc(100% - 1rem);
+        font-size: 90%;
     }
 
     .match .power{

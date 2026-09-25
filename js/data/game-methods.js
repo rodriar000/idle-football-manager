@@ -69,6 +69,9 @@ let functions = {
             game.maxDivisionRank = loadVal(obj.maxDivisionRank, 0);
             game.country = loadVal(obj.country, 0);
             game.canEnterNextCountry = loadVal(obj.canEnterNextCountry, false);
+            game.matchHistory = obj.matchHistory || [];
+            game.lastSeason = obj.lastSeason || null;
+            game.showSeasonSummary = false;
 
             if(obj.league){
                 for(let d = 0; d < obj.league.divisions.length; d++){

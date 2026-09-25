@@ -14,6 +14,7 @@ app.component("tab-countries", {
                 game.league.simulate();
                 game.playerMarket.refresh();
                 game.canEnterNextCountry = false;
+                game.matchHistory = [];
             }
         },
         countryIsLocked(i){

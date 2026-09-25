@@ -78,6 +78,8 @@ app.component("tab-settings", {
         </div>
     </div>
     <button @click="restartTutorial()">Restart Tutorial</button><br/>
+    <h3 class="big-heading">Keyboard Shortcuts</h3>
+    <p class="shortcuts"><kbd>1</kbd>-<kbd>9</kbd>, <kbd>0</kbd> switch Tabs (in header order) · <kbd>Space</kbd> play next Match · <kbd>B</kbd> pick Best XI</p>
     <h3 class="big-heading">Save Management</h3>
     <p>Note: The Game does <b>not</b> save if <b>cookies or storage</b> are disabled. Cleaning Utilities might clear Browser Storage.
     It is recommended to export your savegame <b>often</b>.</p>

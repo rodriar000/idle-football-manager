@@ -39,15 +39,19 @@ app.component("tv-channel", {
             }
 
             ctx.fillStyle = "#00000090";
-            ctx.fillRect(0, 0, w / 2, h * 0.3);
+            ctx.fillRect(0, 0, w * 0.6, h * 0.3);
             ctx.font = "900 " + (h * 0.1) + "px Montserrat";
             ctx.fillStyle = "white";
             ctx.textAlign = "left";
             ctx.textBaseline = "top";
-            ctx.fillText(this.channel.name, 16, 24, w / 2 - 32);
+            //the TV frame image covers the corners of the canvas, so keep the name away from the edges
+            ctx.fillText(this.channel.name, w * 0.1, h * 0.12, w * 0.45);
 
-
-            requestAnimationFrame(this.render);
+            this.frame = requestAnimationFrame(this.render);
+        },
+        startRender(){
+            this.ctx = this.$refs.canvas.getContext("2d");
+            this.frame = requestAnimationFrame(this.render);
         }
     },
     computed: {
@@ -58,11 +62,21 @@ app.component("tv-channel", {
             return game.settings.tv.renderCanvas;
         }
     },
+    watch: {
+        renderCanvas(){
+            cancelAnimationFrame(this.frame);
+            if(this.renderCanvas){
+                this.$nextTick(this.startRender);
+            }
+        }
+    },
     mounted(){
         if(this.renderCanvas){
-            this.ctx = this.$refs.canvas.getContext("2d");
-            requestAnimationFrame(this.render);
+            this.startRender();
         }
+    },
+    beforeUnmount(){
+        cancelAnimationFrame(this.frame);
     },
     template: `<div class="card tv-channel">
 <div class="tv" v-if="renderCanvas">

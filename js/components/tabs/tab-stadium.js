@@ -1,8 +1,12 @@
 app.component("tab-stadium", {
     data(){
         return {
-            stadium: game.stadium,
-            money: game.money
+            stadium: game.stadium
+        }
+    },
+    computed: {
+        money(){
+            return game.money;
         }
     },
     methods: {

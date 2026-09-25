@@ -9,6 +9,12 @@ app.component("match", {
     mounted(){
         this.matchTimeScaleLog = Math.log10(game.settings.match.speed);
     },
+    watch: {
+        match(){
+            //the component is reused for the next match, so the end-of-match window must be reopened
+            this.windowOpen = true;
+        }
+    },
     methods: {
         formatTime: functions.formatTime,
         formatNumber: functions.formatNumber,

@@ -33,7 +33,7 @@ app.component("tab-league", {
     </transition>
     <p class="big-heading">🏆 {{division.getName()}} (Division {{divisionNumber}})</p>
     <p class="big-heading">Matchday {{division.matchDay}} / {{division.matchDays}}</p>
-    <division @team-selected="selectedTeam = $event" :division="division"></division>
+    <div class="division-scroll"><division @team-selected="selectedTeam = $event" :division="division"></division></div>
     <div class="next-match">
         <button v-if="canPlayMatch" @click="playNextMatch()">Play next Match<br/>{{nextMatch.team1.name}} - {{nextMatch.team2.name}}</button>
         <button disabled v-else-if="matchRunning">You are already in a Match.</button>

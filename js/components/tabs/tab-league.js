@@ -17,6 +17,9 @@ app.component("tab-league", {
         matchRunning(){
             return game.currentMatch && !game.currentMatch.ended;
         },
+        matchHistory(){
+            return this.$root.matchHistory;
+        },
         divisionNumber(){
             return game.league.divisions.length - this.division.rank;
         }
@@ -39,5 +42,6 @@ app.component("tab-league", {
         <button disabled v-else-if="matchRunning">You are already in a Match.</button>
         <button disabled v-else>You need at least 1 Player in your Team to play the next Match!</button>
     </div>
+    <match-history :history="matchHistory"></match-history>
 </div>`
 });

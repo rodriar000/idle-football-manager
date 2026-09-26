@@ -7,6 +7,9 @@ let game = {
     nextMatch: null,
     league: null,
     restartedTutorial: false,
+    matchHistory: [],
+    lastSeason: null,
+    showSeasonSummary: false,
     countries: [
         new Country("Nowhereia", `This is your Starting Point. People here don't even really play Football, and are not interested in it. 
             Teams here aren't very good, a good way for you to get going!`, new CountryFlag(["white"])),

@@ -7,6 +7,27 @@ app.component("window-season", {
         season(){
             return this.$root.lastSeason;
         },
+        emblem(){
+            return {champion: "🏆", promoted: "▲", relegated: "▼", stayed: "⚽"}[this.season.outcome];
+        },
+        celebrate(){
+            return this.season.outcome === "champion" || this.season.outcome === "promoted";
+        },
+        //podium order: 2nd, 1st, 3rd
+        podium(){
+            let p = this.season.podium || [];
+            return [p[1], p[0], p[2]].map((team, i) => team && Object.assign({place: [2, 1, 3][i]}, team)).filter(Boolean);
+        },
+        confetti(){
+            let colors = ["#f5c542", "#22c55e", "#ffffff", "#ef4444", "#3b82f6", this.$root.team.logo.gradient[0]];
+            return Array.from({length: 70}, (_, i) => ({
+                left: Math.random() * 100 + "%",
+                backgroundColor: colors[i % colors.length],
+                animationDelay: Math.random() * 1.2 + "s",
+                animationDuration: 2.2 + Math.random() * 1.8 + "s",
+                transform: "rotate(" + Math.random() * 360 + "deg)"
+            }));
+        },
         outcomeText(){
             return {
                 promoted: "Promoted to the next Division!",
@@ -19,9 +40,18 @@ app.component("window-season", {
     template: `<window class="window-season" @closed="$emit('closed')">
     <template v-slot:header><div class="icon-flex"><img src="images/icons/league.png"/><span>Season Summary</span></div></template>
     <template v-slot:body>
+        <div class="confetti" v-if="celebrate" aria-hidden="true"><i v-for="c in confetti" :style="c"></i></div>
+        <div class="season-emblem" :class="season.outcome">{{emblem}}</div>
         <p class="season-division">{{season.divisionName}} (Division {{season.divisionNumber}})</p>
         <p class="position">{{season.position}}. of {{season.teams}}</p>
         <p class="outcome" :class="season.outcome">{{outcomeText}}</p>
+        <div class="podium" v-if="podium.length">
+            <div v-for="t in podium" :class="['place-' + t.place, {own: t.own}]">
+                <p class="podium-team">{{t.name}}</p>
+                <p class="podium-points">{{t.points}} pts</p>
+                <div class="podium-block">{{t.place}}</div>
+            </div>
+        </div>
         <div class="stats">
             <p><b>{{season.points}}</b> Points</p>
             <p><b>{{season.stats.win}}</b> W · <b>{{season.stats.draw}}</b> D · <b>{{season.stats.lose}}</b> L</p>

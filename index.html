@@ -25,9 +25,21 @@
     <link rel="stylesheet" href="css/main.css"/>
     <link rel="stylesheet" href="css/immersive.css"/>
     <link rel="icon" href="icon.ico"/>
+    <link rel="manifest" href="manifest.webmanifest"/>
+    <link rel="apple-touch-icon" href="images/app/apple-touch-icon.png"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="Football Manager"/>
     <title>Idle Football Manager</title>
 </head>
 <body>
+
+<div id="splash" onclick="this.classList.add('hidden')">
+    <img class="splash-logo" alt="Idle Football Manager" src="logo.png"/>
+    <div class="splash-bar"><div></div></div>
+    <p class="splash-hint">Warming up...</p>
+</div>
 
 <div id="app">
     <game-header v-if="init"></game-header>
@@ -36,6 +48,7 @@
         <window-season v-if="init && showSeasonSummary && lastSeason" @closed="showSeasonSummary = false"></window-season>
     </transition>
     <player-compare v-if="init"></player-compare>
+    <signing-stamp v-if="init"></signing-stamp>
     <main>
         <transition name="tab-fade" mode="out-in">
             <component :is="tab"></component>
@@ -66,6 +79,8 @@
 <script src="js/classes/country-flag.js"></script>
 <script src="js/classes/country.js"></script>
 <script src="js/classes/stadium.js"></script>
+<script src="js/classes/stadium-renderer.js"></script>
+<script src="js/classes/player-avatar.js"></script>
 <script src="js/classes/team-logo.js"></script>
 <script src="js/classes/task/game-task.js"></script>
 <script src="js/classes/task/player-training-task.js"></script>
@@ -83,6 +98,8 @@
 
 <script src="js/notifications.js"></script>
 <script src="js/theme.js"></script>
+<script src="js/ui-fx.js"></script>
+<script src="js/pwa.js"></script>
 <script src="js/app.js"></script>
 
 <!-- Mixin -->
@@ -100,7 +117,9 @@
 <script src="js/components/division.js"></script>
 <script src="js/components/player-market.js"></script>
 <script src="js/components/player-compare.js"></script>
+<script src="js/components/player-avatar.js"></script>
 <script src="js/components/player.js"></script>
+<script src="js/components/signing-stamp.js"></script>
 <script src="js/components/team-management.js"></script>
 <script src="js/components/match.js"></script>
 <script src="js/components/match-history.js"></script>
@@ -110,6 +129,7 @@
 <script src="js/components/team-logo.js"></script>
 <script src="js/components/team-settings.js"></script>
 <script src="js/components/stadium.js"></script>
+<script src="js/components/stadium-view.js"></script>
 <script src="js/components/game-task.js"></script>
 <script src="js/components/tv-channel.js"></script>
 <script src="js/components/tutorial.js"></script>

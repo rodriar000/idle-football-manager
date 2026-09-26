@@ -30,7 +30,10 @@ function setup(){
     gameTheme.apply();
 
     if(!error.length){
-        Vue.nextTick(() => game.init = true);
+        Vue.nextTick(() => {
+            game.init = true;
+            hideSplash();
+        });
         window.onerror = null;
 
         requestAnimationFrame(update);

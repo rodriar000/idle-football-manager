@@ -122,6 +122,15 @@ class Team {
         return this.getCombinedStats().defense;
     }
 
+    //seconds until every starter is back at full stamina
+    getTimeUntilRested(){
+        let t = 0;
+        for(let p of this.getActivePlayers()){
+            t = Math.max(t, (1 - p.currentStamina) * p.getRegenerationTime());
+        }
+        return t;
+    }
+
     getAverageStamina(){
         let s = 0;
         for(let p of this.getActivePlayers()){

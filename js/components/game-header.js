@@ -43,6 +43,7 @@ app.component("game-header", {
     },
     template: `<header>
 <h1>Idle {{term}} Manager</h1>
+<p class="header-money">{{formatNumber($root.money)}} $</p>
 <nav>
     <ul>
         <li v-for="(t, i) in tabs" :key="t.id" class="icon-flex" :class="{active: $root.tab === t.id}" @click="changeTab(t.id)"

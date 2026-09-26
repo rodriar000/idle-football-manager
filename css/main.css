@@ -483,6 +483,18 @@ main{
     background-color: var(--color-header);
 }
 
+.player-market .empty{
+    grid-column: 1 / -1;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    padding: 2rem 1rem;
+}
+
+.header-money, .bench-title{
+    display: none;
+}
+
 .team-management .no-players{
     text-align: center;
     font-weight: bold;
@@ -1529,5 +1541,390 @@ main{
 
     .team-settings .logo-settings canvas{
         height: 128px;
+    }
+}
+
+
+/*Phones: compact top bar with money, tab bar at the bottom, two-column cards*/
+@media (max-width: 700px){
+    :root{
+        --tab-bar-height: 3.6rem;
+    }
+
+    body{
+        padding-bottom: calc(var(--tab-bar-height) + env(safe-area-inset-bottom));
+    }
+
+    #app{
+        height: auto;
+        min-height: 100vh;
+    }
+
+    header{
+        position: sticky;
+        top: 0;
+        z-index: 8;
+        flex-direction: row;
+        align-items: center;
+        padding: 0.5rem 0.75rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    header h1{
+        font-size: 115%;
+        margin: 0;
+    }
+
+    .header-money{
+        display: block;
+        margin-left: auto;
+        padding: 0.2rem 0.6rem;
+        border-radius: 1rem;
+        background-color: rgba(0, 0, 0, 0.25);
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    header nav{
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 8;
+        background-color: var(--color-header);
+        box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.3);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    header ul{
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+    }
+
+    header ul::-webkit-scrollbar{
+        display: none;
+    }
+
+    header ul li{
+        flex: 1 0 4.2rem;
+        height: var(--tab-bar-height);
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-size: 75%;
+        scroll-snap-align: start;
+        border-top: 3px solid transparent;
+    }
+
+    header ul li:hover{
+        text-decoration: none;
+    }
+
+    header ul li.active{
+        text-decoration: none;
+        border-top-color: var(--color-button-selected);
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    header ul li img, header ul li canvas{
+        height: 1.6rem;
+        margin: 0 0 0.15rem;
+    }
+
+    /*money is always shown in the top bar*/
+    .tab-upgrades > .money, .tab-stadium > .money, .tab-player-training > .money, .tab-tv-channels > .money{
+        display: none;
+    }
+
+    .tab-player-market > .money{
+        font-size: 90%;
+        padding: 0.5rem;
+    }
+
+    .big-heading{
+        font-size: 160%;
+        margin: 0.75rem 0.5rem;
+    }
+
+    button.help img{
+        height: 1.6em;
+    }
+
+    /*windows fill the width and scroll inside*/
+    .window{
+        position: fixed;
+        left: 0.5rem !important;
+        top: 4rem !important;
+        width: calc(100vw - 1rem);
+        max-height: calc(100vh - 4rem - var(--tab-bar-height) - 1rem);
+        overflow-y: auto;
+    }
+
+    .window .header{
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: var(--color-window-header);
+        font-size: 120%;
+    }
+
+    /*Team*/
+    .team-management > .header{
+        font-size: 100%;
+        padding: 0.5rem 0.75rem;
+        align-items: center;
+    }
+
+    .team-management > .header h4{
+        width: 100%;
+    }
+
+    .team-management .strategies{
+        padding: 0 0.25rem 0.5rem;
+    }
+
+    .team-management .strategy{
+        padding: 0.25rem;
+    }
+
+    .team-management .strategy h4{
+        font-size: 85%;
+        margin-bottom: 0.25rem;
+    }
+
+    .team-management .strategy button{
+        font-size: 80%;
+        padding: 0.3rem 0.15rem;
+    }
+
+    .team-management .strategy button img{
+        height: 1.4em;
+    }
+
+    .team-management .players.active{
+        min-height: 0;
+        padding: 0.5rem 0.25rem;
+    }
+
+    .team-management .players, .player-market{
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+
+    .team-management .players.inactive{
+        height: auto;
+        overflow: visible;
+    }
+
+    .team-management .players .player, .team-management .players.active .player, .player-market .player,
+    .team-management .placeholder, .tab-player-training .player, .tab-player-training .placeholder{
+        margin: 0;
+        width: auto;
+        min-width: 0;
+    }
+
+    .team-management .placeholder{
+        height: 3rem;
+        border: 2px dashed rgba(255, 255, 255, 0.25);
+        background-color: transparent;
+    }
+
+    .team-management .inactive-players{
+        position: static;
+        opacity: 1;
+        padding: 0.5rem 0 1rem;
+    }
+
+    .bench-title{
+        display: block;
+        padding: 0 0.75rem;
+    }
+
+    .player{
+        height: auto;
+        overflow: hidden;
+        box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .player .header .icon-flex{
+        display: flex;
+        justify-content: center;
+    }
+
+    .player .header{
+        font-size: 85%;
+        width: 100%;
+    }
+
+    .player .header .icon-flex:last-child{
+        width: 100%;
+        justify-content: center;
+    }
+
+    .player .progress-bar{
+        width: auto;
+        flex: 1;
+    }
+
+    .player .header > .icon-flex:last-child{
+        padding: 0 0.4rem;
+    }
+
+    .player > .stats{
+        margin: 0.25rem 0;
+        padding: 0.25rem 0.4rem;
+    }
+
+    .player > .stats p{
+        padding: 0.25rem 0;
+        font-size: 80%;
+    }
+
+    .player .actions > div > div{
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .player .actions button{
+        flex: 1 1 50%;
+        width: auto !important;
+        font-size: 68%;
+        padding: 0.45rem 0.2rem;
+    }
+
+    .player .actions button.negative{
+        flex-basis: 100%;
+    }
+
+    .player .actions > div > button{
+        width: 100% !important;
+    }
+
+    /*Match: fits between the top bar and the tab bar*/
+    .match{
+        position: relative;
+        min-height: calc(100vh - 3rem - var(--tab-bar-height));
+        padding-bottom: 9rem;
+    }
+
+    .match .stats{
+        margin-top: 0.75rem;
+    }
+
+    .match .stats .time{
+        font-size: 170%;
+    }
+
+    .match .match-view{
+        bottom: 4.5rem;
+        padding: 0 0.5rem;
+    }
+
+    .match .speed-controls{
+        bottom: 0.75rem;
+    }
+
+    .match .power{
+        margin: -0.5rem 0.5rem 0;
+    }
+
+    /*League*/
+    .tab-league .big-heading{
+        font-size: 130%;
+    }
+
+    .tab-league .next-match button{
+        width: calc(100% - 1rem);
+    }
+
+    /*Achievements: the popup is shown above the tab bar*/
+    .tab-achievements .achievements{
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+        gap: 0.5rem;
+        padding: 0.75rem;
+    }
+
+    .achievement{
+        position: static;
+        margin: 0;
+        width: auto;
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    .achievement img{
+        width: 75%;
+        height: 75%;
+    }
+
+    .achievement .popup{
+        position: fixed;
+        left: 0.5rem;
+        right: 0.5rem;
+        top: auto;
+        bottom: calc(var(--tab-bar-height) + 0.5rem);
+        width: auto;
+        padding: 0.5rem;
+        z-index: 9;
+    }
+
+    .tab-player-training .player, .tab-player-training .placeholder{
+        display: inline-flex;
+        vertical-align: top;
+        width: calc(50% - 1rem);
+        margin: 0.5rem;
+    }
+
+    .tab-player-training .placeholder{
+        height: 8rem;
+        border: 2px dashed rgba(255, 255, 255, 0.25);
+        background-color: transparent;
+    }
+
+    /*Stadium, TV, Training*/
+    .stadium .info{
+        font-size: 110%;
+    }
+
+    .stadium .info img{
+        max-height: 35vh;
+    }
+
+    .stadium > h4{
+        font-size: 150%;
+    }
+
+    .upgrade{
+        margin: 0.5rem;
+        width: calc(100% - 1rem);
+    }
+
+    .upgrade h4{
+        font-size: 120%;
+    }
+
+    .country{
+        margin: 0.5rem;
+    }
+
+    .tab-countries .next-country button{
+        width: calc(100% - 1rem);
+    }
+
+    .tab-settings h3{
+        font-size: 130%;
+    }
+}
+
+/*very small phones*/
+@media (max-width: 360px){
+    .team-management .players, .player-market{
+        grid-template-columns: 1fr;
     }
 }

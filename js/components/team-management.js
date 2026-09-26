@@ -82,6 +82,7 @@ app.component("team-management", {
     </div>
 </div>
 <div class="inactive-players">
+    <h4 class="bench-title" v-if="playerCount > activePlayers.length">Bench ({{playerCount - activePlayers.length}})</h4>
     <div class="no-players" v-if="playerCount === 0">
         You don't have any players in your Team. Consider buying some first in the Market.
     </div>

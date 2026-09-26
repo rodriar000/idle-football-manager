@@ -603,6 +603,32 @@ main{
     padding: 0.35rem;
 }
 
+/*kept apart from "Move to Team" so it is not hit by accident*/
+.player button.sell{
+    margin-top: 0.4rem;
+}
+
+.player button.sell.armed{
+    filter: none;
+    background-color: #c62828;
+    border-color: #ff8a80;
+    font-weight: bold;
+}
+
+.player .header .signing{
+    margin-top: 0.15rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-size: 75%;
+    white-space: nowrap;
+    color: #3a2a00;
+    background-color: #f5c542;
+}
+
+.player .header .signing span{
+    font-weight: normal;
+}
+
 .player progress{
     width: 100px;
 }
@@ -1325,6 +1351,56 @@ main{
     width: 2rem;
 }
 
+/*Club Records*/
+
+.club-records{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    max-width: 60rem;
+    margin: 1rem auto 0;
+    padding: 0 1rem;
+}
+
+.club-records .record{
+    background-color: var(--color-card);
+    border: 3px solid var(--color-card-border);
+    border-radius: 8px;
+    color: var(--color-text-dark);
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.club-records h4{
+    font-size: 90%;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    margin-bottom: 0.25rem;
+}
+
+.club-records p{
+    font-size: 85%;
+    overflow-wrap: anywhere;
+}
+
+.club-records p.value{
+    font-size: 150%;
+    font-weight: 900;
+}
+
+.club-records p.value small{
+    font-size: 55%;
+    font-weight: normal;
+}
+
+.tab-achievements .records-note{
+    text-align: center;
+    font-size: 80%;
+    opacity: 0.75;
+    margin-top: 0.5rem;
+}
+
 /*Achievement*/
 
 .tab-achievements .achievements{
@@ -1911,6 +1987,7 @@ main{
 
     .player .actions button.negative{
         flex-basis: 100%;
+        margin-top: 0.4rem;
     }
 
     .player .actions > div > button{
@@ -2031,6 +2108,12 @@ main{
 
     .tab-settings h3{
         font-size: 130%;
+    }
+
+    .club-records{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+        padding: 0 0.5rem;
     }
 
     .compare-bar{

@@ -10,6 +10,7 @@ let game = {
     matchHistory: [],
     lastSeason: null,
     showSeasonSummary: false,
+    records: Match.emptyRecords,
     countries: [
         new Country("Nowhereia", `This is your Starting Point. People here don't even really play Football, and are not interested in it. 
             Teams here aren't very good, a good way for you to get going!`, new CountryFlag(["white"])),

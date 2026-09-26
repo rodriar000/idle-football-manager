@@ -111,6 +111,7 @@ class Match {
             this.stadiumReward = reward;
             game.stadium.emptyStadium();
             this.addToHistory();
+            Match.updateRecords(game.matchHistory[game.matchHistory.length - 1], game.league.divisions[this.divisionRank].getName());
 
             for(let p of playerTeam.getActivePlayers()){
                 if(p.hasRedCard()){
@@ -311,6 +312,53 @@ class Match {
         });
     }
 
+    static get emptyRecords(){
+        return {
+            matches: 0, wins: 0, draws: 0, losses: 0,
+            goalsFor: 0, goalsAgainst: 0,
+            money: new Decimal(0),
+            biggestWin: null,
+            winStreak: 0, bestWinStreak: 0,
+            unbeatenStreak: 0, bestUnbeatenStreak: 0,
+            scorers: {},
+            seasons: 0, promotions: 0, titles: 0
+        };
+    }
+
+    //all time club records, updated after every match of the player's team
+    static updateRecords(entry, divisionName){
+        let r = game.records;
+        let own = entry.ownIndex === 0 ? entry.score1 : entry.score2;
+        let other = entry.ownIndex === 0 ? entry.score2 : entry.score1;
+        r.matches++;
+        r.goalsFor += own;
+        r.goalsAgainst += other;
+        r.money = r.money.add(entry.reward);
+        if(entry.result === MATCH_WIN){
+            r.wins++;
+            r.winStreak++;
+            let best = r.biggestWin;
+            if(!best || own - other > best.own - best.other || (own - other === best.own - best.other && own > best.own)){
+                r.biggestWin = {own, other, opponent: entry.ownIndex === 0 ? entry.team2 : entry.team1, division: divisionName};
+            }
+        }
+        else{
+            r.winStreak = 0;
+            if(entry.result === MATCH_DRAW){
+                r.draws++;
+            }
+            else{
+                r.losses++;
+            }
+        }
+        r.unbeatenStreak = entry.result === MATCH_LOSE ? 0 : r.unbeatenStreak + 1;
+        r.bestWinStreak = Math.max(r.bestWinStreak, r.winStreak);
+        r.bestUnbeatenStreak = Math.max(r.bestUnbeatenStreak, r.unbeatenStreak);
+        for(let g of entry.goals.filter(g => g.teamIndex === entry.ownIndex && g.name !== "Own Goal")){
+            r.scorers[g.name] = (r.scorers[g.name] || 0) + 1;
+        }
+    }
+
     //called before teams are promoted / relegated
     static createSeasonSummary(){
         let division = game.league.divisions[game.team.divisionRank];
@@ -343,6 +391,13 @@ class Match {
             money: game.matchHistory.reduce((sum, m) => sum.add(m.reward), new Decimal(0)),
             topScorers: Object.entries(scorers).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, goals]) => ({name, goals}))
         };
+        game.records.seasons++;
+        if(outcome === "promoted"){
+            game.records.promotions++;
+        }
+        if(position === 1){
+            game.records.titles++;
+        }
         game.showSeasonSummary = true;
         game.matchHistory = [];
     }

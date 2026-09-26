@@ -38,6 +38,7 @@ function setup(){
 
         requestAnimationFrame(update);
         setInterval(backgroundUpdate, 1000);
+        cloudSave.init();
     }
 }
 

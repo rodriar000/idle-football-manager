@@ -7,7 +7,7 @@
     <meta name="description" content="An Incremental Game where you manage your own Football Team"/>
     <meta name="url" content="https://veprogames.github.io/idle-football-manager/"/>
     <meta name="image" content="https://veprogames.github.io/idle-football-manager/logo.png"/>
-    <meta name="theme-color" content="#f2ae3a"/>
+    <meta name="theme-color" content="#0b2615"/>
 
     <meta name="og:title" content="Idle Football Manager"/>
     <meta name="og:type" content="website"/>
@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/themes/light.css"/>
     <link rel="stylesheet" href="css/themes/dark.css"/>
     <link rel="stylesheet" href="css/main.css"/>
+    <link rel="stylesheet" href="css/immersive.css"/>
     <link rel="icon" href="icon.ico"/>
     <title>Idle Football Manager</title>
 </head>
@@ -36,7 +37,9 @@
     </transition>
     <player-compare v-if="init"></player-compare>
     <main>
-        <component :is="tab"></component>
+        <transition name="tab-fade" mode="out-in">
+            <component :is="tab"></component>
+        </transition>
     </main>
 </div>
 

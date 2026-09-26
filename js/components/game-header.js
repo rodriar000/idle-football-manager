@@ -21,6 +21,24 @@ function getTabShortcut(i){
 }
 
 app.component("game-header", {
+    data(){
+        return {
+            moneyUp: false
+        };
+    },
+    watch: {
+        "$root.money"(value, old){
+            //short glow on the money chip when money comes in
+            if(old && value.gt(old.mul(1.01))){
+                this.moneyUp = true;
+                clearTimeout(this.moneyTimeout);
+                this.moneyTimeout = setTimeout(() => this.moneyUp = false, 500);
+            }
+        }
+    },
+    beforeUnmount(){
+        clearTimeout(this.moneyTimeout);
+    },
     methods: {
         changeTab(tab){
             this.$root.tab = tab;
@@ -42,8 +60,8 @@ app.component("game-header", {
         }
     },
     template: `<header>
-<h1>Idle {{term}} Manager</h1>
-<p class="header-money">{{formatNumber($root.money)}} $</p>
+<h1>Idle <span>{{term}}</span> Manager</h1>
+<p class="header-money" :class="{up: moneyUp}"><img alt="" src="images/icons/money.png"/>{{formatNumber($root.money)}} $</p>
 <nav>
     <ul>
         <li v-for="(t, i) in tabs" :key="t.id" class="icon-flex" :class="{active: $root.tab === t.id}" @click="changeTab(t.id)"

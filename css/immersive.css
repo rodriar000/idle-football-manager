@@ -1,0 +1,1382 @@
+/*
+Stadium / TV broadcast look, layered over main.css.
+Kept in its own file so gameplay changes to main.css rarely conflict with it.
+Light theme = day match, dark theme = floodlit night match.
+*/
+
+:root{
+    --ui-radius: 14px;
+    --ui-radius-small: 9px;
+
+    --ui-accent: #22c55e;
+    --ui-accent-deep: #15803d;
+    --ui-accent-glow: rgba(34, 197, 94, 0.45);
+    --ui-gold: #f5c542;
+    --ui-red: #ef4444;
+    --ui-red-deep: #b91c1c;
+
+    --ui-surface: #f7faf8;
+    --ui-surface-2: #e6efe9;
+    --ui-line: rgba(10, 40, 20, 0.14);
+    --ui-ink: #102418;
+    --ui-muted: #56695d;
+
+    --ui-glass: rgba(9, 34, 19, 0.78);
+    --ui-glass-line: rgba(255, 255, 255, 0.14);
+    --ui-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+
+    /*the pitch behind everything*/
+    --ui-sky: radial-gradient(ellipse 60% 45% at 10% -5%, rgba(255, 250, 220, 0.30), transparent 70%),
+        radial-gradient(ellipse 60% 45% at 90% -5%, rgba(255, 250, 220, 0.30), transparent 70%);
+    --ui-vignette: radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45));
+
+    /*old variables, mapped to the new palette*/
+    --color-header: #0f4a26;
+    --color-background: #0d2a17;
+    --color-text: #f3f8f4;
+    --color-text-dark: var(--ui-ink);
+    --color-border: rgba(0, 0, 0, 0.35);
+
+    --color-button: var(--ui-accent-deep);
+    --color-button-selected: var(--ui-accent);
+    --color-button-border-hover: #86efac;
+
+    --color-card: var(--ui-surface);
+    --color-card-border: var(--ui-line);
+    --color-card-stat: var(--ui-accent-deep);
+
+    --color-table-header: #0f3d22;
+    --color-table-pos: #0b2e19;
+    --color-table-even: var(--ui-surface);
+    --color-table-odd: var(--ui-surface-2);
+
+    --color-window: var(--ui-surface);
+    --color-window-header: var(--ui-surface-2);
+    --color-window-border: var(--ui-line);
+}
+
+:root[data-theme="dark"]{
+    --ui-accent: #3ee07f;
+    --ui-accent-deep: #16a34a;
+    --ui-accent-glow: rgba(62, 224, 127, 0.5);
+
+    --ui-surface: #142219;
+    --ui-surface-2: #1b2d21;
+    --ui-line: rgba(255, 255, 255, 0.09);
+    --ui-ink: #e7f1ea;
+    --ui-muted: #93a99b;
+
+    --ui-glass: rgba(5, 14, 9, 0.8);
+    --ui-shadow: 0 12px 34px rgba(0, 0, 0, 0.55);
+
+    --ui-sky: radial-gradient(ellipse 45% 40% at 8% -8%, rgba(210, 235, 255, 0.28), transparent 70%),
+        radial-gradient(ellipse 45% 40% at 92% -8%, rgba(210, 235, 255, 0.28), transparent 70%),
+        linear-gradient(rgba(2, 8, 5, 0.55), rgba(2, 8, 5, 0.55));
+    --ui-vignette: radial-gradient(ellipse 120% 90% at 50% 40%, transparent 45%, rgba(0, 0, 0, 0.7));
+
+    --color-header: #07170d;
+    --color-background: #06120a;
+    --color-text: #eef6f0;
+    --color-text-dark: var(--ui-ink);
+
+    --color-border: rgba(0, 0, 0, 0.45);
+
+    /*same mapping as above, dark.css sets these for the dark theme too*/
+    --color-button: var(--ui-accent-deep);
+    --color-button-selected: var(--ui-accent);
+    --color-button-border-hover: #86efac;
+
+    --color-card: var(--ui-surface);
+    --color-card-border: var(--ui-line);
+    --color-card-stat: var(--ui-accent-deep);
+
+    --color-table-header: #0a1f12;
+    --color-table-pos: #07170d;
+    --color-table-even: var(--ui-surface);
+    --color-table-odd: var(--ui-surface-2);
+
+    --color-window: var(--ui-surface);
+    --color-window-header: var(--ui-surface-2);
+    --color-window-border: var(--ui-line);
+}
+
+/*the dark theme file made own-team rows dark text on yellow, the new highlight doesn't need it*/
+:root[data-theme="dark"] .division tr.own-team td:not(:first-child){
+    color: var(--ui-ink);
+}
+
+body{
+    font-variant-numeric: tabular-nums;
+    background-color: var(--color-background);
+}
+
+/*Pitch with floodlights, fixed behind the page so it also works on phones*/
+body::before{
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: var(--ui-vignette), var(--ui-sky), url("../images/background.png");
+    background-size: cover, cover, cover;
+    background-position: center;
+    pointer-events: none;
+}
+
+main{
+    background: none;
+    position: relative;
+    isolation: isolate;
+}
+
+::selection{
+    background-color: var(--ui-accent);
+    color: #04120a;
+}
+
+/*Buttons*/
+
+button{
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: var(--ui-radius-small);
+    padding: 0.55rem 0.8rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: var(--color-button);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 55%, rgba(0, 0, 0, 0.12));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 2px 6px rgba(0, 0, 0, 0.25);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    transition: transform 120ms, box-shadow 200ms, background-color 200ms, filter 200ms, opacity 200ms;
+}
+
+button:hover:not(:disabled){
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    filter: brightness(1.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 4px 14px var(--ui-accent-glow);
+}
+
+button:active:not(:disabled){
+    filter: brightness(1.15);
+    transform: translateY(1px) scale(0.98);
+}
+
+button:focus-visible{
+    outline: 2px solid var(--ui-gold);
+    outline-offset: 2px;
+}
+
+button.selected{
+    background-color: var(--ui-accent);
+    color: #04120a;
+    text-shadow: none;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 0 0 2px var(--ui-accent), 0 0 18px var(--ui-accent-glow);
+}
+
+button:disabled{
+    filter: grayscale(0.7);
+    opacity: 0.5;
+}
+
+button.negative{
+    filter: none;
+    background-color: var(--ui-red-deep);
+}
+
+button.negative:hover:not(:disabled){
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 4px 14px rgba(239, 68, 68, 0.45);
+}
+
+button.help, button.help:hover{
+    box-shadow: none !important;
+    background-image: none;
+    border: none;
+}
+
+input[type="range"]{
+    accent-color: var(--ui-accent);
+}
+
+input[type="checkbox"], input[type="radio"]{
+    accent-color: var(--ui-accent-deep);
+}
+
+textarea{
+    border-radius: var(--ui-radius-small);
+    border: 1px solid var(--ui-line);
+    background-color: var(--ui-surface);
+    color: var(--ui-ink);
+    padding: 0.5rem;
+}
+
+/*Headings*/
+
+.big-heading{
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35), 0 0 30px rgba(0, 0, 0, 0.4);
+}
+
+.big-heading::after{
+    content: "";
+    display: block;
+    width: 3.5rem;
+    height: 4px;
+    margin: 0.4em auto 0;
+    border-radius: 2px;
+    background-image: linear-gradient(90deg, var(--ui-accent), var(--ui-gold));
+}
+
+/*two headings in a row (league) only get one underline*/
+.big-heading:has(+ .big-heading)::after{
+    display: none;
+}
+
+/*Cards, panels*/
+
+.card, .team-settings, .upgrade, .country{
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius);
+    box-shadow: var(--ui-shadow);
+}
+
+.upgrade{
+    position: relative;
+    overflow: hidden;
+    gap: 0.35rem;
+    transition: transform 200ms, box-shadow 200ms;
+}
+
+.upgrade::before{
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 4px;
+    background-image: linear-gradient(90deg, var(--ui-accent), var(--ui-gold));
+}
+
+.upgrade p{
+    color: var(--ui-muted);
+}
+
+.upgrade p:nth-last-of-type(1){
+    color: var(--ui-ink);
+    font-weight: 700;
+}
+
+/*Money: header chip, and the strip above some tabs*/
+
+.money{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    background-color: var(--ui-glass);
+    border-top: 1px solid var(--ui-glass-line);
+    border-bottom: 1px solid var(--ui-glass-line);
+    font-size: 150%;
+    padding: 0.75rem;
+    color: var(--ui-gold);
+    text-shadow: 0 0 18px rgba(245, 197, 66, 0.35);
+}
+
+.header-money{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.8rem 0.3rem 0.35rem;
+    border-radius: 2rem;
+    border: 1px solid rgba(245, 197, 66, 0.35);
+    background-color: rgba(0, 0, 0, 0.35);
+    color: var(--ui-gold);
+    font-weight: 900;
+    white-space: nowrap;
+    transition: box-shadow 400ms, transform 300ms;
+}
+
+.header-money img{
+    height: 1.4em;
+    filter: drop-shadow(0 0 4px rgba(245, 197, 66, 0.6));
+}
+
+.header-money.up{
+    box-shadow: 0 0 0 2px rgba(245, 197, 66, 0.55), 0 0 22px rgba(245, 197, 66, 0.55);
+    transform: scale(1.06);
+}
+
+/*Header*/
+
+header{
+    position: sticky;
+    top: 0;
+    z-index: 8;
+    background-color: var(--ui-glass);
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent);
+    border-bottom: 1px solid var(--ui-glass-line);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    -webkit-backdrop-filter: blur(12px) saturate(1.3);
+    backdrop-filter: blur(12px) saturate(1.3);
+    gap: 1rem;
+}
+
+header h1{
+    min-width: 0;
+    flex-shrink: 0;
+    padding-right: 0.1em;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background-image: linear-gradient(180deg, #ffffff 30%, #bff5d2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+}
+
+header h1 span{
+    color: var(--ui-accent);
+    -webkit-text-fill-color: var(--ui-accent);
+}
+
+@media (min-width: 701px){
+    header{
+        padding: 0.6rem 1rem;
+    }
+
+    header h1{
+        font-size: 150%;
+    }
+
+    header .header-money{
+        order: 3;
+        font-size: 110%;
+    }
+
+    header nav{
+        order: 2;
+        margin-left: auto;
+    }
+
+    header ul{
+        gap: 0.25rem;
+        justify-content: flex-end;
+    }
+
+    header ul li{
+        margin: 0;
+        padding: 0.4rem 0.7rem;
+        border-radius: 2rem;
+        font-weight: 700;
+        font-size: 90%;
+        transition: background-color 200ms, box-shadow 200ms, color 200ms;
+    }
+
+    header ul li:hover{
+        text-decoration: none;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    header ul li.active{
+        text-decoration: none;
+        color: #04120a;
+        background-color: var(--ui-accent);
+        box-shadow: 0 0 16px var(--ui-accent-glow);
+    }
+
+    header ul li img, header ul li canvas{
+        height: 1.3em;
+        margin-right: 0.35em;
+    }
+
+    /*money is always in the header now*/
+    .tab-upgrades > .money, .tab-stadium > .money, .tab-player-training > .money, .tab-tv-channels > .money{
+        display: none;
+    }
+}
+
+@media (min-width: 701px) and (max-width: 1500px){
+    header{
+        flex-wrap: wrap;
+    }
+
+    header nav{
+        order: 4;
+        width: 100%;
+    }
+
+    header{
+        padding-bottom: 0.4rem;
+    }
+
+    header ul{
+        justify-content: center;
+    }
+
+    header .header-money{
+        margin-left: auto;
+    }
+
+    header nav{
+        margin-left: 0;
+        padding-top: 0.4rem;
+        border-top: 1px solid var(--ui-glass-line);
+    }
+}
+
+/*Windows*/
+
+.window{
+    border: 1px solid var(--ui-line);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.window .header{
+    background-color: var(--ui-glass);
+    background-image: linear-gradient(90deg, rgba(34, 197, 94, 0.25), transparent 70%);
+    color: #fff;
+    padding: 0.6rem 0.6rem 0.6rem 1rem;
+    font-size: 125%;
+    letter-spacing: 0.02em;
+}
+
+.window .header button{
+    margin-right: 0;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.12);
+    box-shadow: none;
+}
+
+.window .header button:hover:not(:disabled){
+    background-color: var(--ui-red-deep);
+    box-shadow: none;
+}
+
+@media (max-width: 700px){
+    .window .header{
+        background-color: #0b2615;
+    }
+}
+
+/*Progress bar*/
+
+.progress-bar, .progress-bar div{
+    height: 0.6em;
+    border-radius: 1em;
+}
+
+.progress-bar .bg{
+    background-color: rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.progress-bar .front{
+    background-image: linear-gradient(90deg, var(--ui-accent-deep), var(--ui-accent) 70%, #bbf7d0);
+    box-shadow: 0 0 8px var(--ui-accent-glow);
+    transition: width 300ms linear;
+}
+
+/*Team management*/
+
+.team-management > .header, .team-management .strategies{
+    background-color: var(--ui-glass);
+    border-top: 0;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+.team-management > .header{
+    align-items: center;
+    border-bottom: 1px solid var(--ui-glass-line);
+}
+
+.team-management > .header h4{
+    font-size: 125%;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.team-management > .header > p{
+    white-space: nowrap;
+    padding: 0.15rem 0.6rem;
+    border-radius: 2rem;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--ui-glass-line);
+    font-weight: 700;
+    font-size: 90%;
+}
+
+.team-management .strategy h4{
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 85%;
+    opacity: 0.85;
+}
+
+.team-management .strategy button{
+    background-color: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--ui-glass-line);
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+.team-management .strategy button.selected{
+    background-color: var(--ui-accent);
+    font-weight: 700;
+}
+
+.team-management .strategies{
+    border-bottom: 1px solid var(--ui-glass-line);
+}
+
+/*no backdrop-filter here: it would trap the fixed player windows on phones*/
+.team-management .inactive-players{
+    background-color: rgba(6, 20, 11, 0.9);
+    border-top: 1px solid var(--ui-glass-line);
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.placeholder{
+    border-radius: var(--ui-radius);
+    border: 2px dashed rgba(255, 255, 255, 0.28);
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+.bench-title{
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/*Player cards: tier by strength compared to your own team*/
+
+.player{
+    --tier-a: #cfd8d3;
+    --tier-b: #8d9a93;
+    --tier-ink: #0f1a14;
+    --tier-shine: rgba(255, 255, 255, 0.5);
+    border: 0;
+    border-radius: 16px;
+    overflow: hidden;
+    color: var(--tier-ink);
+    background-color: var(--tier-b);
+    background-image: radial-gradient(120% 60% at 20% 0%, var(--tier-shine), transparent 60%),
+        linear-gradient(160deg, var(--tier-a), var(--tier-b));
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(255, 255, 255, 0.25), 0 10px 22px rgba(0, 0, 0, 0.4);
+    transition: transform 200ms, box-shadow 200ms;
+}
+
+.player:hover{
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.35), inset 0 0 0 2px rgba(255, 255, 255, 0.35), 0 16px 30px rgba(0, 0, 0, 0.5);
+}
+
+.player.tier-bronze{
+    --tier-a: #e2a76f;
+    --tier-b: #8a5429;
+    --tier-shine: rgba(255, 220, 180, 0.45);
+}
+
+.player.tier-silver{
+    --tier-a: #eef2f5;
+    --tier-b: #9aa5b1;
+}
+
+.player.tier-gold{
+    --tier-a: #fbe38a;
+    --tier-b: #c7961c;
+    --tier-shine: rgba(255, 250, 220, 0.7);
+}
+
+.player.tier-elite{
+    --tier-a: #a78bfa;
+    --tier-b: #2e1065;
+    --tier-ink: #f5f3ff;
+    --tier-shine: rgba(236, 72, 153, 0.45);
+}
+
+/*elite cards get a moving shine*/
+.player.tier-elite::after{
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.28) 50%, transparent 65%);
+    background-size: 250% 100%;
+    animation: card-shine 3.5s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes card-shine{
+    from{ background-position: 130% 0; }
+    to{ background-position: -30% 0; }
+}
+
+.player .header{
+    color: var(--tier-ink);
+    font-weight: 800;
+}
+
+.player .header img[src$="player.png"]{
+    display: none;
+}
+
+.player > .stats{
+    background-color: rgba(4, 14, 8, 0.72);
+    color: #f3f8f4;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.player > .stats p{
+    text-shadow: none;
+}
+
+.player > .stats p > span{
+    opacity: 0.65;
+    letter-spacing: 0.04em;
+}
+
+.player > .stats p.total{
+    color: var(--ui-gold);
+    font-size: 110%;
+    font-weight: 900;
+}
+
+.player > .stats p.total > span{
+    color: #f3f8f4;
+    font-weight: 700;
+}
+
+.player .actions button{
+    border-radius: 0;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.25);
+    box-shadow: none;
+}
+
+.player .actions button:hover:not(:disabled){
+    box-shadow: none;
+    filter: brightness(1.15);
+}
+
+.player button.compare-toggle{
+    z-index: 1;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.35);
+    box-shadow: none;
+}
+
+.player.compared{
+    box-shadow: 0 0 0 3px var(--ui-accent), 0 0 24px var(--ui-accent-glow), 0 10px 22px rgba(0, 0, 0, 0.4);
+}
+
+.player .progress-bar .bg{
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+/*League table*/
+
+.division{
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: var(--ui-radius);
+    overflow: hidden;
+    box-shadow: var(--ui-shadow);
+    border: 1px solid var(--ui-line);
+}
+
+.division thead{
+    background-color: var(--ui-glass);
+    background-image: none;
+    font-size: 85%;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.division th{
+    padding: 0.6rem 0.25rem;
+    color: #d1e7d9;
+}
+
+.division td{
+    padding: 0.4rem 0.3rem;
+    border-bottom: 1px solid var(--ui-line);
+}
+
+.division .pos{
+    background-image: none;
+    background-color: transparent;
+    color: var(--ui-ink);
+    font-weight: 900;
+    box-shadow: inset 4px 0 0 transparent;
+}
+
+.division tr.promotion, .division tr.relegation, .division tr.own-team{
+    background-image: none;
+}
+
+.division tr.promotion .pos{
+    box-shadow: inset 4px 0 0 var(--ui-accent);
+    color: var(--ui-accent-deep);
+}
+
+.division tr.relegation .pos{
+    box-shadow: inset 4px 0 0 var(--ui-red);
+    color: var(--ui-red);
+}
+
+:root[data-theme="dark"] .division tr.promotion .pos{
+    color: var(--ui-accent);
+}
+
+.division tr.own-team td{
+    background-color: rgba(245, 197, 66, 0.28);
+    font-weight: 800;
+}
+
+.division tr.own-team td:first-child{
+    background-color: var(--ui-gold);
+    color: #1a1403;
+}
+
+.division td:last-child{
+    font-weight: 900;
+}
+
+.division tbody tr, .division tr{
+    transition: background-color 200ms;
+}
+
+.division tr:hover td{
+    filter: brightness(1.05);
+}
+
+.division td.team{
+    display: table-cell;
+}
+
+.division td.team canvas, .division td.team span{
+    vertical-align: middle;
+}
+
+.division td.team canvas{
+    margin-right: 0.4em;
+}
+
+.division .team canvas{
+    height: 1.8em;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+/*League*/
+
+.tab-league .big-heading{
+    margin: 0.8rem;
+}
+
+.tab-league .big-heading + .big-heading{
+    font-size: 150%;
+    opacity: 0.85;
+}
+
+.tab-league .next-match button{
+    padding: 0.8rem 1.6rem;
+    font-size: 110%;
+    border-radius: 2rem;
+    background-color: var(--ui-accent-deep);
+    animation: soft-pulse 2.4s ease-in-out infinite;
+}
+
+.tab-league .next-match button:disabled{
+    animation: none;
+}
+
+@keyframes soft-pulse{
+    0%, 100%{ box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 0 0 var(--ui-accent-glow); }
+    50%{ box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 0 0 10px transparent; }
+}
+
+/*Match history*/
+
+.match-history h3{
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.match-history .row{
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-small);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.match-history .result{
+    border-radius: 50%;
+    color: #04120a;
+}
+
+.match-history .result.L{
+    background-color: var(--ui-red);
+    color: #fff;
+}
+
+/*Match: TV scoreboard*/
+
+.match .stats{
+    margin-top: 1rem;
+}
+
+.match .stats .time{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 900;
+    text-shadow: 0 0 24px rgba(255, 255, 255, 0.35);
+}
+
+.match .stats .time button{
+    display: inline-block;
+    margin: 0;
+    font-size: 45%;
+    padding: 0.5rem 1.4rem;
+    border-radius: 2rem;
+    animation: soft-pulse 2s ease-in-out infinite;
+}
+
+.match .match-state{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: 35%;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.8rem;
+    border-radius: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--ui-glass-line);
+    margin-bottom: 0.4rem;
+}
+
+.match .match-state::before{
+    content: "";
+    width: 0.6em;
+    height: 0.6em;
+    border-radius: 50%;
+    background-color: #9ca3af;
+}
+
+.match .match-state.live::before{
+    background-color: var(--ui-red);
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    animation: live-dot 1.4s ease-out infinite;
+}
+
+.match .match-state.ended::before{
+    background-color: var(--ui-gold);
+}
+
+@keyframes live-dot{
+    0%{ box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    100%{ box-shadow: 0 0 0 0.6em rgba(239, 68, 68, 0); }
+}
+
+.match .stats .score{
+    max-width: 1000px;
+    margin: 0.75rem auto 1.25rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 20px;
+    background-color: var(--ui-glass);
+    background-image: linear-gradient(90deg, rgba(34, 197, 94, 0.18), transparent 30%, transparent 70%, rgba(239, 68, 68, 0.14));
+    border: 1px solid var(--ui-glass-line);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.match .stats .score p:not(.numbers){
+    font-size: 70%;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.match .stats .score canvas{
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.match .stats .score .numbers{
+    flex-shrink: 0;
+    width: auto !important;
+    min-width: 5.5em;
+    margin: 0 auto;
+    padding: 0.1em 0.5em;
+    border-radius: 12px;
+    background-image: linear-gradient(180deg, #ffffff, #dfe7e2);
+    color: #0a1a10;
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.15), 0 6px 18px rgba(0, 0, 0, 0.45);
+    letter-spacing: 0.05em;
+}
+
+.match .stats .score .numbers.flash{
+    animation: score-flash 900ms ease-out;
+}
+
+@keyframes score-flash{
+    0%{ transform: scale(1.35); background-image: linear-gradient(180deg, #fff7d1, var(--ui-gold)); }
+    100%{ transform: scale(1); }
+}
+
+.match .win-chance{
+    height: 1.6rem;
+    line-height: 1.6rem;
+    border-radius: 2rem;
+    border: 1px solid var(--ui-glass-line);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    font-weight: 800;
+}
+
+.match .win-chance .win{
+    background-image: linear-gradient(180deg, #4ade80, var(--ui-accent-deep));
+    color: #04120a;
+}
+
+.match .win-chance .draw{
+    background-image: linear-gradient(180deg, #d1d5db, #8b949e);
+}
+
+.match .win-chance .lose{
+    background-image: linear-gradient(180deg, #f87171, var(--ui-red-deep));
+    color: #fff;
+}
+
+.match .win-chance-label{
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.match .power span{
+    border-radius: 2rem;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--ui-glass-line);
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.match .power span.stronger{
+    background-color: var(--ui-accent);
+    color: #04120a;
+    box-shadow: 0 0 12px var(--ui-accent-glow);
+}
+
+.match .events div p{
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.25rem 0.7rem;
+    border-radius: 2rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--ui-glass-line);
+    font-size: 85%;
+    font-weight: 700;
+    animation: event-in 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.match .events div:first-child p{
+    margin-left: auto;
+}
+
+@keyframes event-in{
+    from{ opacity: 0; transform: translateY(8px) scale(0.9); }
+    to{ opacity: 1; transform: none; }
+}
+
+.match .match-view{
+    filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.5));
+}
+
+.match .speed-controls label{
+    padding: 0.5rem 0.9rem;
+    border-radius: var(--ui-radius);
+    background-color: var(--ui-glass);
+    border: 1px solid var(--ui-glass-line);
+    font-size: 100%;
+}
+
+/*end of match*/
+
+.match .result-banner{
+    font-size: 220%;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin: 0.25rem 0 0.1rem;
+}
+
+.match .result-banner.win{
+    color: var(--ui-accent-deep);
+}
+
+.match .result-banner.lose{
+    color: var(--ui-red);
+}
+
+.match .result-banner.draw{
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .match .result-banner.win{
+    color: var(--ui-accent);
+}
+
+.match .final-score{
+    font-size: 130%;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+}
+
+.match .reward{
+    color: var(--ui-accent-deep);
+}
+
+:root[data-theme="dark"] .match .reward{
+    color: var(--ui-gold);
+}
+
+/*Goal celebration*/
+
+.goal-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    background-image: radial-gradient(circle at 50% 50%, rgba(245, 197, 66, 0.35), transparent 60%);
+    text-align: center;
+}
+
+.goal-overlay.against{
+    background-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.45), transparent 65%);
+}
+
+.goal-overlay .goal-text{
+    font-size: clamp(3.5rem, 14vw, 9rem);
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: #fff;
+    -webkit-text-stroke: 3px #04120a;
+    text-shadow: 0 6px 0 #04120a, 0 0 40px rgba(245, 197, 66, 0.9);
+}
+
+.goal-overlay.against .goal-text{
+    font-size: clamp(2.5rem, 9vw, 5.5rem);
+    text-shadow: 0 5px 0 #04120a, 0 0 30px rgba(239, 68, 68, 0.8);
+}
+
+.goal-overlay .goal-scorer{
+    margin-top: 0.6rem;
+    padding: 0.35rem 1.1rem;
+    border-radius: 2rem;
+    background-color: var(--ui-glass);
+    border: 1px solid var(--ui-glass-line);
+    font-weight: 800;
+    font-size: 120%;
+}
+
+.goal-overlay .burst{
+    position: absolute;
+    width: 60vmin;
+    height: 60vmin;
+    border-radius: 50%;
+    border: 6px solid rgba(245, 197, 66, 0.8);
+    animation: goal-burst 900ms ease-out forwards;
+}
+
+.goal-overlay.against .burst{
+    display: none;
+}
+
+@keyframes goal-burst{
+    from{ transform: scale(0.1); opacity: 1; }
+    to{ transform: scale(1.6); opacity: 0; }
+}
+
+.goal-pop-enter-active{
+    animation: goal-in 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.goal-pop-leave-active{
+    transition: opacity 300ms, transform 300ms;
+}
+
+.goal-pop-leave-to{
+    opacity: 0;
+    transform: scale(1.15);
+}
+
+@keyframes goal-in{
+    from{ opacity: 0; transform: scale(0.3) rotate(-6deg); }
+    to{ opacity: 1; transform: none; }
+}
+
+/*Season summary*/
+
+.window-season .position{
+    background-image: linear-gradient(180deg, var(--ui-gold), #b7791f);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.window-season .outcome{
+    border-radius: 2rem;
+}
+
+/*Countries*/
+
+.country{
+    transition: transform 200ms;
+}
+
+.country.selected{
+    background-image: linear-gradient(135deg, rgba(34, 197, 94, 0.25), transparent 60%);
+    border-color: var(--ui-accent);
+    box-shadow: 0 0 0 2px var(--ui-accent), var(--ui-shadow);
+}
+
+.tab-countries .next-country button{
+    border-radius: var(--ui-radius);
+    padding: 1rem 1.5rem;
+}
+
+/*Achievements*/
+
+.achievement{
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+    transition: transform 200ms, box-shadow 200ms;
+}
+
+.achievement img{
+    filter: grayscale(1) opacity(0.45);
+}
+
+.achievement.completed{
+    background-image: radial-gradient(circle at 50% 30%, rgba(255, 244, 200, 0.9), var(--ui-gold) 70%, #b7791f);
+    border-color: #b7791f;
+    box-shadow: 0 0 18px rgba(245, 197, 66, 0.45), 0 6px 14px rgba(0, 0, 0, 0.3);
+}
+
+.achievement.completed img{
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
+}
+
+@media (hover: hover){
+    .achievement:hover{
+        box-shadow: 0 0 0 2px var(--ui-accent), 0 6px 14px rgba(0, 0, 0, 0.3);
+    }
+}
+
+.achievement .popup{
+    background-color: var(--ui-glass);
+    border: 1px solid var(--ui-glass-line);
+    border-radius: var(--ui-radius-small);
+    padding: 0.5rem;
+    box-shadow: var(--ui-shadow);
+    color: #fff;
+}
+
+/*Stadium, TV, Settings*/
+
+.stadium .info{
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.stadium .info img{
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.55));
+}
+
+.stadium > h4{
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.tab-settings .card.flex{
+    text-align: left;
+}
+
+.tab-settings .notification-settings .notification-message{
+    color: var(--ui-red);
+}
+
+.compare-bar{
+    border: 1px solid var(--ui-glass-line);
+    border-radius: var(--ui-radius);
+    background-color: var(--ui-glass);
+    color: #fff;
+    box-shadow: var(--ui-shadow);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.window-compare td.better{
+    background-color: var(--ui-accent-deep);
+    color: #fff;
+}
+
+kbd{
+    border-color: currentColor;
+    border-bottom-width: 2px;
+    border-radius: 4px;
+}
+
+/*Tab change*/
+
+.tab-fade-enter-active{
+    transition: opacity 180ms ease-out, transform 180ms ease-out;
+}
+
+.tab-fade-leave-active{
+    transition: opacity 90ms ease-in;
+}
+
+.tab-fade-enter-from{
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+.tab-fade-leave-to{
+    opacity: 0;
+}
+
+/*Phones*/
+
+@media (max-width: 700px){
+    /*a backdrop-filter on the header would pin the fixed tab bar to the header instead of the screen*/
+    header{
+        padding: 0.5rem 0.75rem;
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background-color: rgba(6, 22, 12, 0.94);
+    }
+
+    header h1{
+        font-size: 100%;
+    }
+
+    header nav{
+        background-color: var(--ui-glass);
+        border-top: 1px solid var(--ui-glass-line);
+        -webkit-backdrop-filter: blur(14px) saturate(1.3);
+        backdrop-filter: blur(14px) saturate(1.3);
+        box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    header ul li{
+        position: relative;
+        border-top: 0;
+        opacity: 0.75;
+        transition: opacity 200ms;
+    }
+
+    header ul li.active{
+        opacity: 1;
+        background-color: transparent;
+        color: var(--ui-accent);
+        font-weight: 800;
+    }
+
+    header ul li.active::before{
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 25%;
+        right: 25%;
+        height: 3px;
+        border-radius: 0 0 3px 3px;
+        background-color: var(--ui-accent);
+        box-shadow: 0 0 12px var(--ui-accent-glow);
+    }
+
+    header ul li.active img, header ul li.active canvas{
+        transform: translateY(-2px) scale(1.12);
+        filter: drop-shadow(0 0 6px var(--ui-accent-glow));
+    }
+
+    header ul li img, header ul li canvas{
+        transition: transform 200ms;
+    }
+
+    .header-money{
+        font-size: 90%;
+        padding: 0.2rem 0.6rem 0.2rem 0.25rem;
+    }
+
+    .money{
+        font-size: 110%;
+    }
+
+    .player{
+        border-radius: 12px;
+    }
+
+    .team-management > .header > p{
+        font-size: 80%;
+    }
+
+    .match .stats .score{
+        margin: 0.5rem 0.5rem 0.9rem;
+        padding: 0.6rem 0.5rem;
+        border-radius: 16px;
+    }
+
+    .match .stats .score p:not(.numbers){
+        font-size: 60%;
+    }
+
+    .match .stats .score .numbers{
+        min-width: 3.6em;
+        font-size: 150%;
+    }
+
+    .match .events div p{
+        font-size: 75%;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .match .speed-controls label{
+        font-size: 90%;
+    }
+
+    .division{
+        border-radius: 0;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .big-heading::after{
+        width: 2.5rem;
+        height: 3px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+    }
+}
+
+.team-management .best-eleven{
+    white-space: nowrap;
+}
+
+.match .window{
+    min-height: 0;
+    padding-bottom: 0.5rem;
+}

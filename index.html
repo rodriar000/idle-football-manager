@@ -49,6 +49,7 @@
     </transition>
     <player-compare v-if="init"></player-compare>
     <signing-stamp v-if="init"></signing-stamp>
+    <live-score v-if="init"></live-score>
     <main>
         <transition name="tab-fade" mode="out-in">
             <component :is="tab"></component>
@@ -114,6 +115,7 @@
 <script src="js/components/progress-bar.js"></script>
 <script src="js/components/upgrade.js"></script>
 <script src="js/components/achievement.js"></script>
+<script src="js/components/club-records.js"></script>
 <script src="js/components/division.js"></script>
 <script src="js/components/player-market.js"></script>
 <script src="js/components/player-compare.js"></script>
@@ -123,6 +125,8 @@
 <script src="js/components/team-management.js"></script>
 <script src="js/components/match.js"></script>
 <script src="js/components/match-history.js"></script>
+<script src="js/components/live-score.js"></script>
+<script src="js/components/season-archive.js"></script>
 <script src="js/components/match-view.js"></script>
 <script src="js/components/country-flag.js"></script>
 <script src="js/components/country.js"></script>

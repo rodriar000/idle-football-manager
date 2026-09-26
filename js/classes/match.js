@@ -18,6 +18,8 @@ class Match {
 
         this.ballX = 0; //-1 to 1
         this.ballSpeed = 0;
+
+        this.baseStrategy = null; //strategy chosen by the player while auto strategy has changed it
     }
 
     addGoal(team, player, minute){
@@ -38,6 +40,34 @@ class Match {
         }
         for(let sub of team.substituteTiredPlayers(settings.substituteStamina)){
             this.addSubstitution(team, sub.out, sub.in, this.getMinute());
+        }
+    }
+
+    //late in the match: defend a lead, attack when behind, back to the chosen strategy when level
+    checkAutoStrategy(){
+        let settings = game.settings.team;
+        let team = this.getPlayerTeam();
+        if(!team || !settings.autoStrategy || this.getMinute() < settings.autoStrategyMinute){
+            return;
+        }
+        if(this.baseStrategy === null){
+            this.baseStrategy = team.strategy;
+        }
+        let own = team === this.team1 ? this.score1 : this.score2;
+        let other = team === this.team1 ? this.score2 : this.score1;
+        let wanted = own > other ? Strategy.DEFENSIVE : own < other ? Strategy.OFFENSIVE : this.baseStrategy;
+        if(team.strategy !== wanted){
+            team.strategy = wanted;
+            let name = {[Strategy.NORMAL]: "Neutral", [Strategy.OFFENSIVE]: "Offensive", [Strategy.DEFENSIVE]: "Defensive"}[wanted];
+            this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 3, name: "Strategy: " + name, minute: this.getMinute()});
+        }
+    }
+
+    restoreStrategy(){
+        let team = this.getPlayerTeam();
+        if(team && this.baseStrategy !== null){
+            team.strategy = this.baseStrategy;
+            this.baseStrategy = null;
         }
     }
 
@@ -80,6 +110,7 @@ class Match {
     }
 
     endGame() {
+        this.restoreStrategy();
         for(let p of this.team1.players.concat(this.team2.players)){
             p.redCard = Math.max(0, p.redCard - 1);
         }
@@ -111,6 +142,7 @@ class Match {
             this.stadiumReward = reward;
             game.stadium.emptyStadium();
             this.addToHistory();
+            Match.updateRecords(game.matchHistory[game.matchHistory.length - 1], game.league.divisions[this.divisionRank].getName());
 
             for(let p of playerTeam.getActivePlayers()){
                 if(p.hasRedCard()){
@@ -256,6 +288,7 @@ class Match {
                     p.currentStamina = Math.max(0, p.currentStamina - Math.random() * 3e-5 * dt * tm * (1 / p.stamina));
                 }
                 this.checkSubstitutions();
+                this.checkAutoStrategy();
 
                 this.ballX += this.ballSpeed * dt;
                 this.ballSpeed *= 0.2 ** dt;
@@ -293,6 +326,7 @@ class Match {
         this.gameEvents = obj.gameEvents;
         this.stadiumReward = obj.stadiumReward || new Decimal(0);
         this.ended = obj.ended;
+        this.baseStrategy = obj.baseStrategy ?? null;
     }
 
     //remember the player's matches of the current season
@@ -309,6 +343,53 @@ class Match {
             goals: this.gameEvents.filter(e => e.event === 0).map(e => ({teamIndex: e.teamIndex, name: e.name, minute: e.minute})),
             reward: this.getRewardMoney().add(this.stadiumReward)
         });
+    }
+
+    static get emptyRecords(){
+        return {
+            matches: 0, wins: 0, draws: 0, losses: 0,
+            goalsFor: 0, goalsAgainst: 0,
+            money: new Decimal(0),
+            biggestWin: null,
+            winStreak: 0, bestWinStreak: 0,
+            unbeatenStreak: 0, bestUnbeatenStreak: 0,
+            scorers: {},
+            seasons: 0, promotions: 0, titles: 0
+        };
+    }
+
+    //all time club records, updated after every match of the player's team
+    static updateRecords(entry, divisionName){
+        let r = game.records;
+        let own = entry.ownIndex === 0 ? entry.score1 : entry.score2;
+        let other = entry.ownIndex === 0 ? entry.score2 : entry.score1;
+        r.matches++;
+        r.goalsFor += own;
+        r.goalsAgainst += other;
+        r.money = r.money.add(entry.reward);
+        if(entry.result === MATCH_WIN){
+            r.wins++;
+            r.winStreak++;
+            let best = r.biggestWin;
+            if(!best || own - other > best.own - best.other || (own - other === best.own - best.other && own > best.own)){
+                r.biggestWin = {own, other, opponent: entry.ownIndex === 0 ? entry.team2 : entry.team1, division: divisionName};
+            }
+        }
+        else{
+            r.winStreak = 0;
+            if(entry.result === MATCH_DRAW){
+                r.draws++;
+            }
+            else{
+                r.losses++;
+            }
+        }
+        r.unbeatenStreak = entry.result === MATCH_LOSE ? 0 : r.unbeatenStreak + 1;
+        r.bestWinStreak = Math.max(r.bestWinStreak, r.winStreak);
+        r.bestUnbeatenStreak = Math.max(r.bestUnbeatenStreak, r.unbeatenStreak);
+        for(let g of entry.goals.filter(g => g.teamIndex === entry.ownIndex && g.name !== "Own Goal")){
+            r.scorers[g.name] = (r.scorers[g.name] || 0) + 1;
+        }
     }
 
     //called before teams are promoted / relegated
@@ -332,6 +413,20 @@ class Match {
                 scorers[g.name] = (scorers[g.name] || 0) + 1;
             }
         }
+        game.seasonArchive.push({
+            country: game.country,
+            divisionName: division.getName(),
+            divisionNumber: game.league.divisions.length - division.rank,
+            position,
+            teams: sorted.length,
+            outcome,
+            points: game.team.getPoints(),
+            win: game.team.divisionStats.win,
+            draw: game.team.divisionStats.draw,
+            lose: game.team.divisionStats.lose,
+            goalsShot: game.team.divisionStats.goalsShot,
+            goalsOpponent: game.team.divisionStats.goalsOpponent
+        });
         game.lastSeason = {
             divisionName: division.getName(),
             divisionNumber: game.league.divisions.length - division.rank,
@@ -344,6 +439,13 @@ class Match {
             podium: sorted.slice(0, 3).map(t => ({name: t.name, points: t.getPoints(), own: t === game.team})),
             topScorers: Object.entries(scorers).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, goals]) => ({name, goals}))
         };
+        game.records.seasons++;
+        if(outcome === "promoted"){
+            game.records.promotions++;
+        }
+        if(position === 1){
+            game.records.titles++;
+        }
         game.showSeasonSummary = true;
         game.matchHistory = [];
     }

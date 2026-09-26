@@ -8,8 +8,10 @@ let game = {
     league: null,
     restartedTutorial: false,
     matchHistory: [],
+    seasonArchive: [],
     lastSeason: null,
     showSeasonSummary: false,
+    records: Match.emptyRecords,
     countries: [
         new Country("Nowhereia", `This is your Starting Point. People here don't even really play Football, and are not interested in it. 
             Teams here aren't very good, a good way for you to get going!`, new CountryFlag(["white"])),
@@ -92,7 +94,9 @@ let game = {
         team: {
             refillPlayers: true,
             autoSubstitute: false,
-            substituteStamina: 0.5
+            substituteStamina: 0.5,
+            autoStrategy: false,
+            autoStrategyMinute: 70
         },
         match: {
             speed: 1,

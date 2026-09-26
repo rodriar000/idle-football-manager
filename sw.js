@@ -1,4 +1,5 @@
-//offline support for the installed game: answer from the cache, refresh it in the background
+//offline support for the installed game: always try the network first so updates show
+//right away, and fall back to the last copy when offline
 const CACHE = "idle-football-manager";
 
 self.addEventListener("install", () => self.skipWaiting());
@@ -10,19 +11,12 @@ self.addEventListener("fetch", e => {
     if(e.request.method !== "GET" || url.origin !== location.origin){
         return;
     }
-    e.respondWith(caches.open(CACHE).then(async cache => {
-        let cached = await cache.match(e.request);
-        let fresh = fetch(e.request).then(response => {
+    e.respondWith(caches.open(CACHE).then(cache =>
+        fetch(e.request).then(response => {
             if(response.ok){
                 cache.put(e.request, response.clone());
             }
             return response;
-        });
-        if(cached){
-            //keep the cache current, errors while offline don't matter
-            fresh.catch(() => null);
-            return cached;
-        }
-        return fresh;
-    }));
+        }).catch(async () => (await cache.match(e.request)) || Response.error())
+    ));
 });

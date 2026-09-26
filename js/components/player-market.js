@@ -7,5 +7,6 @@ app.component("player-market", {
     },
     template: `<div class="player-market">
     <player v-for="(p, i) in sortedPlayers" :player="p" :key="i"></player>
+    <p class="empty" v-if="sortedPlayers.length === 0">No Players left in the Market. New Players arrive with the next refresh.</p>
 </div>`
 });

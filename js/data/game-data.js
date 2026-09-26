@@ -8,6 +8,7 @@ let game = {
     league: null,
     restartedTutorial: false,
     matchHistory: [],
+    seasonArchive: [],
     lastSeason: null,
     showSeasonSummary: false,
     countries: [
@@ -92,7 +93,9 @@ let game = {
         team: {
             refillPlayers: true,
             autoSubstitute: false,
-            substituteStamina: 0.5
+            substituteStamina: 0.5,
+            autoStrategy: false,
+            autoStrategyMinute: 70
         },
         match: {
             speed: 1,

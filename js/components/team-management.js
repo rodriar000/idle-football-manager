@@ -36,6 +36,11 @@ app.component("team-management", {
         },
         setStrategy(strategy){
             this.team.strategy = strategy;
+            //a manual pick during the match is what auto strategy goes back to
+            let match = this.$root.currentMatch;
+            if(match && !match.ended && match.baseStrategy !== null){
+                match.baseStrategy = strategy;
+            }
         },
         setAggressivity(strategy){
             this.team.aggressivity = strategy;
@@ -59,6 +64,9 @@ app.component("team-management", {
         <label><input type="checkbox" v-model="teamSettings.autoSubstitute"/> Auto Substitutions</label>
         <label :class="{disabled: !teamSettings.autoSubstitute}">Sub out below {{formatNumber(teamSettings.substituteStamina * 100)}} % Stamina
             <input type="range" min="0.05" max="0.95" step="0.05" :disabled="!teamSettings.autoSubstitute" v-model.number="teamSettings.substituteStamina"/></label>
+        <label title="Late in the Match: Defensive when winning, Offensive when losing, your Strategy when level"><input type="checkbox" v-model="teamSettings.autoStrategy"/> Auto Strategy</label>
+        <label :class="{disabled: !teamSettings.autoStrategy}">from minute {{teamSettings.autoStrategyMinute}}
+            <input type="range" min="45" max="85" step="5" :disabled="!teamSettings.autoStrategy" v-model.number="teamSettings.autoStrategyMinute"/></label>
     </div>
 </div>
 <div class="strategies">

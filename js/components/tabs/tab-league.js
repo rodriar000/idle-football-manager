@@ -43,5 +43,6 @@ app.component("tab-league", {
         <button disabled v-else>You need at least 1 Player in your Team to play the next Match!</button>
     </div>
     <match-history :history="matchHistory"></match-history>
+    <season-archive></season-archive>
 </div>`
 });

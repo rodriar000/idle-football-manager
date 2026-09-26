@@ -18,6 +18,8 @@ class Match {
 
         this.ballX = 0; //-1 to 1
         this.ballSpeed = 0;
+
+        this.baseStrategy = null; //strategy chosen by the player while auto strategy has changed it
     }
 
     addGoal(team, player, minute){
@@ -38,6 +40,34 @@ class Match {
         }
         for(let sub of team.substituteTiredPlayers(settings.substituteStamina)){
             this.addSubstitution(team, sub.out, sub.in, this.getMinute());
+        }
+    }
+
+    //late in the match: defend a lead, attack when behind, back to the chosen strategy when level
+    checkAutoStrategy(){
+        let settings = game.settings.team;
+        let team = this.getPlayerTeam();
+        if(!team || !settings.autoStrategy || this.getMinute() < settings.autoStrategyMinute){
+            return;
+        }
+        if(this.baseStrategy === null){
+            this.baseStrategy = team.strategy;
+        }
+        let own = team === this.team1 ? this.score1 : this.score2;
+        let other = team === this.team1 ? this.score2 : this.score1;
+        let wanted = own > other ? Strategy.DEFENSIVE : own < other ? Strategy.OFFENSIVE : this.baseStrategy;
+        if(team.strategy !== wanted){
+            team.strategy = wanted;
+            let name = {[Strategy.NORMAL]: "Neutral", [Strategy.OFFENSIVE]: "Offensive", [Strategy.DEFENSIVE]: "Defensive"}[wanted];
+            this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 3, name: "Strategy: " + name, minute: this.getMinute()});
+        }
+    }
+
+    restoreStrategy(){
+        let team = this.getPlayerTeam();
+        if(team && this.baseStrategy !== null){
+            team.strategy = this.baseStrategy;
+            this.baseStrategy = null;
         }
     }
 
@@ -80,6 +110,7 @@ class Match {
     }
 
     endGame() {
+        this.restoreStrategy();
         for(let p of this.team1.players.concat(this.team2.players)){
             p.redCard = Math.max(0, p.redCard - 1);
         }
@@ -256,6 +287,7 @@ class Match {
                     p.currentStamina = Math.max(0, p.currentStamina - Math.random() * 3e-5 * dt * tm * (1 / p.stamina));
                 }
                 this.checkSubstitutions();
+                this.checkAutoStrategy();
 
                 this.ballX += this.ballSpeed * dt;
                 this.ballSpeed *= 0.2 ** dt;
@@ -293,6 +325,7 @@ class Match {
         this.gameEvents = obj.gameEvents;
         this.stadiumReward = obj.stadiumReward || new Decimal(0);
         this.ended = obj.ended;
+        this.baseStrategy = obj.baseStrategy ?? null;
     }
 
     //remember the player's matches of the current season
@@ -332,6 +365,20 @@ class Match {
                 scorers[g.name] = (scorers[g.name] || 0) + 1;
             }
         }
+        game.seasonArchive.push({
+            country: game.country,
+            divisionName: division.getName(),
+            divisionNumber: game.league.divisions.length - division.rank,
+            position,
+            teams: sorted.length,
+            outcome,
+            points: game.team.getPoints(),
+            win: game.team.divisionStats.win,
+            draw: game.team.divisionStats.draw,
+            lose: game.team.divisionStats.lose,
+            goalsShot: game.team.divisionStats.goalsShot,
+            goalsOpponent: game.team.divisionStats.goalsOpponent
+        });
         game.lastSeason = {
             divisionName: division.getName(),
             divisionNumber: game.league.divisions.length - division.rank,

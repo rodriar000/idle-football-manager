@@ -70,6 +70,7 @@ let functions = {
             game.country = loadVal(obj.country, 0);
             game.canEnterNextCountry = loadVal(obj.canEnterNextCountry, false);
             game.matchHistory = obj.matchHistory || [];
+            game.seasonArchive = obj.seasonArchive || [];
             game.lastSeason = obj.lastSeason || null;
             game.showSeasonSummary = false;
 
@@ -149,6 +150,8 @@ let functions = {
                 game.settings.team.refillPlayers = loadVal(obj.settings.team.refillPlayers, true);
                 game.settings.team.autoSubstitute = obj.settings.team.autoSubstitute ?? false;
                 game.settings.team.substituteStamina = obj.settings.team.substituteStamina ?? 0.5;
+                game.settings.team.autoStrategy = obj.settings.team.autoStrategy ?? false;
+                game.settings.team.autoStrategyMinute = obj.settings.team.autoStrategyMinute ?? 70;
             }
             if(obj.settings.players){
                 game.settings.players.shiftToSell = loadVal(obj.settings.players.shiftToSell, false);

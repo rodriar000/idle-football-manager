@@ -5,6 +5,10 @@ app.component("stadium", {
         formatNumber: functions.formatNumber
     },
     computed: {
+        nextRing(){
+            let tiers = StadiumRenderer.getTiers(this.stadium.getCapacity());
+            return tiers === 0 || tiers >= 6 ? null : new Decimal(10).pow(tiers + 2);
+        },
         maxPayment(){
             return this.stadium.getTicketPrice().mul(this.stadium.getCapacity());
         }
@@ -23,7 +27,8 @@ app.component("stadium", {
     <p>{{formatNumber(stadium.attendance)}} / {{formatNumber(stadium.getCapacity())}} watching</p>
     <p>{{formatNumber(stadium.fans)}} Fans</p>
     <p>{{formatNumber(stadium.getTicketPrice(), 2, 2)}} $ per Ticket → {{formatNumber(maxPayment)}} $ possible</p>
-    <img alt="Stadium" src="images/stadium.png"/>
+    <stadium-view :stadium="stadium"></stadium-view>
+    <p class="next-ring" v-if="nextRing">Next ring of stands at {{formatNumber(nextRing)}} seats</p>
 </div>
 <h4>Upgrades</h4>
 <div class="upgrade-container">

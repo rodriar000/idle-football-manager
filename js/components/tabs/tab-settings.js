@@ -69,6 +69,9 @@ app.component("tab-settings", {
         tvUnlocked(){
             return game.tv.isUnlocked();
         },
+        pwa(){
+            return gamePwa;
+        },
         themes(){
             return gameTheme.options;
         }
@@ -106,6 +109,15 @@ app.component("tab-settings", {
             <small>While on, Matches keep playing in the Background.</small>
             <p class="notification-message" v-if="notificationMessage">{{notificationMessage}}</p>
         </div>
+    </div>
+    <div class="install-app card" v-if="!pwa.installed && (pwa.installEvent || pwa.isIOS)">
+        <img alt="" src="images/app/icon-192.png"/>
+        <div>
+            <h4>Play it like an App</h4>
+            <p v-if="pwa.installEvent">Install the Game to open it from your Home Screen, full screen and offline.</p>
+            <p v-else>On iPhone and iPad: tap Share, then "Add to Home Screen".</p>
+        </div>
+        <button v-if="pwa.installEvent" @click="pwa.install()">Install App</button>
     </div>
     <button @click="restartTutorial()">Restart Tutorial</button><br/>
     <h3 class="big-heading">Keyboard Shortcuts</h3>

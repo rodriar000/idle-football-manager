@@ -11,13 +11,19 @@ app.component("tab-player-market", {
         money(){
             return game.money;
         },
+        affordable(){
+            return this.playerMarket.players.filter(p => p.canAfford()).length;
+        },
         refreshTime(){
             return 4 - game.league.divisions[game.team.divisionRank].matchDay % 4;
         }
     },
     template: `<div class="tab-player-market">
-<p class="money">You have {{formatNumber(money)}} $<br/>
-    Refresh in {{refreshTime}} Matchday(s)</p>
+<div class="money transfer-window">
+    <p class="window-title">Transfer Window</p>
+    <p>You have {{formatNumber(money)}} $ · {{affordable}} of {{playerMarket.players.length}} Players affordable</p>
+    <p class="refresh">New Players in {{refreshTime}} Matchday(s)</p>
+</div>
 <player-market :playerMarket="playerMarket"></player-market>
 </div>`
 });

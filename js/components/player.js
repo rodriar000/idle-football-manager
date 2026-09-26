@@ -19,6 +19,12 @@ app.component("player", {
         removeFromTraining(){
             game.training.removePlayer(this.player);
         },
+        buy(){
+            this.player.buy();
+            if(this.player.isBought()){
+                uiFx.showSigning(this.player);
+            }
+        },
         toggleCompare(){
             playerCompare.toggle(this.player);
         },
@@ -105,7 +111,7 @@ app.component("player", {
     },
     template: `<div class="player" :class="['tier-' + tier, {compared: isCompared}]">
 <button class="compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" :title="isCompared ? 'Remove from Comparison' : 'Compare'">⇄</button>
-<p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><img alt="" src="images/player.png"/><img v-if="player.hasRedCard()" alt="" src="images/icons/red-card.png"/> {{player.name}}</div>
+<p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><player-avatar :player="player"></player-avatar><img v-if="player.hasRedCard()" alt="" src="images/icons/red-card.png"/> {{player.name}}</div>
 <div class="icon-flex" v-if="isBought"><img alt="" src="images/icons/stamina.png"/> <progress-bar :value="player.currentStamina"></progress-bar></div>
 <div class="signing" v-else-if="signing" title="Buying this Player improves your best Eleven the most">★ Best Signing <span>{{formatChange(signing.attack)}} ATT · {{formatChange(signing.defense)}} DEF</span></div></p>
 <div class="stats">
@@ -130,7 +136,7 @@ app.component("player", {
         </div>
     </div>
     <div v-else>
-        <button :disabled="!player.canAfford()" @click="player.buy()">Buy ($ {{formatNumber(player.getPrice())}})</button>
+        <button :disabled="!player.canAfford()" :class="{'cant-afford': !player.canAfford()}" @click="buy()">Buy ($ {{formatNumber(player.getPrice())}})</button>
     </div>
 </div>
 <transition name="window-grow">

@@ -436,6 +436,7 @@ class Match {
             stats: Object.assign({}, game.team.divisionStats),
             points: game.team.getPoints(),
             money: game.matchHistory.reduce((sum, m) => sum.add(m.reward), new Decimal(0)),
+            podium: sorted.slice(0, 3).map(t => ({name: t.name, points: t.getPoints(), own: t === game.team})),
             topScorers: Object.entries(scorers).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, goals]) => ({name, goals}))
         };
         game.records.seasons++;

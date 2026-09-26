@@ -120,7 +120,6 @@ app.component("match", {
         }
     },
     template: `<div class="match">
-<match-view :ballx="match.ballX"></match-view>
 <transition name="goal-pop">
     <div v-if="goal" :key="goal.key" class="goal-overlay" :class="{against: !goal.own}">
         <div class="burst"></div>
@@ -156,6 +155,7 @@ app.component("match", {
             <span :class="{stronger: team2Stats.defense.gt(team1Stats.attack)}">DEF {{formatNumber(team2Stats.defense)}}</span></p>
     </div>
 </div>
+<match-view :match="match"></match-view>
 <div class="events">
     <div>
         <p v-for="g in team1Events">

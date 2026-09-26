@@ -104,6 +104,11 @@ let game = {
         },
         tv: {
             renderCanvas: true
-        }
+        },
+        notifications: {
+            matchEnd: false,
+            seasonEnd: false
+        },
+        theme: "light"
     }
 };

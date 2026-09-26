@@ -14,6 +14,9 @@ app.component("player", {
         removeFromTraining(){
             game.training.removePlayer(this.player);
         },
+        toggleCompare(){
+            playerCompare.toggle(this.player);
+        },
         sellPlayer(){
             if(keyMap.keyPressed("Shift") || !game.settings.players.shiftToSell){
                 this.player.sell();
@@ -42,6 +45,12 @@ app.component("player", {
         isTraining(){
             return this.$root.training.players.find(p => p === this.player) !== undefined;
         },
+        isCompared(){
+            return playerCompare.isSelected(this.player);
+        },
+        canCompare(){
+            return this.isCompared || playerCompare.players.length < 2;
+        },
         buttonWidth(){
             if(!this.trainingUnlocked){
                 return "100%";
@@ -49,7 +58,8 @@ app.component("player", {
             return this.player.active ? "100%" : "50%";
         }
     },
-    template: `<div class="player">
+    template: `<div class="player" :class="{compared: isCompared}">
+<button class="compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" :title="isCompared ? 'Remove from Comparison' : 'Compare'">⇄</button>
 <p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><img alt="" src="images/player.png"/><img v-if="player.hasRedCard()" alt="" src="images/icons/red-card.png"/> {{player.name}}</div>
 <div class="icon-flex" v-if="isBought"><img alt="" src="images/icons/stamina.png"/> <progress-bar :value="player.currentStamina"></progress-bar></div></p>
 <div class="stats">

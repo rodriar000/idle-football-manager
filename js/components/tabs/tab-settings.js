@@ -4,10 +4,26 @@ app.component("tab-settings", {
             saveString: "Your savegame will appear here. Keep it somewhere safe! Make sure to backup often.\n" +
                 "Import Game will read the content of this textbox.\n" +
                 "The downloaded File contains the content to be pasted into this text box.",
-            settings: game.settings
+            settings: game.settings,
+            notificationMessage: ""
         };
     },
     methods: {
+        async toggleNotification(key, e){
+            if(!e.target.checked){
+                this.settings.notifications[key] = false;
+                return;
+            }
+            if(!gameNotifications.supported){
+                e.target.checked = false;
+                this.notificationMessage = "Your Browser does not support Notifications.";
+                return;
+            }
+            let granted = await gameNotifications.request();
+            this.settings.notifications[key] = granted;
+            e.target.checked = granted;
+            this.notificationMessage = granted ? "" : "Notifications are blocked. Allow them for this Site in your Browser Settings.";
+        },
         restartTutorial(){
             game.restartedTutorial = true;
         },
@@ -52,6 +68,9 @@ app.component("tab-settings", {
         },
         tvUnlocked(){
             return game.tv.isUnlocked();
+        },
+        themes(){
+            return gameTheme.options;
         }
     },
     template: `<div class="tab-settings">
@@ -75,6 +94,17 @@ app.component("tab-settings", {
         </div>
         <div v-if="tvUnlocked">
             <label>Render TV Screens (decreases Performance) <input type="checkbox" v-model="settings.tv.renderCanvas"/></label><br/>
+        </div>
+        <div>
+            Theme<br/>
+            <label v-for="(name, key) in themes"><input type="radio" name="theme" v-model="settings.theme" :value="key"/> {{name}}</label>
+        </div>
+        <div class="notification-settings">
+            Notifications when the Tab is in the Background<br/>
+            <label>Match ended <input type="checkbox" :checked="settings.notifications.matchEnd" @change="toggleNotification('matchEnd', $event)"/></label><br/>
+            <label>Season ended <input type="checkbox" :checked="settings.notifications.seasonEnd" @change="toggleNotification('seasonEnd', $event)"/></label><br/>
+            <small>While on, Matches keep playing in the Background.</small>
+            <p class="notification-message" v-if="notificationMessage">{{notificationMessage}}</p>
         </div>
     </div>
     <button @click="restartTutorial()">Restart Tutorial</button><br/>

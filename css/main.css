@@ -520,7 +520,7 @@ main{
 .player .header{
     font-weight: bold;
     text-align: center;
-    color: black;
+    color: var(--color-text-dark);
     padding: 0.25rem;
     max-width: 100%;
 }
@@ -1033,6 +1033,101 @@ main{
     margin-top: 0.5rem;
 }
 
+/*Player Compare*/
+
+.player{
+    position: relative;
+}
+
+.player.compared{
+    border-color: var(--color-button-selected);
+}
+
+.player .header{
+    padding: 0.25rem 1.6rem;
+}
+
+.player button.compare-toggle{
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    width: 1.4rem;
+    height: 1.4rem;
+    padding: 0;
+    font-size: 80%;
+    line-height: 1;
+    border-radius: 50%;
+    border-width: 2px;
+    opacity: 0.6;
+}
+
+.player button.compare-toggle:hover, .player button.compare-toggle.active{
+    opacity: 1;
+}
+
+.player button.compare-toggle.active{
+    background-color: var(--color-button-selected);
+}
+
+.player button.compare-toggle:disabled{
+    opacity: 0.2;
+}
+
+.window-compare table{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.window-compare th, .window-compare td{
+    padding: 0.35rem 0.5rem;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.window-compare td:first-child{
+    text-align: left;
+    font-size: 85%;
+}
+
+.window-compare tbody tr:nth-child(2n+1){
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+.window-compare tr.total{
+    font-weight: bold;
+}
+
+.window-compare td.better{
+    font-weight: bold;
+    color: var(--color-text);
+    background-color: var(--color-card-stat);
+}
+
+.compare-bar{
+    position: fixed;
+    left: 50%;
+    bottom: 1rem;
+    transform: translateX(-50%);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: calc(100vw - 1rem);
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    border: 3px solid var(--color-card-border);
+    background-color: var(--color-card);
+    color: var(--color-text-dark);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+
+.compare-bar button{
+    padding: 0.25rem 0.75rem;
+}
+
 .team-management .best-eleven{
     font-size: 80%;
     padding: 0.25rem 0.75rem;
@@ -1163,6 +1258,23 @@ main{
 
 .tab-settings label{
     margin: 0 0.5rem;
+}
+
+.tab-settings .card.flex{
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.tab-settings .notification-settings small{
+    opacity: 0.75;
+}
+
+.tab-settings .notification-settings .notification-message{
+    padding: 0;
+    max-width: 16rem;
+    margin: 0.25rem auto 0;
+    font-size: 85%;
+    color: #b01010;
 }
 
 .tab-settings textarea{
@@ -1919,6 +2031,18 @@ main{
 
     .tab-settings h3{
         font-size: 130%;
+    }
+
+    .compare-bar{
+        bottom: calc(4rem + env(safe-area-inset-bottom));
+        width: calc(100vw - 1rem);
+        justify-content: space-between;
+        font-size: 85%;
+    }
+
+    .window-compare th, .window-compare td{
+        padding: 0.3rem 0.25rem;
+        font-size: 90%;
     }
 }
 

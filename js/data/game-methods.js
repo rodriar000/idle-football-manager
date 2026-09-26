@@ -72,6 +72,8 @@ let functions = {
             game.matchHistory = obj.matchHistory || [];
             game.lastSeason = obj.lastSeason || null;
             game.showSeasonSummary = false;
+            game.records = Object.assign(Match.emptyRecords, obj.records || {});
+            game.records.money = new Decimal(game.records.money);
 
             if(obj.league){
                 for(let d = 0; d < obj.league.divisions.length; d++){

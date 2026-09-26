@@ -1,13 +1,18 @@
 app.component("player", {
-    props: ["player"],
+    props: ["player", "signing"],
     data() {
         return {
             showStatBreakdown: false,
+            confirmSell: false,
+            confirmSellTimeout: null,
             teamPlayers: game.team.players
         }
     },
     methods: {
         formatNumber: functions.formatNumber,
+        formatChange(n){
+            return (n.lt(0) ? "-" : "+") + this.formatNumber(n.abs());
+        },
         addToTraining(){
             game.training.addPlayer(this.player);
         },
@@ -17,11 +22,27 @@ app.component("player", {
         toggleCompare(){
             playerCompare.toggle(this.player);
         },
+        //selling needs a second tap (or Shift held), so a missed tap on "Move to Team" can't sell
         sellPlayer(){
-            if(keyMap.keyPressed("Shift") || !game.settings.players.shiftToSell){
-                this.player.sell();
+            let shift = keyMap.keyPressed("Shift");
+            if(!shift && game.settings.players.shiftToSell){
+                return;
             }
+            if(shift || this.confirmSell){
+                this.cancelSell();
+                this.player.sell();
+                return;
+            }
+            this.confirmSell = true;
+            this.confirmSellTimeout = setTimeout(() => this.cancelSell(), 3000);
+        },
+        cancelSell(){
+            clearTimeout(this.confirmSellTimeout);
+            this.confirmSell = false;
         }
+    },
+    beforeUnmount(){
+        clearTimeout(this.confirmSellTimeout);
     },
     computed: {
         canMove(){
@@ -61,7 +82,8 @@ app.component("player", {
     template: `<div class="player" :class="{compared: isCompared}">
 <button class="compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" :title="isCompared ? 'Remove from Comparison' : 'Compare'">⇄</button>
 <p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><img alt="" src="images/player.png"/><img v-if="player.hasRedCard()" alt="" src="images/icons/red-card.png"/> {{player.name}}</div>
-<div class="icon-flex" v-if="isBought"><img alt="" src="images/icons/stamina.png"/> <progress-bar :value="player.currentStamina"></progress-bar></div></p>
+<div class="icon-flex" v-if="isBought"><img alt="" src="images/icons/stamina.png"/> <progress-bar :value="player.currentStamina"></progress-bar></div>
+<div class="signing" v-else-if="signing" title="Buying this Player improves your best Eleven the most">★ Best Signing <span>{{formatChange(signing.attack)}} ATT · {{formatChange(signing.defense)}} DEF</span></div></p>
 <div class="stats">
     <p><span>ATT</span> {{formatNumber(player.getBaseAttack())}}</p>
     <p>{{formatNumber(player.getBaseDefense())}} <span>DEF</span></p>
@@ -77,7 +99,10 @@ app.component("player", {
         <div v-else>
             <button :style="{width: buttonWidth}" :disabled="!canMove" v-if="isBought" @click="player.active = !player.active"><span v-if="!player.active">Move to Team</span><span v-else>Move from Team</span></button>
             <button :style="{width: '50%'}" v-if="!player.active && trainingUnlocked" @click="addToTraining()">Train</button>
-            <button class="negative" v-if="!player.active" @click="sellPlayer()">Sell ({{formatNumber(player.getSellAmount())}} $)</button>
+            <button class="negative sell" :class="{armed: confirmSell}" v-if="!player.active" @click="sellPlayer()" @blur="cancelSell()">
+                <span v-if="confirmSell">Tap again to sell ({{formatNumber(player.getSellAmount())}} $)</span>
+                <span v-else>Sell ({{formatNumber(player.getSellAmount())}} $)</span>
+            </button>
         </div>
     </div>
     <div v-else>

@@ -27,6 +27,13 @@ app.component("team-management", {
         },
         teamSettings(){
             return this.$root.settings.team;
+        },
+        restTime(){
+            return this.team.getTimeUntilRested();
+        },
+        restPaused(){
+            let match = this.$root.currentMatch;
+            return match && !match.ended;
         }
     },
     methods: {
@@ -51,7 +58,8 @@ app.component("team-management", {
         aggressivitySelected(strategy){
             return this.team.aggressivity === strategy;
         },
-        formatNumber: functions.formatNumber
+        formatNumber: functions.formatNumber,
+        formatTime: functions.formatTime
     },
     template: `<div class="team-management">
 <div class="header">
@@ -59,6 +67,11 @@ app.component("team-management", {
     <p>ATT {{formatNumber(totalAttack)}}</p>
     <p>DEF {{formatNumber(totalDefense)}}</p>
     <p>Synergy {{formatNumber(team.getSynergy() * 100)}} %</p>
+    <p class="ready-in" v-if="activePlayers.length > 0" :class="{rested: restTime <= 0}" title="Time until every Player in the Team is at full Stamina">
+        <template v-if="restTime <= 0">✅ Team rested</template>
+        <template v-else-if="restPaused">⏸ Ready in {{formatTime(Math.ceil(restTime))}} after the Match</template>
+        <template v-else>⏳ Ready in {{formatTime(Math.ceil(restTime))}}</template>
+    </p>
     <button class="best-eleven" :disabled="playerCount === 0" @click="pickBestEleven()" title="Put the 11 strongest rested players in the Team (B)">Best XI</button>
     <div class="auto-sub">
         <label><input type="checkbox" v-model="teamSettings.autoSubstitute"/> Auto Substitutions</label>

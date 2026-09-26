@@ -2042,3 +2042,141 @@ kbd{
 .tab-settings .cloud-save .cloud-message.error{
     color: var(--ui-red, #ef4444);
 }
+
+/*Season calendar: every matchday of the season as a tile*/
+.season-calendar{
+    width: 80%;
+    max-width: 900px;
+    margin: 2rem auto 0;
+}
+
+.season-calendar h3{
+    text-align: center;
+    font-size: 150%;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.season-calendar .rounds{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+    gap: 0.4rem;
+}
+
+.season-calendar .round{
+    display: grid;
+    grid-template-columns: 1.6rem 1.4rem 1fr;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 0.25rem;
+    min-height: 3.4rem;
+    padding: 0.35rem 0.5rem;
+    background-color: var(--color-card);
+    color: var(--color-text-dark);
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius-small);
+}
+
+.season-calendar .round.upcoming{
+    opacity: 0.6;
+}
+
+.season-calendar .round.next{
+    border: 2px solid var(--ui-accent);
+    box-shadow: 0 0 0 3px var(--ui-accent-glow);
+}
+
+.season-calendar .round-number{
+    grid-row: span 2;
+    font-weight: bold;
+    opacity: 0.6;
+    font-variant-numeric: tabular-nums;
+}
+
+.season-calendar .venue{
+    font-size: 70%;
+    font-weight: 900;
+    text-align: center;
+    border-radius: 4px;
+    background-color: var(--ui-surface-2);
+    color: var(--ui-muted);
+}
+
+.season-calendar .opponent{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.season-calendar .outcome{
+    grid-column: 2 / span 2;
+    font-size: 90%;
+    font-variant-numeric: tabular-nums;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.season-calendar .result{
+    display: inline-block;
+    width: 1.3rem;
+    height: 1.3rem;
+    line-height: 1.3rem;
+    text-align: center;
+    border-radius: 50%;
+    font-weight: 900;
+    font-size: 80%;
+    color: #04120a;
+}
+
+.season-calendar .result.W{
+    background-color: var(--color-button-selected);
+}
+
+.season-calendar .result.D{
+    background-color: #9e9e9e;
+}
+
+.season-calendar .result.L{
+    background-color: var(--ui-red);
+    color: #fff;
+}
+
+.season-calendar .next-label{
+    color: var(--ui-accent-deep);
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 75%;
+    letter-spacing: 0.05em;
+}
+
+@media (max-width:700px){
+    .season-calendar{
+        width: calc(100% - 1rem);
+        font-size: 90%;
+    }
+
+    .season-calendar .rounds{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/*time until the starters are back at full stamina*/
+.ready-in{
+    font-size: 85%;
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.tab-league .next-match .ready-in{
+    margin-top: 0.4rem;
+    text-align: center;
+    opacity: 0.85;
+}
+
+.ready-in.rested{
+    color: var(--ui-accent);
+}

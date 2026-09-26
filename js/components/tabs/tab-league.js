@@ -20,11 +20,15 @@ app.component("tab-league", {
         matchHistory(){
             return this.$root.matchHistory;
         },
+        restTime(){
+            return this.$root.team.getTimeUntilRested();
+        },
         divisionNumber(){
             return game.league.divisions.length - this.division.rank;
         }
     },
     methods: {
+        formatTime: functions.formatTime,
         playNextMatch(){
             this.division.playNextMatch();
             game.tab = "tab-match";
@@ -41,7 +45,9 @@ app.component("tab-league", {
         <button v-if="canPlayMatch" @click="playNextMatch()">Play next Match<br/>{{nextMatch.team1.name}} - {{nextMatch.team2.name}}</button>
         <button disabled v-else-if="matchRunning">You are already in a Match.</button>
         <button disabled v-else>You need at least 1 Player in your Team to play the next Match!</button>
+        <p class="ready-in" v-if="canPlayMatch" :class="{rested: restTime <= 0}">{{restTime <= 0 ? "✅ Team rested" : "⏳ Team ready in " + formatTime(Math.ceil(restTime))}}</p>
     </div>
+    <season-calendar></season-calendar>
     <match-history :history="matchHistory"></match-history>
     <season-archive></season-archive>
 </div>`

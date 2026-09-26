@@ -86,7 +86,20 @@ let game = {
         new Achievement("Ludicrous Speed", "Turn your Match Speed above x1,000", "images/icons/speed2.png", () => game.settings.match.speed >= 1000),
         new Achievement("U Got God", () => "Have a player with a Training Factor of over " + functions.formatNumber(1e6), "images/icons/player-training-2.png", () => game.team.players.concat(game.training.players).filter(p => p.trainingFactor.gt(1e6)).length > 0),
         new Achievement("The WORLD WORLD is watching", () => "Have a Stadium Capacity of at least " + functions.formatNumber(7.8e9 ** 2) + "<br/><i>imagine We had 7.8 Billion Earths, with 7.8 Billion people each.</i>", "images/icons/stadium.png", () => game.stadium.getCapacity().gte(7.8e9 ** 2)),
-        new Achievement("Around the World", "Enter the 3rd Country", "images/icons/country.png", () => game.country >= 2)
+        new Achievement("Around the World", "Enter the 3rd Country", "images/icons/country.png", () => game.country >= 2),
+        new Achievement("On Fire", "Win 5 Matches in a row", "images/icons/football.png", () => game.records.bestWinStreak >= 5),
+        new Achievement("Unstoppable", "Win 10 Matches in a row", "images/icons/football.png", () => game.records.bestWinStreak >= 10),
+        new Achievement("Thrashing", "Win a Match by 5 or more Goals", "images/icons/football.png", () => game.records.biggestWin !== null && game.records.biggestWin.own - game.records.biggestWin.other >= 5),
+        new Achievement("Hat-trick Hero", "Have one of your Players score 3 Goals in a single Match", "images/player.png", () => game.matchHistory.some(m => {
+            let goals = {};
+            return m.goals.some(g => g.teamIndex === m.ownIndex && (goals[g.name] = (goals[g.name] || 0) + 1) >= 3);
+        })),
+        new Achievement("Century", "Score 100 Goals with your Club", "images/icons/football.png", () => game.records.goalsFor >= 100),
+        new Achievement("Veteran", "Play 100 Matches", "images/icons/stamina.png", () => game.records.matches >= 100),
+        new Achievement("Invincibles", "Finish a Season without losing a Match", "images/icons/league.png", () => game.seasonArchive.some(s => s.lose === 0)),
+        new Achievement("Perfect Season", "Win every Match of a Season", "images/icons/league.png", () => game.seasonArchive.some(s => s.draw === 0 && s.lose === 0)),
+        new Achievement("Silverware", "Finish a Season in 1st place", "images/icons/achievements.png", () => game.records.titles >= 1),
+        new Achievement("Dynasty", "Finish 3 Seasons in 1st place", "images/icons/achievements.png", () => game.records.titles >= 3)
     ],
     tab: "tab-team",
     settings: {

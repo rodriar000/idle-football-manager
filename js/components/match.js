@@ -3,8 +3,13 @@ app.component("match", {
     data(){
         return {
             matchTimeScaleLog: 0,
-            windowOpen: true
+            windowOpen: true,
+            goal: null,
+            scoreFlash: false
         }
+    },
+    beforeUnmount(){
+        clearTimeout(this.goalTimeout);
     },
     mounted(){
         this.matchTimeScaleLog = Math.log10(game.settings.match.speed);
@@ -13,6 +18,18 @@ app.component("match", {
         match(){
             //the component is reused for the next match, so the end-of-match window must be reopened
             this.windowOpen = true;
+            this.goal = null;
+        },
+        //a new match starts at 0, so only an increase is a goal
+        "match.score1"(value, old){
+            if(value > old){
+                this.celebrateGoal(0);
+            }
+        },
+        "match.score2"(value, old){
+            if(value > old){
+                this.celebrateGoal(1);
+            }
         }
     },
     methods: {
@@ -21,6 +38,24 @@ app.component("match", {
         setTimeScale(){
             this.match.timeScale = this.timeScale;
             game.settings.match.speed = this.timeScale;
+        },
+        celebrateGoal(teamIndex){
+            let team = teamIndex === 0 ? this.match.team1 : this.match.team2;
+            let goals = this.match.gameEvents.filter(e => e.event === 0 && e.teamIndex === teamIndex);
+            let last = goals[goals.length - 1];
+            this.goal = {
+                key: Date.now(),
+                own: team === this.$root.team,
+                team: team.name,
+                scorer: last ? last.name + " " + last.minute + "'" : ""
+            };
+            this.scoreFlash = false;
+            this.$nextTick(() => this.scoreFlash = true);
+            clearTimeout(this.goalTimeout);
+            this.goalTimeout = setTimeout(() => {
+                this.goal = null;
+                this.scoreFlash = false;
+            }, 1600);
         },
         playNextMatch(){
             if(this.canPlayNextMatch){
@@ -62,20 +97,46 @@ app.component("match", {
         team2Stats(){
             return this.match.team2.getCombinedStats();
         },
+        state(){
+            if(this.match.ended){
+                return {name: "ended", text: "Full Time"};
+            }
+            return this.match.time === 0 ? {name: "waiting", text: "Kick-off"} : {name: "live", text: "Live"};
+        },
+        ownScore(){
+            return this.match.team2 === this.$root.team ? this.match.score2 : this.match.score1;
+        },
+        otherScore(){
+            return this.match.team2 === this.$root.team ? this.match.score1 : this.match.score2;
+        },
+        result(){
+            if(this.ownScore > this.otherScore){
+                return {name: "win", text: "Victory"};
+            }
+            return this.ownScore < this.otherScore ? {name: "lose", text: "Defeat"} : {name: "draw", text: "Draw"};
+        },
         canPlayNextMatch(){
             return (this.match.time === 0 || this.match.ended) && game.team.canPlayNextMatch();
         }
     },
     template: `<div class="match">
 <match-view :ballx="match.ballX"></match-view>
+<transition name="goal-pop">
+    <div v-if="goal" :key="goal.key" class="goal-overlay" :class="{against: !goal.own}">
+        <div class="burst"></div>
+        <p class="goal-text">{{goal.own ? "GOAL!" : "Goal"}}</p>
+        <p class="goal-scorer">⚽ {{goal.scorer || goal.team}}</p>
+    </div>
+</transition>
 <div class="stats">
+    <p class="match-state" :class="state.name">{{state.text}}</p>
     <p class="time">{{formatTime(match.time)}}<button :disabled="!canPlayNextMatch" v-if="match.time === 0" @click="playNextMatch()">Start</button></p>
     <div class="score">
         <div class="icon-flex">
             <team-logo :logo="match.team1.logo"></team-logo>
             <p>{{match.team1.name}}</p>
         </div> 
-        <p class="numbers">{{match.score1}} - {{match.score2}}</p> 
+        <p class="numbers" :class="{flash: scoreFlash}">{{match.score1}} - {{match.score2}}</p> 
         <div class="icon-flex">
             <p>{{match.team2.name}}</p>
             <team-logo :logo="match.team2.logo"></team-logo>
@@ -120,6 +181,8 @@ app.component("match", {
     <window v-if="match.ended && windowOpen" @closed="windowOpen = false">
         <template v-slot:header><div class="icon-flex"><img src="images/icons/football.png"/><span>Match Ended</span></div></template>
         <template v-slot:body>
+            <p class="result-banner" :class="result.name">{{result.text}}</p>
+            <p class="final-score">{{match.team1.name}} {{match.score1}} - {{match.score2}} {{match.team2.name}}</p>
             <p>Your performance in this match rewarded you:</p>
             <p class="reward">+ {{formatNumber(reward)}} $</p>
             <div v-if="stadiumUnlocked">

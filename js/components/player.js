@@ -51,6 +51,30 @@ app.component("player", {
         canCompare(){
             return this.isCompared || playerCompare.players.length < 2;
         },
+        //card colour: strength compared to the typical (median) Player of your Team
+        tier(){
+            let team = this.$root.team;
+            let ref = team.getActivePlayers();
+            if(ref.length === 0){
+                ref = team.players;
+            }
+            if(ref.length === 0){
+                return "gold";
+            }
+            let total = p => p.getBaseAttack().add(p.getBaseDefense());
+            let totals = ref.map(total).sort((a, b) => a.cmp(b));
+            let median = totals[Math.floor(totals.length / 2)];
+            let ratio = total(this.player).div(median).toNumber();
+            return ratio >= 1.6 ? "elite" : ratio >= 1.15 ? "gold" : ratio >= 0.85 ? "silver" : "bronze";
+        },
+        tierTitle(){
+            return {
+                elite: "Elite: much stronger than your typical Player",
+                gold: "Gold: stronger than your typical Player",
+                silver: "Silver: about as strong as your typical Player",
+                bronze: "Bronze: weaker than your typical Player"
+            }[this.tier];
+        },
         buttonWidth(){
             if(!this.trainingUnlocked){
                 return "100%";
@@ -58,7 +82,7 @@ app.component("player", {
             return this.player.active ? "100%" : "50%";
         }
     },
-    template: `<div class="player" :class="{compared: isCompared}">
+    template: `<div class="player" :class="['tier-' + tier, {compared: isCompared}]">
 <button class="compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" :title="isCompared ? 'Remove from Comparison' : 'Compare'">⇄</button>
 <p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><img alt="" src="images/player.png"/><img v-if="player.hasRedCard()" alt="" src="images/icons/red-card.png"/> {{player.name}}</div>
 <div class="icon-flex" v-if="isBought"><img alt="" src="images/icons/stamina.png"/> <progress-bar :value="player.currentStamina"></progress-bar></div></p>
@@ -67,7 +91,7 @@ app.component("player", {
     <p>{{formatNumber(player.getBaseDefense())}} <span>DEF</span></p>
     <p><span>AGG</span> {{formatNumber(player.aggressivity * 100)}}</p>
     <p>{{formatNumber(player.stamina * 100)}} <span>STA</span></p>
-    <p class="total" title="Attack + Defense"><span>ATT+DEF</span> {{formatNumber(player.getBaseAttack().add(player.getBaseDefense()))}}</p>
+    <p class="total" :title="'Attack + Defense. ' + tierTitle"><span>ATT+DEF</span> {{formatNumber(player.getBaseAttack().add(player.getBaseDefense()))}}</p>
 </div>
 <div class="actions">
     <div v-if="isBought">

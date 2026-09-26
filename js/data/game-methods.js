@@ -157,6 +157,9 @@ let functions = {
                 game.settings.tv.renderCanvas = loadVal(obj.settings.tv.renderCanvas, false);
             }
             game.settings.term = loadVal(obj.settings.term, "Football");
+            game.settings.notifications.matchEnd = obj.settings.notifications?.matchEnd ?? false;
+            game.settings.notifications.seasonEnd = obj.settings.notifications?.seasonEnd ?? false;
+            game.settings.theme = obj.settings.theme ?? "light";
             if(obj.numberFormatter){
                 let notation = notations.find(n => n.name === obj.numberFormatter);
                 if(notation){

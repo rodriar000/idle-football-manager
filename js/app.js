@@ -27,19 +27,44 @@ function setup(){
     else{
         functions.loadGame();
     }
+    gameTheme.apply();
 
     if(!error.length){
         Vue.nextTick(() => game.init = true);
         window.onerror = null;
 
         requestAnimationFrame(update);
+        setInterval(backgroundUpdate, 1000);
     }
 }
 
 function update(){
     let dt = (Date.now() - lastUpdate) / 1000;
     lastUpdate = Date.now();
+    step(dt);
+    requestAnimationFrame(update);
+}
 
+//browsers pause requestAnimationFrame in background tabs. With notifications on,
+//keep the game running from a timer so matches can end and notify.
+function backgroundUpdate(){
+    if(!game.init || !document.hidden || !gameNotifications.enabled){
+        return;
+    }
+    let elapsed = (Date.now() - lastUpdate) / 1000;
+    lastUpdate = Date.now();
+    //small steps, as if the tab was visible. Throttled timers can fire rarely,
+    //so limit the work per call and pass the rest at once like a visible tab would.
+    let simulated = Math.min(10, elapsed);
+    for(let t = simulated; t > 0; t -= 1 / 30){
+        step(Math.min(1 / 30, t));
+    }
+    if(elapsed > simulated){
+        step(elapsed - simulated);
+    }
+}
+
+function step(dt){
     if(game.settings.match.autoPlay && game.team.getAverageStamina() >= game.settings.match.minAutoPlayStamina){
         if(game.team.canPlayNextMatch() && (!game.currentMatch || game.currentMatch.ended)){
             game.league.divisions[game.team.divisionRank].playNextMatch();
@@ -67,8 +92,6 @@ function update(){
             a.completed = a.requirement();
         }
     }
-
-    requestAnimationFrame(update);
 }
 
 let app = Vue.createApp({
@@ -77,6 +100,11 @@ let app = Vue.createApp({
     },
     methods: functions,
     computed,
+    watch: {
+        "settings.theme"(){
+            gameTheme.apply();
+        }
+    },
     setup
 });
 

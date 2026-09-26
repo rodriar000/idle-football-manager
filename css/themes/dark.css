@@ -1,0 +1,31 @@
+:root[data-theme="dark"]{
+    color-scheme: dark;
+
+    --color-header: #1f4a22;
+    --color-background: #0f1a10;
+    --color-text: #ececec;
+    --color-text-dark: #e2e2e2;
+    --color-border: #0a2a0b;
+
+    --color-button: #1f6a24;
+    --color-button-selected: #2f9a35;
+    --color-button-border-hover: #6fcf73;
+
+    --color-card: #262a27;
+    --color-card-border: #4d554e;
+    --color-card-stat: #1b4a1e;
+
+    --color-table-header: #8e1a1a;
+    --color-table-pos: #5c1111;
+    --color-table-even: #2a2e2b;
+    --color-table-odd: #212422;
+
+    --color-window: var(--color-card);
+    --color-window-header: #3b423c;
+    --color-window-border: #0c0c0c;
+}
+
+/*keep the own team row readable on the bright highlight*/
+:root[data-theme="dark"] .division tr.own-team td:not(:first-child){
+    color: #101010;
+}

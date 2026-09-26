@@ -15,6 +15,12 @@ app.component("team-settings", {
     computed: {
         logo(){
             return this.team.logo;
+        },
+        patterns(){
+            return TeamLogo.patterns;
+        },
+        gradientDirections(){
+            return TeamLogo.gradientDirections;
         }
     },
     template: `<div class="team-settings">
@@ -31,9 +37,17 @@ app.component("team-settings", {
             <input type="color" v-for="(col, i) in logo.gradient" v-model="logo.gradient[i]"/>
             <button @click="addColor()" v-if="logo.gradient.length < 10">+</button>
         </label>
-        <label>Stripe Color <input type="color" v-model="logo.stripeColor"/></label>
+        <label>Gradient <select v-model="logo.gradientDirection">
+            <option v-for="(name, key) in gradientDirections" :value="key">{{name}}</option>
+        </select></label>
+        <label>Pattern <select v-model="logo.pattern">
+            <option v-for="(name, key) in patterns" :value="key">{{name}}</option>
+        </select></label>
+        <label v-if="logo.pattern !== 'none'">Pattern Color <input type="color" v-model="logo.stripeColor"/></label>
+        <label>Outline Color <input type="color" v-model="logo.outlineColor"/></label>
         <label>Sides <input type="range" min="3" max="8" v-model="logo.sides"/></label>
         <label>Icon <input type="text" maxlength="1" v-model="logo.icon"/></label>
+        <label>Icon Color <input type="color" v-model="logo.iconColor"/></label>
     </div>
 </div>
 </div>`

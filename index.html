@@ -21,6 +21,7 @@
     <meta name="twitter:image" content="https://veprogames.github.io/idle-football-manager/logo.png"/>
 
     <link rel="stylesheet" href="css/themes/light.css"/>
+    <link rel="stylesheet" href="css/themes/dark.css"/>
     <link rel="stylesheet" href="css/main.css"/>
     <link rel="icon" href="icon.ico"/>
     <title>Idle Football Manager</title>
@@ -33,6 +34,7 @@
     <transition name="window-grow">
         <window-season v-if="init && showSeasonSummary && lastSeason" @closed="showSeasonSummary = false"></window-season>
     </transition>
+    <player-compare v-if="init"></player-compare>
     <main>
         <component :is="tab"></component>
     </main>
@@ -76,6 +78,8 @@
 <script src="js/data/vocab.js"></script>
 <script src="js/data/notations.js"></script>
 
+<script src="js/notifications.js"></script>
+<script src="js/theme.js"></script>
 <script src="js/app.js"></script>
 
 <!-- Mixin -->
@@ -92,6 +96,7 @@
 <script src="js/components/achievement.js"></script>
 <script src="js/components/division.js"></script>
 <script src="js/components/player-market.js"></script>
+<script src="js/components/player-compare.js"></script>
 <script src="js/components/player.js"></script>
 <script src="js/components/team-management.js"></script>
 <script src="js/components/match.js"></script>

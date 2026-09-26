@@ -101,6 +101,7 @@ class Match {
         this.team2.divisionStats.goalsShot += this.score2;
         this.team2.divisionStats.goalsOpponent += this.score1;
 
+        let seasonEnded = false;
         if(this.getPlayerTeam()){
             let playerTeam = this.getPlayerTeam();
 
@@ -126,6 +127,7 @@ class Match {
                     game.canEnterNextCountry = true;
                 }
                 Match.createSeasonSummary();
+                seasonEnded = true;
                 game.league.moveTeams();
                 game.playerMarket.refresh();
             }
@@ -133,6 +135,13 @@ class Match {
                 game.league.simulate();
             }
             game.money = game.money.add(this.getRewardMoney());
+
+            if(seasonEnded){
+                gameNotifications.seasonEnded(game.lastSeason);
+            }
+            else{
+                gameNotifications.matchEnded(this);
+            }
         }
 
         this.ended = true;

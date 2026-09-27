@@ -13,7 +13,6 @@ app.component("tab-stadium", {
         formatNumber: functions.formatNumber
     },
     template: `<div class="tab-stadium">
-<p class="money">You have {{formatNumber(money)}} $</p>
 <stadium :stadium="stadium"></stadium>
 </div>`
 });

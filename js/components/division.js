@@ -23,28 +23,30 @@ app.component("division", {
             return team === game.team;
         }
     },
-    template: `<table class="division">
-<thead>
-    <th>Pos</th>
-    <th>Team</th>
-    <th>Games</th>
-    <th>W</th>
-    <th>D</th>
-    <th>L</th>
-    <th>Goals</th>
-    <th>GD</th>
-    <th>pts</th>
-</thead>
-<tr :class="{'own-team': isOwnTeam(team), promotion: i < promotion, relegation: i > sortedTeams.length - relegation - 1}" v-for="(team, i) in sortedTeams" :key="i">
+    template: `<table class="standings">
+<thead><tr>
+    <th class="pos">#</th>
+    <th class="team">Team</th>
+    <th class="num games" title="Games played">P</th>
+    <th class="num wdl">W</th>
+    <th class="num wdl">D</th>
+    <th class="num wdl">L</th>
+    <th class="num goals">Goals</th>
+    <th class="num">GD</th>
+    <th class="num pts">Pts</th>
+</tr></thead>
+<tbody>
+<tr :class="{'own-team': isOwnTeam(team), promotion: i < promotion, relegation: i > sortedTeams.length - relegation - 1}" v-for="(team, i) in sortedTeams" :key="i" @click="selectTeam(team)">
     <td class="pos">{{i + 1}}</td>
-    <td class="icon-flex team" :title="getStatsDisplay(team)"><team-logo :logo="team.logo"></team-logo> <span @click="selectTeam(team)">{{team.name}}</span></td>
-    <td>{{team.getTotalGames()}}</td>
-    <td>{{team.divisionStats.win}}</td>
-    <td>{{team.divisionStats.draw}}</td>
-    <td>{{team.divisionStats.lose}}</td>
-    <td>{{team.divisionStats.goalsShot}} - {{team.divisionStats.goalsOpponent}}</td>
-    <td>{{team.getGoalDifference()}}</td>
-    <td>{{team.getPoints()}}</td>
+    <td class="team" :title="getStatsDisplay(team)"><team-logo :logo="team.logo"></team-logo> <span>{{team.name}}</span></td>
+    <td class="num games">{{team.getTotalGames()}}</td>
+    <td class="num wdl">{{team.divisionStats.win}}</td>
+    <td class="num wdl">{{team.divisionStats.draw}}</td>
+    <td class="num wdl">{{team.divisionStats.lose}}</td>
+    <td class="num goals">{{team.divisionStats.goalsShot}}:{{team.divisionStats.goalsOpponent}}</td>
+    <td class="num gd">{{team.getGoalDifference() > 0 ? "+" : ""}}{{team.getGoalDifference()}}</td>
+    <td class="num pts">{{team.getPoints()}}</td>
 </tr>
+</tbody>
 </table>`
 });

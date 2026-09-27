@@ -21,12 +21,10 @@ app.component("notation-select", {
             return notations.map(n => n.name);
         }
     },
-    template: `<div class="notation-select">
-    <label>Number Format 
+    template: `<label class="set-row notation-select">
+    <span>Number Format <small>e. g. {{formatNumber(1234)}} · {{formatNumber(3.1415e12)}} · {{formatNumber(1e36)}}</small></span>
     <select v-model="notationName">
         <option v-for="name in notationNames">{{name}}</option>
     </select>
-    </label>
-    <p>e. g. {{formatNumber(1)}}; {{formatNumber(1234)}}; {{formatNumber(3.1415e12)}}; {{formatNumber(1e36)}}</p>
-</div>`
+</label>`
 });

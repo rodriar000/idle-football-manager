@@ -44,7 +44,7 @@ const gameNotifications = {
         }
         let result = {[MATCH_WIN]: "Won", [MATCH_DRAW]: "Draw", [MATCH_LOSE]: "Lost"}[match.getGameResult()];
         this.send("Match ended: " + result,
-            match.team1.name + " " + match.score1 + " - " + match.score2 + " " + match.team2.name);
+            match.getTeamName(0) + " " + match.score1 + " - " + match.score2 + " " + match.getTeamName(1));
     },
     seasonEnded(season){
         if(!game.settings.notifications.seasonEnd){

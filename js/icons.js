@@ -62,6 +62,7 @@ const Icons = {
         "tv-off": '<rect x="3" y="7" width="18" height="12.5" rx="2.5"/><path d="m8 3 4 4 4-4M9 23h6"/>',
         "transfer": '<rect class="d" x="3" y="3" width="18" height="18" rx="5"/><path d="M7 9.5h10.5M14.5 6.5l3 3-3 3M17 14.5H6.5M9.5 11.5l-3 3 3 3"/>',
         "sponsor": '<path class="d" d="M2.5 10.5 7 6l3 1.5L13.5 6l8 4.5-4 5.5-5.5-.5L7 16z"/><path d="M2.5 10.5 7 6l3 1.5M21.5 10.5 17 6l-3.5 1.5L9.8 11a1.3 1.3 0 0 0 1.7 2l2.3-1.5 4.2 4.5M17.8 16l-1.4 1.4M7 16l2.5 2.5a1.3 1.3 0 0 0 1.9-1.8M9 14l3 3a1.3 1.3 0 0 0 1.9-1.8M11.4 11.9l3.5 3.5a1.3 1.3 0 0 0 1.9-1.8"/>',
+        "worldcup": '<circle class="d" cx="12" cy="8" r="5.5"/><circle cx="12" cy="8" r="5.5"/><path d="M6.5 8h11M12 2.5c1.6 1.6 2.3 3.4 2.3 5.5s-.7 3.9-2.3 5.5c-1.6-1.6-2.3-3.4-2.3-5.5s.7-3.9 2.3-5.5zM9 12.7l1 4.3h4l1-4.3M8.5 17h7l.8 3.5H7.7z"/>',
         "cup": '<path class="d" d="M7 3.5h10v5a5 5 0 0 1-10 0z"/><path d="M7 3.5h10v5a5 5 0 0 1-10 0zM7 5.5H5.2a2 2 0 0 0-2 2.2c.3 2.4 2 3.8 4.3 4M17 5.5h1.8a2 2 0 0 1 2 2.2c-.3 2.4-2 3.8-4.3 4M12 13.5V17M8 20.5h8M9 20.5c0-2 1.3-3.5 3-3.5s3 1.5 3 3.5"/>',
         "whistle": '<path class="d" d="M3.5 13.5a5.5 5.5 0 1 0 11 0v-2h7v-4h-11.5a5.5 5.5 0 0 0-6.5 6z"/><path d="M3.5 13.5a5.5 5.5 0 1 0 11 0v-2h7v-4h-11.5M9 8a5.5 5.5 0 0 0-5.5 5.5M7 4.5 5.5 2.5M11 4.5l1.5-2"/><circle class="f" cx="9" cy="13.5" r="1.6"/>',
         "binoculars": '<circle class="d" cx="6.5" cy="15.5" r="4"/><circle class="d" cx="17.5" cy="15.5" r="4"/><circle cx="6.5" cy="15.5" r="4"/><circle cx="17.5" cy="15.5" r="4"/><path d="M10.5 15.5h3M3 14l2.3-8.2A1.7 1.7 0 0 1 7 4.5h1.5a1.5 1.5 0 0 1 1.5 1.5v6.5M21 14l-2.3-8.2A1.7 1.7 0 0 0 17 4.5h-1.5A1.5 1.5 0 0 0 14 6v6.5"/>',
@@ -99,7 +100,8 @@ const Icons = {
         "images/icons/website.png": "link",
         "images/icons/cup.png": "cup",
         "images/icons/sponsor.png": "sponsor",
-        "images/icons/transfer.png": "transfer"
+        "images/icons/transfer.png": "transfer",
+        "images/icons/worldcup.png": "worldcup"
     },
 
     forImage(src){

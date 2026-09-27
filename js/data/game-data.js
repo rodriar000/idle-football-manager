@@ -47,6 +47,7 @@ let game = {
     cup: new Cup(),
     sponsors: new Sponsors(),
     world: new World(),
+    worldCup: new WorldCup(),
     tv: {
         isUnlocked: () => game.maxDivisionRank >= 8 || game.country >= 1,
         channels: [
@@ -111,6 +112,8 @@ let game = {
         new Achievement("Brand Ambassador", "Reach the goal of a Sponsor", "images/icons/sponsor.png", () => game.sponsors.totalBonus >= 1),
         new Achievement("Commercial Giant", "Reach 10 Sponsor goals", "images/icons/sponsor.png", () => game.sponsors.totalBonus >= 10),
         new Achievement("Hard Bargain", "Sell a Player to a rival club for 2.5 times their Market value", "images/icons/transfer.png", () => game.records.bestSaleRatio >= 2.5),
+        new Achievement("Road to Glory", "Reach the Final of the World Cup", "images/icons/worldcup.png", () => (game.records.worldCupFinals || 0) >= 1),
+        new Achievement("World Champion", "Win the World Cup", "images/icons/worldcup.png", () => (game.records.worldCups || 0) >= 1),
         new Achievement("Cup Kings", "Win the Continental Cup 3 times", "images/icons/cup.png", () => (game.records.cups || 0) >= 3)
     ],
     tab: "tab-team",

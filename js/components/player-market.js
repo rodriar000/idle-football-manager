@@ -1,5 +1,16 @@
 app.component("player-market", {
     props: ["playerMarket"],
+    data(){
+        return {
+            sorts: [
+                {id: "recommended", label: "Recommended", icon: "star"},
+                {id: "total", label: "ATT+DEF", icon: "chart"},
+                {id: "attack", label: "Attack", icon: "attack"},
+                {id: "defense", label: "Defense", icon: "defend"},
+                {id: "price", label: "Cheapest", icon: "coins"}
+            ]
+        };
+    },
     computed: {
         //the affordable player that raises the ATT + DEF of your best eleven the most
         bestSigning(){
@@ -23,16 +34,52 @@ app.component("player-market", {
             }
             return best;
         },
+        sort(){
+            return uiFx.marketSort;
+        },
+        view(){
+            return uiFx.playerView;
+        },
         sortedPlayers(){
-            let sorted = Array.from(this.playerMarket.players).sort((p1, p2) => (p2.attack.add(p2.defense)).gte(p1.attack.add(p1.defense)) ? 1 : -1);
-            if(this.bestSigning){
+            let total = p => p.getBaseAttack().add(p.getBaseDefense());
+            let by = {
+                recommended: (a, b) => total(b).cmp(total(a)),
+                total: (a, b) => total(b).cmp(total(a)),
+                attack: (a, b) => b.getBaseAttack().cmp(a.getBaseAttack()),
+                defense: (a, b) => b.getBaseDefense().cmp(a.getBaseDefense()),
+                price: (a, b) => a.getPrice().cmp(b.getPrice())
+            }[this.sort];
+            let sorted = Array.from(this.playerMarket.players).sort(by);
+            if(this.sort === "recommended" && this.bestSigning){
                 sorted = [this.bestSigning.player].concat(sorted.filter(p => p !== this.bestSigning.player));
             }
             return sorted;
         }
     },
+    methods: {
+        setSort(sort){
+            uiFx.marketSort = sort;
+        },
+        setView(view){
+            uiFx.setPlayerView(view);
+        },
+        keyOf(p){
+            return uiFx.keyOf(p);
+        }
+    },
     template: `<div class="player-market">
-    <player v-for="(p, i) in sortedPlayers" :player="p" :key="i" :signing="bestSigning && bestSigning.player === p ? bestSigning : null"></player>
-    <p class="empty" v-if="sortedPlayers.length === 0">No Players left in the Market. New Players arrive with the next refresh.</p>
+    <div class="market-tools" v-if="playerMarket.players.length">
+        <div class="chips" role="group" aria-label="Sort Players by">
+            <button v-for="s in sorts" :key="s.id" :class="{selected: sort === s.id}" @click="setSort(s.id)"><ui-icon :name="s.icon"></ui-icon> {{s.label}}</button>
+        </div>
+        <div class="seg" role="group" aria-label="Show Players as">
+            <button :class="{selected: view === 'cards'}" @click="setView('cards')" aria-label="Cards" title="Cards"><ui-icon name="grid"></ui-icon></button>
+            <button :class="{selected: view === 'list'}" @click="setView('list')" aria-label="List" title="List"><ui-icon name="list"></ui-icon></button>
+        </div>
+    </div>
+    <div :class="view === 'list' ? 'player-list' : 'player-grid'" v-if="sortedPlayers.length">
+        <player v-for="p in sortedPlayers" :player="p" :key="keyOf(p)" :layout="view === 'list' ? 'row' : 'card'" :signing="bestSigning && bestSigning.player === p ? bestSigning : null"></player>
+    </div>
+    <p class="empty" v-else>No Players left in the Market. New Players arrive with the next refresh.</p>
 </div>`
 });

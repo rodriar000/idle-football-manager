@@ -9,7 +9,10 @@ app.component("tab-player-training", {
         trainingSelected(t){
             return !t.paused;
         },
-        formatNumber: functions.formatNumber
+        formatNumber: functions.formatNumber,
+        keyOf(p){
+            return uiFx.keyOf(p);
+        }
     },
     computed: {
         money(){
@@ -27,8 +30,10 @@ app.component("tab-player-training", {
         </window>
     </transition>
     <h4 class="big-heading">Players in Training <button class="help" @click="showHelpDialog()"><ui-icon name="help"></ui-icon></button></h4>
-    <player v-for="(p, i) in training.players" :player="p" :key="i"></player>
-    <div v-for="i in training.getMaxPlayers() - training.players.length" class="placeholder"></div>
+    <div class="player-grid training-players">
+        <player v-for="p in training.players" :player="p" :key="keyOf(p)"></player>
+        <div v-for="i in training.getMaxPlayers() - training.players.length" class="slot"><ui-icon name="training"></ui-icon></div>
+    </div>
     <h4 class="big-heading">Training</h4>
     <div class="trainings">
         <div>

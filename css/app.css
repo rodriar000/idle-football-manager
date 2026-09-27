@@ -340,14 +340,14 @@ button.negative:hover:not(:disabled){
 
 /*main actions: kick off, play next match, buy a player*/
 .match .stats .time button, .tab-league .next-match button, .match .window button,
-.player-market .player .actions button:not(:disabled):not(.cant-afford), .install-app button{
+.next-card button.primary:not(:disabled), .install-app button{
     color: var(--ui-accent-ink);
     background-color: var(--ui-accent);
     border-color: transparent;
 }
 
 .match .stats .time button:hover:not(:disabled), .tab-league .next-match button:hover:not(:disabled), .match .window button:hover:not(:disabled),
-.player-market .player .actions button:hover:not(:disabled):not(.cant-afford), .install-app button:hover:not(:disabled){
+.next-card button.primary:hover:not(:disabled), .install-app button:hover:not(:disabled){
     border-color: transparent;
     filter: brightness(1.06);
 }
@@ -920,127 +920,12 @@ header ul li.active .ico{
     }
 }
 
-/*Team: strategy picks as segmented controls*/
-
-.team-management > .header, .team-management .strategies{
-    background-color: var(--ui-surface);
-    border: 1px solid var(--ui-line);
-    box-shadow: var(--ui-shadow);
-    color: var(--ui-ink);
-}
-
-.team-management > .header h4, .team-management .strategy h4{
-    font-family: var(--font-display);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--ui-muted);
-}
-
-.team-management > .header h4{
-    color: var(--ui-ink);
-}
-
-.team-management .strategy{
-    gap: 0.25rem;
-}
-
-.team-management .strategy button{
-    display: inline-grid;
-    justify-items: center;
-    align-content: start;
-    gap: 0.15rem;
-    margin: 0;
-    padding: 0.55rem 0.75rem;
-    border-radius: 10px;
-    border: 1px solid transparent;
-    background-color: var(--ui-surface-2);
-    color: var(--ui-muted);
-    font-size: 80%;
-    font-weight: 500;
-    line-height: 1.3;
-}
-
-.team-management .strategy button b{
-    color: var(--ui-ink);
-    font-size: 125%;
-    font-weight: 700;
-}
-
-.team-management .strategy button .ico{
-    width: 1.6rem;
-    height: 1.6rem;
-}
-
-.team-management .strategy button.selected{
-    border-color: var(--ui-accent);
-    background-color: var(--ui-accent-soft);
-    color: var(--ui-ink);
-}
-
-.team-management .strategy button:hover:not(:disabled){
-    border-color: var(--ui-line);
-}
-
-.team-management .strategy button.selected:hover:not(:disabled){
-    border-color: var(--ui-accent);
-}
-
-.team-management .auto-sub label{
-    display: flex;
-    align-items: center;
-    gap: 0.25rem 0.5rem;
-    white-space: nowrap;
-}
-
-/*a slider label: text on top, slider under it*/
-.team-management .auto-sub label:has(input[type="range"]){
-    flex-direction: column;
-    align-items: stretch;
-}
-
 .ready-in .ico{
     color: var(--ui-accent-text);
 }
 
 .ready-in.rested, .ready-in.rested .ico{
     color: var(--ui-pos);
-}
-
-.bench-title{
-    font-family: var(--font-display);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-/*Player cards keep their layout for now; icons and colours follow the new set*/
-
-.player button.compare-toggle, .player button.lock-toggle{
-    display: grid;
-    place-items: center;
-    padding: 0;
-    color: var(--ui-ink);
-    background-color: var(--ui-surface);
-    border: 1px solid var(--ui-line);
-}
-
-.player button.compare-toggle .ico, .player button.lock-toggle .ico{
-    width: 0.85rem;
-    height: 0.85rem;
-}
-
-.player button.compare-toggle.active, .player button.lock-toggle.active{
-    color: var(--ui-accent-ink);
-    background-color: var(--ui-accent);
-    border-color: transparent;
-}
-
-.player .header .signing .ico{
-    color: var(--ui-accent-text);
-}
-
-.player > .stats p > span{
-    font-family: var(--font-display);
-    letter-spacing: 0.05em;
 }
 
 /*Match*/
@@ -1182,60 +1067,6 @@ header ul li.active .ico{
     color: var(--ui-accent);
 }
 
-/*the bench is its own block under the XI instead of a drawer over it*/
-.team-management .inactive-players{
-    position: static;
-    width: auto;
-    opacity: 1;
-    margin: 0 1rem 1rem;
-    padding: 1rem;
-    border: 1px solid var(--ui-line);
-    border-radius: 14px;
-    background-color: var(--ui-surface);
-    box-shadow: var(--ui-shadow);
-}
-
-.team-management .players.active{
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-}
-
-.team-management .players.inactive{
-    overflow-x: auto;
-}
-
-.team-management > .header h4{
-    white-space: nowrap;
-}
-
-.team-management .auto-sub{
-    display: grid;
-    grid-template-columns: auto minmax(9rem, 14rem);
-    gap: 0.5rem 1.25rem;
-    align-items: center;
-}
-
-.team-management .auto-sub label{
-    margin-left: 0;
-}
-
-.team-management .auto-sub input[type="range"]{
-    margin-left: 0;
-    width: 100%;
-}
-
-.team-management > .header{
-    flex-wrap: wrap;
-    row-gap: 0.6rem;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-}
-
-.team-management .strategies{
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-}
-
 .match .match-state, .match .power span, .match .events div p{
     color: var(--ui-ink);
     background-color: var(--ui-surface);
@@ -1249,12 +1080,6 @@ header ul li.active .ico{
 
 .match .match-state.live{
     color: var(--ui-neg);
-}
-
-/*a card with its stat window open sits above the cards after it*/
-.player:has(> .window){
-    z-index: 10;
-    overflow: visible;
 }
 
 .window .header button:hover:not(:disabled){
@@ -1288,4 +1113,1050 @@ header ul li.active .ico{
 .live-score .numbers{
     background-color: var(--ui-surface-2);
     border: 1px solid var(--ui-line);
+}
+
+/*Club home (Team tab)*/
+
+.eyebrow{
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 78%;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ui-muted);
+}
+
+.team-management{
+    display: grid;
+    gap: 1rem;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.club-hero{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 18px;
+    background-color: var(--ui-surface);
+    background-image: radial-gradient(120% 140% at 0% 0%, var(--ui-accent-soft), transparent 60%);
+    box-shadow: var(--ui-shadow);
+}
+
+.club-hero .hero-main{
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    min-width: 0;
+}
+
+.club-hero .hero-crest{
+    flex: none;
+    width: 5rem;
+    height: 5rem;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+}
+
+.club-hero .hero-text{
+    min-width: 0;
+}
+
+.club-hero .hero-name{
+    margin: 0.1rem 0 0.4rem;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.05;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+}
+
+.club-hero .hero-meta{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 1rem;
+    color: var(--ui-muted);
+    font-size: 90%;
+    font-weight: 500;
+}
+
+.club-hero .hero-meta > span{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.club-hero .hero-meta .ico{
+    width: 1.1em;
+    height: 1.1em;
+    color: var(--ui-accent-text);
+}
+
+.form{
+    display: inline-flex;
+    gap: 0.2rem;
+}
+
+.form i{
+    display: inline-grid;
+    place-items: center;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-size: 80%;
+    font-style: normal;
+    font-weight: 800;
+    color: #fff;
+    background-color: var(--ui-muted);
+}
+
+.form i.W{
+    background-color: var(--ui-pos);
+}
+
+.form i.L{
+    background-color: var(--ui-neg);
+}
+
+.next-card{
+    display: grid;
+    gap: 0.55rem;
+    min-width: 15rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    background-color: var(--ui-surface-2);
+}
+
+.next-card .vs{
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+}
+
+.next-card .vs canvas{
+    flex: none;
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+.next-card .vs b{
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 105%;
+}
+
+.next-card .vs small{
+    margin-left: auto;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    border: 1px solid var(--ui-line);
+    color: var(--ui-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 70%;
+    letter-spacing: 0.06em;
+}
+
+.next-card button{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.club-kpis{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.club-kpis .kpi{
+    display: grid;
+    gap: 0.2rem;
+    min-width: 0;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    background-color: var(--ui-surface);
+    box-shadow: var(--ui-shadow);
+}
+
+.club-kpis .kpi b{
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-display);
+    font-size: 1.65rem;
+    font-weight: 800;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.club-kpis .kpi b .ico{
+    flex: none;
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.club-kpis .kpi small{
+    color: var(--ui-muted);
+    font-size: 80%;
+}
+
+.club-kpis .att b .ico{
+    color: var(--ui-att);
+}
+
+.club-kpis .def b .ico{
+    color: var(--ui-def);
+}
+
+.club-kpis .syn b .ico{
+    color: var(--ui-accent-text);
+}
+
+.club-kpis .fit.rested b{
+    color: var(--ui-pos);
+}
+
+.club-panels{
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 1rem;
+}
+
+.club-panel{
+    min-width: 0;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 16px;
+    background-color: var(--ui-surface);
+    box-shadow: var(--ui-shadow);
+}
+
+.club-panel h3{
+    margin: 0 0 0.75rem;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.tactic + .tactic{
+    margin-top: 0.85rem;
+}
+
+.tactic h4{
+    margin: 0 0 0.4rem;
+    font-size: 78%;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ui-muted);
+}
+
+.seg-tiles{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+}
+
+.seg-tiles button{
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 0.15rem;
+    min-width: 0;
+    padding: 0.6rem 0.4rem;
+    border-color: transparent;
+    color: var(--ui-muted);
+    font-size: 78%;
+    font-weight: 500;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.seg-tiles button b{
+    color: var(--ui-ink);
+    font-size: 128%;
+    font-weight: 700;
+}
+
+.seg-tiles button .ico{
+    width: 1.55rem;
+    height: 1.55rem;
+    color: var(--ui-ink);
+}
+
+.seg-tiles .ico.att{
+    color: var(--ui-att);
+}
+
+.seg-tiles .ico.def{
+    color: var(--ui-def);
+}
+
+.seg-tiles button:hover:not(:disabled){
+    border-color: var(--ui-line);
+}
+
+.seg-tiles button.selected, .seg-tiles button.selected:hover:not(:disabled){
+    border-color: var(--ui-accent);
+    background-color: var(--ui-accent-soft);
+}
+
+.auto-list{
+    display: grid;
+    gap: 0.9rem;
+}
+
+.auto-list label{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+/*a slider label: text on top, slider under it*/
+.auto-list label:has(input[type="range"]){
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+    margin: -0.4rem 0 0 2.95em;
+    color: var(--ui-muted);
+    font-size: 88%;
+    font-weight: 500;
+}
+
+.auto-list label input[type="checkbox"]{
+    margin: 0;
+}
+
+.auto-list input[type="range"]{
+    width: 100%;
+    margin: 0;
+}
+
+.auto-list .disabled{
+    opacity: 0.5;
+}
+
+.squad-head{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.6rem;
+    margin-bottom: 0.85rem;
+}
+
+.squad-head h3{
+    margin: 0;
+}
+
+.count-chip{
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    background-color: var(--ui-surface-2);
+    border: 1px solid var(--ui-line);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 90%;
+}
+
+.squad-note{
+    margin: 0 0 0 auto;
+    color: var(--ui-muted);
+    font-size: 85%;
+}
+
+.squad-tools{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: auto;
+}
+
+.squad-tools .best-eleven{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+}
+
+.squad-tools .best-eleven .ico{
+    color: var(--ui-accent-text);
+}
+
+/*segmented icon switch (cards / list)*/
+.seg{
+    display: inline-flex;
+    padding: 0.15rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 10px;
+    background-color: var(--ui-surface-2);
+}
+
+.seg button, .seg button:hover:not(:disabled){
+    display: grid;
+    place-items: center;
+    padding: 0.3rem 0.5rem;
+    border: none;
+    border-radius: 7px;
+    background: none;
+    color: var(--ui-muted);
+}
+
+.seg button.selected{
+    color: var(--ui-ink);
+    background-color: var(--ui-surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.team-management .no-players{
+    padding: 1.5rem 1rem;
+    color: var(--ui-muted);
+    font-weight: 600;
+    font-size: 100%;
+}
+
+/*Players: cards and list rows*/
+
+.player-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+    gap: 0.75rem;
+}
+
+.pcard, .prow{
+    --tier: #9aa7b4;
+    position: relative;
+    display: grid;
+    min-width: 0;
+    color: var(--ui-ink);
+}
+
+.tier-bronze{
+    --tier: #c27c47;
+}
+
+.tier-silver{
+    --tier: #9aa7b4;
+}
+
+.tier-gold{
+    --tier: var(--ui-gold);
+}
+
+.tier-elite{
+    --tier: #a66bff;
+}
+
+.pcard{
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "avatar id ovr"
+        "stats stats stats"
+        "extra extra tools"
+        "fit fit fit"
+        "actions actions actions";
+    align-items: center;
+    gap: 0.55rem 0.6rem;
+    padding: 0.85rem 0.85rem 0.8rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    background-color: var(--ui-surface);
+    box-shadow: inset 0 3px 0 var(--tier), var(--ui-shadow);
+    transition: border-color 150ms;
+}
+
+.pcard:hover{
+    border-color: color-mix(in srgb, var(--tier) 55%, var(--ui-line));
+}
+
+.pcard.compared, .prow.compared{
+    outline: 2px solid var(--ui-accent);
+    outline-offset: -2px;
+}
+
+/*a player with the stat window open sits above the ones after it*/
+.pcard.window-open, .prow.window-open{
+    z-index: 10;
+}
+
+.pcard > .p-avatar, .prow > .p-avatar{
+    grid-area: avatar;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background-color: var(--ui-surface-2);
+    box-shadow: 0 0 0 2px var(--tier);
+    cursor: pointer;
+}
+
+.p-id{
+    grid-area: id;
+    display: grid;
+    gap: 0.1rem;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.p-id:hover .p-name{
+    text-decoration: underline;
+    text-decoration-color: var(--ui-muted);
+    text-underline-offset: 2px;
+}
+
+.p-name{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 700;
+}
+
+.p-sub{
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 78%;
+}
+
+.p-tier{
+    padding: 0 0.4rem;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--tier) 22%, transparent);
+    color: var(--ui-ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.p-sub .ico{
+    width: 1.05rem;
+    height: 1.05rem;
+}
+
+.p-sub .red-card{
+    color: var(--ui-neg);
+}
+
+.p-sub .p-locked{
+    color: var(--ui-accent-text);
+}
+
+.p-ovr{
+    grid-area: ovr;
+    display: grid;
+    justify-items: end;
+    line-height: 1;
+}
+
+.p-ovr b{
+    font-family: var(--font-display);
+    font-size: 1.55rem;
+    font-weight: 800;
+}
+
+.p-ovr small{
+    color: var(--ui-muted);
+    font-size: 62%;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.p-stats{
+    grid-area: stats;
+    display: grid;
+    grid-template-columns: auto minmax(2rem, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.p-stats p{
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.p-stats b{
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.p-stats small, .p-extra small{
+    color: var(--ui-muted);
+    font-size: 70%;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.p-att b{
+    color: var(--ui-att);
+}
+
+.p-def b{
+    color: var(--ui-def);
+}
+
+.p-split{
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--ui-def);
+    overflow: hidden;
+}
+
+.p-split i{
+    display: block;
+    height: 100%;
+    background-color: var(--ui-att);
+    box-shadow: 1px 0 0 var(--ui-surface);
+}
+
+.p-extra{
+    grid-area: extra;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.75rem;
+    font-size: 85%;
+    font-weight: 600;
+}
+
+.p-fitness, .p-signing{
+    grid-area: fit;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+}
+
+.p-fitness .ico{
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+    color: var(--ui-pos);
+}
+
+.p-fitness .progress-bar{
+    flex: 1;
+    width: auto;
+    height: 6px;
+}
+
+.p-fitness .progress-bar div{
+    height: 6px;
+}
+
+.p-signing{
+    padding: 0.35rem 0.5rem;
+    border-radius: 10px;
+    background-color: var(--ui-accent-soft);
+    font-size: 78%;
+    line-height: 1.3;
+}
+
+.p-signing .ico{
+    flex: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--ui-accent-text);
+}
+
+.p-signing b{
+    color: var(--ui-accent-text);
+}
+
+.p-tools{
+    grid-area: tools;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.3rem;
+}
+
+.icon-btn, .icon-btn:hover:not(:disabled){
+    display: grid;
+    place-items: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
+    border-radius: 8px;
+    color: var(--ui-muted);
+    background-color: var(--ui-surface-2);
+}
+
+.icon-btn:hover:not(:disabled){
+    color: var(--ui-ink);
+}
+
+.icon-btn .ico{
+    width: 1rem;
+    height: 1rem;
+}
+
+.icon-btn.active, .icon-btn.active:hover:not(:disabled){
+    color: var(--ui-accent-ink);
+    background-color: var(--ui-accent);
+    border-color: transparent;
+}
+
+.pcard > .actions, .prow > .actions{
+    grid-area: actions;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.pcard > .actions button, .prow > .actions button{
+    display: inline-flex;
+    flex: 1 1 auto;
+    justify-content: center;
+    align-items: center;
+    gap: 0.3rem;
+    min-width: 0;
+    padding: 0.45rem 0.55rem;
+    font-size: 85%;
+    white-space: nowrap;
+}
+
+.pcard > .actions button .ico, .prow > .actions button .ico{
+    flex: none;
+    width: 1rem;
+    height: 1rem;
+}
+
+.pcard > .actions button.buy:not(:disabled), .prow > .actions button.buy:not(:disabled){
+    color: var(--ui-accent-ink);
+    background-color: var(--ui-accent);
+    border-color: transparent;
+}
+
+.pcard > .actions button.buy:hover:not(:disabled), .prow > .actions button.buy:hover:not(:disabled){
+    border-color: transparent;
+    filter: brightness(1.06);
+}
+
+.pcard > .actions button.sell.armed, .prow > .actions button.sell.armed{
+    color: #fff;
+    background-color: var(--ui-neg);
+    border-color: transparent;
+}
+
+.pcard.cant-afford > :not(.actions):not(.window), .prow.cant-afford > :not(.actions):not(.window){
+    opacity: 0.6;
+}
+
+/*list view: one row per player*/
+.player-list{
+    display: grid;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    background-color: var(--ui-surface);
+    box-shadow: var(--ui-shadow);
+}
+
+.club-panel .player-list{
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    margin: 0 -1.1rem -1rem;
+}
+
+.prow{
+    grid-template-columns: 2.4rem minmax(8rem, 1.3fr) 4rem minmax(10rem, 1.3fr) 7.5rem minmax(5rem, 0.8fr) auto 13.5rem;
+    grid-template-areas: "avatar id ovr stats extra fit tools actions";
+    align-items: center;
+    gap: 0.4rem 0.9rem;
+    padding: 0.55rem 1.1rem;
+    border-top: 1px solid var(--ui-line);
+    box-shadow: inset 3px 0 0 var(--tier);
+}
+
+.player-list > .prow:first-child{
+    border-top: none;
+}
+
+.prow:hover{
+    background-color: var(--ui-surface-2);
+}
+
+.prow > .p-avatar{
+    width: 2.3rem;
+    height: 2.3rem;
+}
+
+.prow .p-ovr b{
+    font-size: 1.3rem;
+}
+
+.prow .p-extra{
+    font-size: 80%;
+}
+
+.prow > .actions{
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+}
+
+.prow > .actions button{
+    flex: none;
+}
+
+/*empty places in the XI and in training*/
+.slot{
+    display: grid;
+    place-items: center;
+    min-height: 10.5rem;
+    border: 2px dashed var(--ui-line);
+    border-radius: 14px;
+    color: var(--ui-line);
+}
+
+.slot .ico{
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+/*Market*/
+
+.tab-player-market .player-market{
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.85rem;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 1rem 1rem;
+}
+
+.market-tools{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.chips{
+    display: flex;
+    gap: 0.4rem;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.chips::-webkit-scrollbar{
+    display: none;
+}
+
+.chips button{
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    background-color: var(--ui-surface);
+    color: var(--ui-muted);
+    font-size: 88%;
+    white-space: nowrap;
+}
+
+.chips button.selected{
+    color: var(--ui-ink);
+}
+
+.chips button .ico{
+    width: 1rem;
+    height: 1rem;
+}
+
+.market-tools .seg{
+    margin-left: auto;
+    flex: none;
+}
+
+/*Training*/
+
+.tab-player-training .training-players{
+    padding: 0 1rem;
+}
+
+@media (max-width: 1100px){
+    .club-panels{
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .prow{
+        grid-template-columns: 2.4rem minmax(0, 1fr) auto auto;
+        grid-template-areas:
+            "avatar id ovr tools"
+            "avatar stats stats stats"
+            "avatar extra fit fit"
+            "actions actions actions actions";
+    }
+
+    .prow > .actions{
+        justify-content: stretch;
+        flex-wrap: wrap;
+    }
+
+    .prow > .actions button{
+        flex: 1 1 auto;
+    }
+}
+
+@media (max-width: 900px){
+    .club-kpis{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px){
+    .team-management{
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .club-hero{
+        grid-template-columns: minmax(0, 1fr);
+        padding: 1rem;
+    }
+
+    .club-hero .hero-crest{
+        width: 3.75rem;
+        height: 3.75rem;
+    }
+
+    .club-hero .hero-name{
+        font-size: 1.5rem;
+    }
+
+    .next-card{
+        min-width: 0;
+    }
+
+    .club-kpis{
+        gap: 0.5rem;
+    }
+
+    .club-kpis .kpi{
+        padding: 0.7rem 0.8rem;
+    }
+
+    .club-kpis .kpi b{
+        font-size: 1.3rem;
+    }
+
+    .club-kpis .kpi small{
+        display: none;
+    }
+
+    .club-panel{
+        padding: 0.9rem;
+    }
+
+    .club-panel .player-list{
+        margin: 0 -0.9rem -0.9rem;
+    }
+
+    .seg-tiles button{
+        font-size: 70%;
+        padding: 0.5rem 0.2rem;
+    }
+
+    .squad-note{
+        margin: 0;
+        width: 100%;
+    }
+
+    .player-grid{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.5rem;
+    }
+
+    /*narrow cards: the name gets its own line*/
+    .pcard{
+        grid-template-areas:
+            "avatar . ovr"
+            "id id id"
+            "stats stats stats"
+            "extra extra tools"
+            "fit fit fit"
+            "actions actions actions";
+        gap: 0.45rem;
+        padding: 0.7rem 0.65rem 0.65rem;
+    }
+
+    .pcard > .p-avatar{
+        width: 2.2rem;
+        height: 2.2rem;
+    }
+
+    .pcard .p-ovr b{
+        font-size: 1.25rem;
+    }
+
+    .pcard .p-stats{
+        gap: 0.35rem;
+    }
+
+    .pcard .p-stats b{
+        font-size: 0.95rem;
+    }
+
+    .pcard .p-stats small{
+        display: none;
+    }
+
+    .pcard .p-extra{
+        font-size: 75%;
+        gap: 0.1rem 0.5rem;
+    }
+
+    .pcard .icon-btn{
+        width: 1.7rem;
+        height: 1.7rem;
+    }
+
+    .pcard > .actions button, .prow > .actions button{
+        font-size: 78%;
+        padding: 0.45rem 0.35rem;
+        white-space: normal;
+        line-height: 1.15;
+    }
+
+    .prow{
+        padding: 0.6rem 0.9rem;
+    }
+
+    .slot{
+        min-height: 4rem;
+    }
+
+    .tab-player-market .player-market{
+        padding: 0 0.75rem 0.75rem;
+    }
+
+    .tab-player-training .training-players{
+        padding: 0 0.75rem;
+    }
+}
+
+@media (max-width: 360px){
+    .player-grid{
+        grid-template-columns: minmax(0, 1fr);
+    }
 }

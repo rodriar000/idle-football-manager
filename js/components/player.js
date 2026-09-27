@@ -1,5 +1,5 @@
 app.component("player", {
-    props: ["player", "signing"],
+    props: ["player", "signing", "layout"],
     data() {
         return {
             showStatBreakdown: false,
@@ -110,49 +110,62 @@ app.component("player", {
                 bronze: "Bronze: weaker than your typical Player"
             }[this.tier];
         },
-        buttonWidth(){
-            if(!this.trainingUnlocked){
-                return "100%";
-            }
-            return this.player.active ? "100%" : "50%";
+        tierName(){
+            return {elite: "Elite", gold: "Gold", silver: "Silver", bronze: "Bronze"}[this.tier];
+        },
+        total(){
+            return this.player.getBaseAttack().add(this.player.getBaseDefense());
+        },
+        //how much of ATT+DEF is attack, for the split bar
+        attackShare(){
+            let total = this.total;
+            return total.gt(0) ? Math.round(this.player.getBaseAttack().div(total).toNumber() * 100) : 50;
         }
     },
-    template: `<div class="player" :class="['tier-' + tier, {compared: isCompared, locked: player.locked}]">
-<button class="lock-toggle" v-if="isBought" :class="{active: player.locked}" @click="toggleLock()" :title="player.locked ? 'Protected: cannot be sold or taken out of the Team. Tap to unprotect' : 'Protect this Player'"><ui-icon :name="player.locked ? 'lock' : 'unlock'"></ui-icon></button>
-<button class="compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" :title="isCompared ? 'Remove from Comparison' : 'Compare'"><ui-icon name="compare"></ui-icon></button>
-<p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><player-avatar :player="player"></player-avatar><ui-icon class="red-card" v-if="player.hasRedCard()" name="redcard"></ui-icon> {{player.name}}</div>
-<div class="icon-flex" v-if="isBought"><ui-icon class="stamina-icon" name="stamina"></ui-icon> <progress-bar :value="player.currentStamina"></progress-bar></div>
-<div class="signing" v-else-if="signing" title="Buying this Player improves your best Eleven the most"><ui-icon name="star"></ui-icon> Best Signing <span>{{formatChange(signing.attack)}} ATT · {{formatChange(signing.defense)}} DEF</span></div></p>
-<div class="stats">
-    <p><span>ATT</span> {{formatNumber(player.getBaseAttack())}}</p>
-    <p>{{formatNumber(player.getBaseDefense())}} <span>DEF</span></p>
-    <p><span>AGG</span> {{formatNumber(player.aggressivity * 100)}}</p>
-    <p>{{formatNumber(player.stamina * 100)}} <span>STA</span></p>
-    <p class="total" :title="'Attack + Defense. ' + tierTitle"><span>ATT+DEF</span> {{formatNumber(player.getBaseAttack().add(player.getBaseDefense()))}}</p>
+    template: `<div :class="[layout === 'row' ? 'prow' : 'pcard', 'tier-' + tier, {compared: isCompared, locked: player.locked, owned: isBought, 'cant-afford': !isBought && !player.canAfford(), 'window-open': showStatBreakdown}]">
+<player-avatar class="p-avatar" :player="player" @click="showStatBreakdown = true"></player-avatar>
+<div class="p-id" @click="showStatBreakdown = true" title="Show all stats">
+    <b class="p-name" :title="player.name">{{player.name}}</b>
+    <span class="p-sub">
+        <span class="p-tier" :title="tierTitle">{{tierName}}</span>
+        <ui-icon class="red-card" v-if="player.hasRedCard()" name="redcard" title="Red card"></ui-icon>
+        <ui-icon class="p-locked" v-if="player.locked" name="lock"></ui-icon>
+    </span>
+</div>
+<div class="p-ovr" :title="'Attack + Defense. ' + tierTitle"><b>{{formatNumber(total)}}</b><small>ATT+DEF</small></div>
+<div class="p-stats">
+    <p class="p-att"><small>ATT</small><b>{{formatNumber(player.getBaseAttack())}}</b></p>
+    <div class="p-split" :title="attackShare + '% Attack, ' + (100 - attackShare) + '% Defense'"><i :style="{width: attackShare + '%'}"></i></div>
+    <p class="p-def"><b>{{formatNumber(player.getBaseDefense())}}</b><small>DEF</small></p>
+</div>
+<div class="p-extra">
+    <span title="Aggressiveness: higher means more red cards"><small>AGG</small> {{formatNumber(player.aggressivity * 100)}}</span>
+    <span title="Stamina: higher means faster recovery"><small>STA</small> {{formatNumber(player.stamina * 100)}}</span>
+</div>
+<div class="p-fitness" v-if="isBought" :title="'Fitness ' + Math.round(player.currentStamina * 100) + '%'"><ui-icon class="stamina-icon" name="stamina"></ui-icon><progress-bar :value="player.currentStamina"></progress-bar></div>
+<div class="p-signing" v-else-if="signing" title="Buying this Player improves your best Eleven the most"><ui-icon name="star"></ui-icon><span><b>Best Signing</b> {{formatChange(signing.attack)}} ATT · {{formatChange(signing.defense)}} DEF</span></div>
+<div class="p-tools">
+    <button class="icon-btn lock-toggle" v-if="isBought" :class="{active: player.locked}" @click="toggleLock()" :aria-label="player.locked ? 'Unprotect' : 'Protect'" :title="player.locked ? 'Protected: cannot be sold or taken out of the Team. Tap to unprotect' : 'Protect this Player'"><ui-icon :name="player.locked ? 'lock' : 'unlock'"></ui-icon></button>
+    <button class="icon-btn compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" aria-label="Compare" :title="isCompared ? 'Remove from Comparison' : 'Compare'"><ui-icon name="compare"></ui-icon></button>
 </div>
 <div class="actions">
-    <div v-if="isBought">
-        <div v-if="isTraining">
-            <button v-if="!player.active" @click="removeFromTraining()">Stop Training</button>
-        </div>
-        <div v-else>
-            <button :style="{width: buttonWidth}" :disabled="!canMove" v-if="isBought" @click="player.active = !player.active" :title="player.active && player.locked ? 'Protected: unprotect the Player (lock button) to take them out' : ''"><span v-if="!player.active">Move to Team</span><span v-else>Move from Team</span></button>
-            <button :style="{width: '50%'}" v-if="!player.active && trainingUnlocked" @click="addToTraining()">Train</button>
+    <template v-if="isBought">
+        <button v-if="isTraining && !player.active" @click="removeFromTraining()"><ui-icon name="swap"></ui-icon> Stop Training</button>
+        <template v-else-if="!isTraining">
+            <button class="move" :disabled="!canMove" @click="player.active = !player.active" :title="player.active && player.locked ? 'Protected: unprotect the Player (lock button) to take them out' : ''"><ui-icon name="swap"></ui-icon> {{player.active ? "To Bench" : "To Team"}}</button>
+            <button class="train" v-if="!player.active && trainingUnlocked" @click="addToTraining()"><ui-icon name="training"></ui-icon> Train</button>
             <button class="sell protected" disabled v-if="!player.active && player.locked" title="Unprotect the Player (lock button) to sell"><ui-icon name="lock"></ui-icon> Protected</button>
             <button class="negative sell" :class="{armed: confirmSell}" v-else-if="!player.active" @click="sellPlayer()" @blur="cancelSell()">
-                <span v-if="confirmSell">Tap again to sell ({{formatNumber(player.getSellAmount())}} $)</span>
-                <span v-else>Sell ({{formatNumber(player.getSellAmount())}} $)</span>
+                <ui-icon name="sell"></ui-icon>
+                <span v-if="confirmSell">Tap again: {{formatNumber(player.getSellAmount())}} $</span>
+                <span v-else>Sell {{formatNumber(player.getSellAmount())}} $</span>
             </button>
-        </div>
-    </div>
-    <div v-else>
-        <button :disabled="!player.canAfford()" :class="{'cant-afford': !player.canAfford()}" @click="buy()">Buy ($ {{formatNumber(player.getPrice())}})</button>
-    </div>
+        </template>
+    </template>
+    <button v-else class="buy" :disabled="!player.canAfford()" :class="{'cant-afford': !player.canAfford()}" @click="buy()"><ui-icon name="coins"></ui-icon> Buy {{formatNumber(player.getPrice())}} $</button>
 </div>
 <transition name="window-grow">
-    <window-player @closed="showStatBreakdown = false" v-if="showStatBreakdown" :player="player">
-    
-    </window-player>
+    <window-player @closed="showStatBreakdown = false" v-if="showStatBreakdown" :player="player"></window-player>
 </transition>
 </div>`
 });

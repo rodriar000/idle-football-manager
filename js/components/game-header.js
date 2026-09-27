@@ -4,6 +4,7 @@ function getVisibleTabs(){
         {id: "tab-team", name: "Team", icon: "team"},
         {id: "tab-player-market", name: "Market", icon: "market"},
         {id: "tab-academy", name: "Academy", icon: "academy"},
+        {id: "tab-manager", name: "Manager", icon: "manager"},
         {id: "tab-upgrades", name: "Upgrades", icon: "upgrades"},
         {id: "tab-league", name: "League", icon: "league"},
         {id: "tab-match", name: "Match", icon: "match"},
@@ -63,6 +64,9 @@ app.component("game-header", {
             let match = this.$root.currentMatch;
             return match && !match.ended && match.time > 0 ? Math.min(90, match.getMinute()) + "'" : "";
         },
+        freePoints(){
+            return this.$root.career.getFreePoints();
+        },
         tabs(){
             //touch reactive state the unlock checks depend on
             this.$root.maxDivisionRank; this.$root.country; this.$root.stadium.upgrades.capacity.level;
@@ -84,6 +88,7 @@ app.component("game-header", {
             :title="getTabShortcut(i) ? 'Shortcut: ' + getTabShortcut(i) : ''">
             <ui-icon :name="t.icon"></ui-icon><span class="tab-name">{{t.name}}</span>
             <span class="tab-badge" v-if="t.id === 'tab-match' && liveMinute">{{liveMinute}}</span>
+            <span class="tab-badge points" v-if="t.id === 'tab-manager' && freePoints > 0" :title="freePoints + ' skill points to spend'">{{freePoints}}</span>
         </li>
     </ul>
 </nav>

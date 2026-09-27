@@ -87,6 +87,9 @@ class Team {
         else if(this.aggressivity === Strategy.DEFENSIVE){
             base /= 2;
         }
+        if(this === game.team){
+            base *= game.career.mul("discipline");
+        }
         return base;
     }
 
@@ -97,7 +100,8 @@ class Team {
 
     //the playing players in the places of the formation: [{place, player, fit}]
     getLineup(){
-        return Formations.assign(this.getActivePlayingPlayers(), this.formation);
+        return Formations.assign(this.getActivePlayingPlayers(), this.formation, Formations.power,
+            this === game.team ? game.career.add("versatility") : 0);
     }
 
     //the place an active player plays in and how much of their stats they give there (fit 1 = own position)
@@ -117,6 +121,12 @@ class Team {
         let formation = Formations.get(this.formation);
         stats.attack = stats.attack.mul(formation.att);
         stats.defense = stats.defense.mul(formation.def);
+        //the manager's perks only help your own Team
+        if(this === game.team){
+            let career = game.career;
+            stats.attack = stats.attack.mul(career.mul("pressing") * career.mul("matchday"));
+            stats.defense = stats.defense.mul(career.mul("organisation") * career.mul("matchday"));
+        }
         if(this.strategy === Strategy.OFFENSIVE){
             stats.attack = stats.attack.mul(1.3);
             stats.defense = stats.defense.div(1.3);

@@ -63,6 +63,7 @@ app.component("window-season", {
             <p v-if="season.academy.grown.length"><ui-icon name="upgrades"></ui-icon> {{season.academy.grown.length}} young Players improved</p>
             <p v-if="season.academy.retired.length"><ui-icon name="timer"></ui-icon> Retired: {{season.academy.retired.join(", ")}}</p>
             <p v-if="season.academy.promoted.length"><ui-icon name="academy"></ui-icon> Joined the Team from the Academy: {{season.academy.promoted.join(", ")}}</p>
+            <p v-if="season.managerXp"><ui-icon name="manager"></ui-icon> +{{season.managerXp}} Manager XP for the Season</p>
             <p v-if="season.academy.joined.length"><ui-icon name="star"></ui-icon> New prospects: {{season.academy.joined.join(", ")}}</p>
         </div>
         <div v-if="season.topScorers.length" class="scorers">

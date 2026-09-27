@@ -15,6 +15,7 @@ class Match {
 
         this.gameEvents = []; //recorded goals
         this.stadiumReward = new Decimal(0); //used for display
+        this.managerXp = 0; //used for display
 
         this.ballX = 0; //-1 to 1
         this.ballSpeed = 0;
@@ -137,12 +138,16 @@ class Match {
             let playerTeam = this.getPlayerTeam();
 
             game.stadium.changeFans(this.getGameResult());
-            let reward = game.stadium.getPaidMoney();
+            let reward = game.stadium.getPaidMoney().mul(game.career.mul("tickets"));
             game.money = game.money.add(reward);
             this.stadiumReward = reward;
             game.stadium.emptyStadium();
             this.addToHistory();
             Match.updateRecords(game.matchHistory[game.matchHistory.length - 1], game.league.divisions[this.divisionRank].getName());
+            let ownIndex = this.team1 === playerTeam ? 0 : 1;
+            let own = ownIndex === 0 ? this.score1 : this.score2, other = ownIndex === 0 ? this.score2 : this.score1;
+            this.managerXp = ManagerCareer.matchXp(own, other);
+            game.career.addXp(this.managerXp);
 
             for(let p of playerTeam.getActivePlayers()){
                 if(p.hasRedCard()){
@@ -162,6 +167,8 @@ class Match {
                 seasonEnded = true;
                 game.league.moveTeams();
                 game.lastSeason.academy = game.academy.endSeason();
+                game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome);
+                game.career.addXp(game.lastSeason.managerXp);
                 game.playerMarket.refresh();
             }
             else{
@@ -326,6 +333,7 @@ class Match {
         this.powerMultiFreq = obj.powerMultiFreq;
         this.gameEvents = obj.gameEvents;
         this.stadiumReward = obj.stadiumReward || new Decimal(0);
+        this.managerXp = Number(obj.managerXp) || 0;
         this.ended = obj.ended;
         this.baseStrategy = obj.baseStrategy ?? null;
     }

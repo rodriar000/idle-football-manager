@@ -258,6 +258,7 @@ app.component("match", {
                 <li v-if="stadiumUnlocked"><ui-icon name="stadium"></ui-icon><span>Stadium tickets</span><b class="pos">+{{formatNumber(match.stadiumReward)}} $</b></li>
                 <li class="total"><ui-icon name="coins"></ui-icon><span>Balance</span><b>{{formatNumber(money)}} $</b></li>
             </ul>
+            <p class="ft-xp" v-if="match.managerXp"><ui-icon name="manager"></ui-icon> +{{match.managerXp}} Manager XP</p>
             <button class="kick" :disabled="!canPlayNextMatch" @click="playNextMatch()"><ui-icon name="play"></ui-icon> Play next Match</button>
         </template>
     </window>

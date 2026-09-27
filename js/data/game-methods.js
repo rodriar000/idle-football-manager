@@ -144,6 +144,10 @@ let functions = {
                 game.academy.load(obj.academy);
             }
 
+            if(obj.career){
+                game.career.load(obj.career);
+            }
+
             if(game.team && game.team.formation === null){
                 functions.introducePositions();
             }

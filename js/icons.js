@@ -7,6 +7,7 @@ const Icons = {
         "market": '<path class="d" d="M3.5 11.6V4.5a1 1 0 0 1 1-1h7.1l9 9a1.4 1.4 0 0 1 0 2l-6.1 6.1a1.4 1.4 0 0 1-2 0z"/><path d="M3.5 11.6V4.5a1 1 0 0 1 1-1h7.1l9 9a1.4 1.4 0 0 1 0 2l-6.1 6.1a1.4 1.4 0 0 1-2 0z"/><circle cx="8" cy="8" r="1.6"/><path d="m11.5 14.5 3-3"/>',
         "league": '<path class="d" d="M9 20.5v-11h6v11z"/><path d="M3 20.5v-7h6M15 20.5v-5h6v5M9 20.5v-11h6v11M2 20.5h20"/><path class="f" d="m12 2.6.9 1.9 2 .3-1.5 1.4.4 2L12 7.2l-1.8 1 .4-2-1.5-1.4 2-.3z"/>',
         "stadium": '<ellipse class="d" cx="12" cy="14" rx="9.5" ry="6"/><ellipse cx="12" cy="14" rx="9.5" ry="6"/><ellipse cx="12" cy="14.3" rx="5" ry="2.8"/><path d="M3.5 3.5v7.3M20.5 3.5v7.3"/><path d="M2.3 3.5h2.4M19.3 3.5h2.4"/>',
+        "academy": '<path class="d" d="M2.5 9 12 4.5 21.5 9 12 13.5z"/><path d="M2.5 9 12 4.5 21.5 9 12 13.5zM6.5 11v4.6c0 1.4 2.5 3 5.5 3s5.5-1.6 5.5-3V11M21.5 9v5.5"/>',
         "training": '<path class="d" d="M10 4h4l4.3 14H5.7z"/><path d="M10 4h4l4.3 14H5.7zM3 20.5h18M8.2 11h7.6"/>',
         "upgrades": '<rect class="d" x="3" y="3" width="18" height="18" rx="5"/><path d="m7 12.5 5-5 5 5M7 17.5l5-5 5 5"/>',
         "achievements": '<path d="M8 2.8 10.2 9M16 2.8 13.8 9M6 2.8h4M14 2.8h4"/><circle class="d" cx="12" cy="15" r="6.3"/><circle cx="12" cy="15" r="6.3"/><path class="f" d="m12 11.6 1 2 2.2.3-1.6 1.6.4 2.2-2-1-2 1 .4-2.2-1.6-1.6 2.2-.3z"/>',

@@ -14,6 +14,8 @@ class GeneratorUtils {
         let name = Utils.capitalize(firstNames[r.nextInt(firstNames.length)]) + " "
                     + Utils.capitalize(lastNames[r.nextInt(lastNames.length)]);
         let player = new Player(name, attack, defense, aggressivity, stamina, active, marketValue, position);
+        player.age = 18 + Math.floor(16 * r.nextDouble() ** 1.3);
+        player.retireAge = Math.max(player.age + 1, 33 + r.nextInt(5));
         if(!player.position){
             player.position = Positions.fromShare(Positions.attackShare(player));
         }
@@ -49,6 +51,16 @@ class GeneratorUtils {
             divisions.push(GeneratorUtils.generateDivision(r.nextInt(), i, country));
         }
         return new League(divisions);
+    }
+
+    //typical stat of a player in this Division (the middle of what its clubs are generated with)
+    static getStatLevel(rank, country){
+        let normRank = GeneratorUtils.getNormRank(rank, country);
+        let stat = Decimal.pow(16, normRank + 0.5);
+        stat = stat.mul(new Decimal(17 / 16).pow(Math.max(0, normRank - 4)).add(1));
+        stat = stat.mul(new Decimal(20 / 17).pow(Math.max(0, normRank - 12)).add(1));
+        stat = stat.mul(new Decimal(1.1).pow(Decimal.pow(1.01, Decimal.max(0, normRank - 50))));
+        return stat.mul(1.125);
     }
 
     static getNormRank(rank, country){

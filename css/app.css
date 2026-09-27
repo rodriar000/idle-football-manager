@@ -4559,3 +4559,298 @@ button.kick:hover:not(:disabled){
 .pcard .p-sub .p-tier{
     flex: 0 1 auto;
 }
+
+/*Academy and ages*/
+
+.tab-academy{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+    text-align: left;
+}
+
+.p-age .ico{
+    width: 0.95em;
+    height: 0.95em;
+    margin-left: 0.15rem;
+    vertical-align: -0.12em;
+}
+
+.p-age.last{
+    color: var(--ui-neg);
+    font-weight: 800;
+}
+
+.academy-strip{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.academy-panel{
+    display: grid;
+    gap: 0.75rem;
+}
+
+.academy-empty{
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 1.25rem;
+    border: 1px dashed var(--ui-line);
+    border-radius: 14px;
+    color: var(--ui-muted);
+}
+
+.academy-empty .ico{
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.prospect-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 0.75rem;
+}
+
+.prospect{
+    display: grid;
+    align-content: start;
+    gap: 0.65rem;
+    min-width: 0;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 16px;
+    background-color: var(--ui-surface);
+    background-image: radial-gradient(120% 90% at 100% 0%, var(--ui-accent-soft), transparent 55%);
+    box-shadow: var(--ui-shadow);
+}
+
+.prospect.slot{
+    place-items: center;
+    align-content: center;
+    min-height: 12rem;
+    border-style: dashed;
+    background: none;
+    box-shadow: none;
+    color: var(--ui-muted);
+}
+
+.prospect.slot .ico{
+    width: 1.8rem;
+    height: 1.8rem;
+    opacity: 0.6;
+}
+
+.pr-head{
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+}
+
+.pr-name{
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pr-age{
+    flex: none;
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    background-color: var(--ui-surface-2);
+    color: var(--ui-muted);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 88%;
+}
+
+.pr-stars{
+    display: flex;
+    gap: 0.15rem;
+}
+
+.pr-stars .ico{
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--ui-line);
+}
+
+.pr-stars .ico.on{
+    color: var(--ui-gold);
+}
+
+.pr-stats{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+    margin: 0;
+}
+
+.pr-stats p{
+    display: grid;
+    gap: 0.05rem;
+    margin: 0;
+    min-width: 0;
+}
+
+.pr-stats small{
+    color: var(--ui-muted);
+    font-size: 72%;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+}
+
+.pr-stats b{
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pr-stats b.att{
+    color: var(--ui-att);
+}
+
+.pr-stats b.def{
+    color: var(--ui-def);
+}
+
+.pr-growth{
+    display: grid;
+    gap: 0.2rem;
+    font-size: 85%;
+}
+
+.pr-growth > span{
+    font-weight: 700;
+}
+
+.pr-growth .bar{
+    margin: 0;
+}
+
+.pr-growth .bar i{
+    background-color: var(--ui-gold);
+}
+
+.pr-growth small{
+    color: var(--ui-muted);
+}
+
+.pr-actions{
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 0.5rem;
+}
+
+.pr-actions button{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+}
+
+.pr-actions .promote{
+    color: var(--ui-accent-ink);
+    background-color: var(--ui-accent);
+    border-color: transparent;
+}
+
+.pr-actions .negative.armed{
+    color: #fff;
+    background-color: var(--ui-neg);
+}
+
+.retired-list{
+    display: grid;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    background-color: var(--ui-surface);
+    overflow: hidden;
+}
+
+.retired{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    padding: 0.6rem 0.9rem;
+}
+
+.retired + .retired{
+    border-top: 1px solid var(--ui-line);
+}
+
+.retired b{
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.retired > small{
+    color: var(--ui-muted);
+    white-space: nowrap;
+}
+
+.retired-total{
+    margin-left: auto;
+    font-family: var(--font-display);
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.retired-total small{
+    color: var(--ui-muted);
+    font-size: 70%;
+}
+
+.window-season .season-academy{
+    margin-top: 0.75rem;
+    text-align: left;
+}
+
+.window-season .season-academy h4{
+    margin: 0 0 0.35rem;
+}
+
+.window-season .season-academy p{
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    margin: 0.2rem 0;
+    font-size: 90%;
+}
+
+.window-season .season-academy .ico{
+    flex: none;
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-top: 0.1rem;
+    color: var(--ui-accent-text);
+}
+
+@media (max-width: 700px){
+    .tab-academy{
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .academy-strip{
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+
+    .academy-strip .s-kpi:last-child{
+        grid-column: 1 / -1;
+    }
+}

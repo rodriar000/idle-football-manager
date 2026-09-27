@@ -161,6 +161,7 @@ class Match {
                 Match.createSeasonSummary();
                 seasonEnded = true;
                 game.league.moveTeams();
+                game.lastSeason.academy = game.academy.endSeason();
                 game.playerMarket.refresh();
             }
             else{

@@ -140,6 +140,10 @@ let functions = {
                 game.training.load(obj.training);
             }
 
+            if(obj.academy){
+                game.academy.load(obj.academy);
+            }
+
             if(game.team && game.team.formation === null){
                 functions.introducePositions();
             }

@@ -27,6 +27,7 @@ function setup(){
     else{
         functions.loadGame();
     }
+    game.academy.start();
     gameTheme.apply();
 
     if(!error.length){

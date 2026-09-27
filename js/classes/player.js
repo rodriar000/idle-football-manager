@@ -15,6 +15,15 @@ class Player {
         this.locked = false;
         //GK, DEF, MID or FWD (see formation.js)
         this.position = position;
+        //ages a year every season end (academy.js); plays until the season they are retireAge
+        this.age = 25;
+        this.retireAge = 35;
+        //came through your youth academy
+        this.academy = false;
+    }
+
+    isLastSeason(){
+        return this.age >= this.retireAge;
     }
 
     //used for display on player component
@@ -93,5 +102,9 @@ class Player {
         this.locked = obj.locked === true;
         //players saved before positions existed get one from how attacking they are
         this.position = Positions.list.includes(obj.position) ? obj.position : Positions.fromShare(Positions.attackShare(this));
+        //players from before ages existed get one from 20 to 30, so nobody retires right away
+        this.age = typeof obj.age === "number" ? obj.age : PlayerAges.fromName(this.name, 20, 11);
+        this.retireAge = typeof obj.retireAge === "number" ? obj.retireAge : 33 + PlayerAges.fromName(this.name + "!", 0, 5);
+        this.academy = obj.academy === true;
     }
 }

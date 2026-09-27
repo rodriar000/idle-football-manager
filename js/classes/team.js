@@ -159,9 +159,10 @@ class Team {
     pickBestEleven(minStamina = 0){
         //sent off players can't leave the pitch while a match is running
         let matchRunning = game.currentMatch && !game.currentMatch.ended;
-        let keep = matchRunning ? this.players.filter(p => p.active && p.hasRedCard()) : [];
+        //protected players already in the team stay there too
+        let keep = this.players.filter(p => p.active && (p.locked || matchRunning && p.hasRedCard()));
         let slots = 11 - keep.length;
-        let available = this.players.filter(p => !p.hasRedCard());
+        let available = this.players.filter(p => !p.hasRedCard() && !keep.includes(p));
         let rested = available.filter(p => p.currentStamina >= minStamina);
         let power = p => p.getAttack().add(p.getDefense());
         let byPower = list => Array.from(list).sort((p1, p2) => power(p2).cmp(power(p1)));
@@ -178,7 +179,7 @@ class Team {
     //swap tired active players for rested bench players; returns [{out, in}]
     substituteTiredPlayers(minStamina){
         let subs = [];
-        let tired = this.getActivePlayingPlayers().filter(p => p.currentStamina < minStamina)
+        let tired = this.getActivePlayingPlayers().filter(p => p.currentStamina < minStamina && !p.locked)
             .sort((p1, p2) => p1.currentStamina - p2.currentStamina);
         for(let out of tired){
             let bench = this.getInactivePlayers().filter(p => !p.hasRedCard() && p.currentStamina >= minStamina);

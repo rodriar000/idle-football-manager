@@ -72,7 +72,7 @@ app.component("team-management", {
         <template v-else-if="restPaused">⏸ Ready in {{formatTime(Math.ceil(restTime))}} after the Match</template>
         <template v-else>⏳ Ready in {{formatTime(Math.ceil(restTime))}}</template>
     </p>
-    <button class="best-eleven" :disabled="playerCount === 0" @click="pickBestEleven()" title="Put the 11 strongest rested players in the Team (B)">Best XI</button>
+    <button class="best-eleven" :disabled="playerCount === 0" @click="pickBestEleven()" title="Put the 11 strongest rested players in the Team; protected players stay (B)">Best XI</button>
     <div class="auto-sub">
         <label><input type="checkbox" v-model="teamSettings.autoSubstitute"/> Auto Substitutions</label>
         <label :class="{disabled: !teamSettings.autoSubstitute}">Sub out below {{formatNumber(teamSettings.substituteStamina * 100)}} % Stamina

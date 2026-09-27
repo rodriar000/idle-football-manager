@@ -11,6 +11,8 @@ class Player {
         this.currentStamina = 1;
         this.trainingFactor = new Decimal(1);
         this.redCard = 0;
+        //protected: can't be sold or taken out of the Team (only a red card still benches them)
+        this.locked = false;
     }
 
     //used for display on player component
@@ -68,7 +70,7 @@ class Player {
     }
 
     sell(){
-        if(!this.active && this.isBought()){
+        if(!this.active && this.isBought() && !this.locked){
             game.money = game.money.add(this.getSellAmount());
             game.playerMarket.players.push(this);
             game.team.players = game.team.players.filter(p => p !== this);
@@ -86,5 +88,6 @@ class Player {
         this.sellMultiplier = obj.sellMultiplier;
         this.redCard = Number(obj.redCard);
         this.trainingFactor = obj.trainingFactor ? obj.trainingFactor : new Decimal(1);
+        this.locked = obj.locked === true;
     }
 }

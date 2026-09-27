@@ -30,15 +30,15 @@ app.component("tab-tv-channels", {
     </div>
     <h4 class="big-heading">Upgrades</h4>
     <div class="upgrade-container">
-        <upgrade :upgrade="upgrades.matchReward">
+        <upgrade :upgrade="upgrades.matchReward" icon="chart">
             <template v-slot:title>Statistical Recognition</template>
             <template v-slot:description>Increase the Match Rewards by a percentage of Stadium Rewards.</template>
         </upgrade>
-        <upgrade :upgrade="upgrades.channelMoney">
+        <upgrade :upgrade="upgrades.channelMoney" icon="coins">
             <template v-slot:title>Cool Ads and nice Commentary</template>
             <template v-slot:description>Channels pay you more Money each second.</template>
         </upgrade>
-        <upgrade :upgrade="upgrades.matchSpeed">
+        <upgrade :upgrade="upgrades.matchSpeed" icon="rocket">
             <template v-slot:title>Beyond Speed</template>
             <template v-slot:description>Increase max Match Speed.<br/>
             <i>Wanna see me play a match? Wanna see me do it again?</i></template>

@@ -32,15 +32,15 @@ app.component("stadium", {
 </div>
 <h4>Upgrades</h4>
 <div class="upgrade-container">
-    <upgrade :upgrade="stadium.upgrades.capacity">
+    <upgrade :upgrade="stadium.upgrades.capacity" icon="stadium">
         <template v-slot:title>Stadium Capacity</template>
         <template v-slot:description>Increase the Amount of people that can watch the match at once.</template>
     </upgrade>
-    <upgrade :upgrade="stadium.upgrades.ticketPrice">
+    <upgrade :upgrade="stadium.upgrades.ticketPrice" icon="coins">
         <template v-slot:title>Pricing Tactics</template>
         <template v-slot:description>Increase the Price for each Ticket. Don't worry, this won't decrease attendance.</template>
     </upgrade>
-    <upgrade :upgrade="stadium.upgrades.fanGain">
+    <upgrade :upgrade="stadium.upgrades.fanGain" icon="crowd">
         <template v-slot:title>The Famous Factor</template>
         <template v-slot:description>More people decide to become a fan.</template>
     </upgrade>

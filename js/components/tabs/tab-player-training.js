@@ -60,15 +60,15 @@ app.component("tab-player-training", {
     </div>
     <h4 class="big-heading">Upgrades</h4>
     <div class="upgrade-container">
-        <upgrade :upgrade="training.upgrades.trainSpeed">
+        <upgrade :upgrade="training.upgrades.trainSpeed" icon="clock">
             <template v-slot:title>Discipline! Discipline!</template>
             <template v-slot:description>Players train faster. No doping included!</template>
         </upgrade>
-        <upgrade :upgrade="training.upgrades.generalTraining">
+        <upgrade :upgrade="training.upgrades.generalTraining" icon="chart">
             <template v-slot:title>Learning Curve</template>
             <template v-slot:description>The Stat increase after General Training is higher.</template>
         </upgrade>
-        <upgrade :upgrade="training.upgrades.longetivity">
+        <upgrade :upgrade="training.upgrades.longetivity" icon="training-star">
             <template v-slot:title>Infinite Potential</template>
             <template v-slot:description>The Stat increase after General Training is slightly exponential.</template>
         </upgrade>

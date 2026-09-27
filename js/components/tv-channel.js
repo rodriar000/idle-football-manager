@@ -44,7 +44,7 @@ app.component("tv-channel", {
             ctx.fillStyle = "white";
             ctx.textAlign = "left";
             ctx.textBaseline = "top";
-            //the TV frame image covers the corners of the canvas, so keep the name away from the edges
+            //the screen has rounded corners, so keep the name away from the edges
             ctx.fillText(this.channel.name, w * 0.1, h * 0.12, w * 0.45);
 
             this.frame = requestAnimationFrame(this.render);
@@ -78,20 +78,23 @@ app.component("tv-channel", {
     beforeUnmount(){
         cancelAnimationFrame(this.frame);
     },
-    template: `<div class="card tv-channel">
-<div class="tv" v-if="renderCanvas">
-    <canvas ref="canvas" width="240" height="160"></canvas>
-    <img alt="" src="images/tv.png"/>
+    template: `<div class="tv-channel" :class="{locked: !channel.bought, live: channel.bought && channel.matchRunning()}">
+<div class="tv-screen">
+    <canvas v-if="renderCanvas" ref="canvas" width="240" height="160"></canvas>
+    <ui-icon v-else :name="channel.bought ? 'tv' : 'tv-off'"></ui-icon>
+    <span class="tv-live" v-if="channel.bought && channel.matchRunning()">On Air</span>
 </div>
-<div class="tv" v-else>
-    <img alt="" src="images/tv-filled.png"/>
+<div class="tv-info" v-if="!channel.bought">
+    <h4><ui-icon name="lock"></ui-icon> Locked Channel</h4>
+    <p>Contract it to earn Money every second of a Match.</p>
+    <button class="buy" :disabled="!canAfford" @click="channel.buy()"><ui-icon name="coins"></ui-icon> Contract {{formatNumber(channel.price)}} $</button>
 </div>
-<div v-if="!channel.bought">
-    Locked <button :disabled="!canAfford" @click="channel.buy()">{{formatNumber(channel.price)}} $</button>
-</div>
-<div v-else>
+<div class="tv-info" v-else>
     <h4>{{channel.name}}</h4>
-    <p>Paying {{formatNumber(channel.getMPS(), 2, 2)}} $ per second while in Match and multiplying Match Rewards by x{{formatNumber(channel.moneyMultiplier, 2, 2)}}</p>
+    <p class="tv-stats">
+        <span><b>{{formatNumber(channel.getMPS(), 2, 2)}} $</b> per second in Match</span>
+        <span><b>x{{formatNumber(channel.moneyMultiplier, 2, 2)}}</b> Match Rewards</span>
+    </p>
 </div>
 </div>`
 });

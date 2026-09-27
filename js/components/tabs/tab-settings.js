@@ -77,38 +77,50 @@ app.component("tab-settings", {
         }
     },
     template: `<div class="tab-settings">
-    <h3 class="big-heading">Team Settings</h3>
-    <team-settings :team="team"></team-settings>
-    <h3 class="big-heading">Game Settings</h3>
-    <div class="card flex">
-        <div>
-            Term shown in Game Header<br/>
-            <label><input type="radio" name="term" v-model="settings.term" value="Football"/> Football</label>
-            <label><input type="radio" name="term" v-model="settings.term" value="Soccer"/> Soccer</label><br/>
-        </div>
-        <div>   
-            <label>Match Autoplay <input type="checkbox" v-model="settings.match.autoPlay"/></label><br/>
-            <label>Min Avg. Stamina required <input type="range" min="0" max="1" step="any" v-model.number="settings.match.minAutoPlayStamina"/></label><br/>
-            <label>Refill Team after Match <input type="checkbox" v-model="settings.team.refillPlayers"/></label>
-            <notation-select></notation-select><br/>
-        </div>
-        <div>
-            <label>Hold Shift to sell Players <input type="checkbox" v-model="settings.players.shiftToSell"/></label><br/>
-        </div>
-        <div v-if="tvUnlocked">
-            <label>Render TV Screens (decreases Performance) <input type="checkbox" v-model="settings.tv.renderCanvas"/></label><br/>
-        </div>
-        <div>
-            Theme<br/>
-            <label v-for="(name, key) in themes"><input type="radio" name="theme" v-model="settings.theme" :value="key"/> {{name}}</label>
-        </div>
-        <div class="notification-settings">
-            Notifications when the Tab is in the Background<br/>
-            <label>Match ended <input type="checkbox" :checked="settings.notifications.matchEnd" @change="toggleNotification('matchEnd', $event)"/></label><br/>
-            <label>Season ended <input type="checkbox" :checked="settings.notifications.seasonEnd" @change="toggleNotification('seasonEnd', $event)"/></label><br/>
-            <small>While on, Matches keep playing in the Background.</small>
+    <div class="page-head">
+        <span class="page-icon"><ui-icon name="settings"></ui-icon></span>
+        <div><p class="eyebrow">Settings</p><h2>Club and Game</h2></div>
+    </div>
+    <section class="set-group club">
+        <h3><ui-icon name="palette"></ui-icon> Club</h3>
+        <team-settings :team="team"></team-settings>
+    </section>
+    <div class="set-columns">
+        <section class="set-group">
+            <h3><ui-icon name="match"></ui-icon> Matches</h3>
+            <label class="set-row"><span>Match Autoplay <small>Starts the next Match by itself</small></span><input type="checkbox" v-model="settings.match.autoPlay"/></label>
+            <label class="set-row" :class="{disabled: !settings.match.autoPlay}"><span>Autoplay needs <small>{{Math.round(settings.match.minAutoPlayStamina * 100)}} % average Stamina</small></span><input type="range" min="0" max="1" step="any" v-model.number="settings.match.minAutoPlayStamina"/></label>
+            <label class="set-row"><span>Refill Team after Match <small>Fills empty places from the Bench</small></span><input type="checkbox" v-model="settings.team.refillPlayers"/></label>
+            <label class="set-row"><span>Hold Shift to sell Players <small>For Keyboards: a safety for selling</small></span><input type="checkbox" v-model="settings.players.shiftToSell"/></label>
+        </section>
+        <section class="set-group">
+            <h3><ui-icon name="palette"></ui-icon> Display</h3>
+            <div class="set-row"><span>Theme</span>
+                <div class="seg seg-text" role="radiogroup" aria-label="Theme">
+                    <label v-for="(name, key) in themes" :class="{selected: settings.theme === key}"><input type="radio" name="theme" v-model="settings.theme" :value="key"/>{{name}}</label>
+                </div>
+            </div>
+            <div class="set-row"><span>Game Header says</span>
+                <div class="seg seg-text" role="radiogroup" aria-label="Term shown in Game Header">
+                    <label v-for="term in ['Football', 'Soccer']" :class="{selected: settings.term === term}"><input type="radio" name="term" v-model="settings.term" :value="term"/>{{term}}</label>
+                </div>
+            </div>
+            <notation-select></notation-select>
+            <label class="set-row" v-if="tvUnlocked"><span>Render TV Screens <small>Uses more Performance</small></span><input type="checkbox" v-model="settings.tv.renderCanvas"/></label>
+        </section>
+        <section class="set-group notification-settings">
+            <h3><ui-icon name="bolt"></ui-icon> Notifications</h3>
+            <label class="set-row"><span>Match ended</span><input type="checkbox" :checked="settings.notifications.matchEnd" @change="toggleNotification('matchEnd', $event)"/></label>
+            <label class="set-row"><span>Season ended</span><input type="checkbox" :checked="settings.notifications.seasonEnd" @change="toggleNotification('seasonEnd', $event)"/></label>
+            <p class="set-note">Shown when the Tab is in the Background. While on, Matches keep playing in the Background.</p>
             <p class="notification-message" v-if="notificationMessage">{{notificationMessage}}</p>
-        </div>
+        </section>
+        <section class="set-group">
+            <h3><ui-icon name="help"></ui-icon> Help</h3>
+            <div class="set-row"><span>Tutorial <small>Show the Introduction again</small></span><button @click="restartTutorial()">Restart</button></div>
+            <div class="set-row shortcuts"><span>Keyboard Shortcuts <small><kbd>1</kbd>-<kbd>9</kbd>, <kbd>0</kbd> switch Tabs · <kbd>Space</kbd> next Match · <kbd>B</kbd> Best XI</small></span></div>
+            <a class="set-row" target="_blank" href="https://veprogames.github.io"><span>Original Game by veprogames <small>Visit the Website</small></span><ui-icon name="link"></ui-icon></a>
+        </section>
     </div>
     <div class="install-app card" v-if="!pwa.installed && (pwa.installEvent || pwa.isIOS)">
         <img alt="" src="images/app/icon-192.png"/>
@@ -120,23 +132,16 @@ app.component("tab-settings", {
         <button v-if="pwa.installEvent" @click="pwa.install()">Install App</button>
     </div>
     <cloud-save-panel></cloud-save-panel>
-    <button @click="restartTutorial()">Restart Tutorial</button><br/>
-    <h3 class="big-heading">Keyboard Shortcuts</h3>
-    <p class="shortcuts"><kbd>1</kbd>-<kbd>9</kbd>, <kbd>0</kbd> switch Tabs (in header order) · <kbd>Space</kbd> play next Match · <kbd>B</kbd> pick Best XI</p>
-    <h3 class="big-heading">Save Management</h3>
-    <p>Note: The Game does <b>not</b> save if <b>cookies or storage</b> are disabled. Cleaning Utilities might clear Browser Storage.
-    It is recommended to export your savegame <b>often</b>.</p>
-    <div>
-        <div>
+    <section class="set-group save">
+        <h3><ui-icon name="bag"></ui-icon> Save Management</h3>
+        <p class="set-note">The Game does <b>not</b> save if <b>cookies or storage</b> are disabled, and cleaning Utilities might clear Browser Storage. Export your Savegame <b>often</b>.</p>
+        <div class="save-actions">
             <button @click="exportGame()">Export Game</button>
             <button @click="importGame()">Import Game</button>
             <button @click="download()">Download Savegame</button>
-            <button @click="hardReset()">HARD RESET</button>
+            <button class="negative" @click="hardReset()">Hard Reset</button>
         </div>
-        <textarea v-model="saveString">
-        </textarea>
-    </div>
-    <h3 class="big-heading">Social</h3>
-    <a target="_blank" href="https://veprogames.github.io" class="icon-flex"><ui-icon name="link"></ui-icon> Visit my Website</a>
+        <textarea v-model="saveString" aria-label="Savegame"></textarea>
+    </section>
 </div>`
 });

@@ -115,11 +115,46 @@ app.component("match", {
             }
             return this.ownScore < this.otherScore ? {name: "lose", text: "Defeat"} : {name: "draw", text: "Draw"};
         },
+        ownIndex(){
+            return this.match.team2 === this.$root.team ? 1 : 0;
+        },
+        ownStats(){
+            return this.ownIndex === 1 ? this.team2Stats : this.team1Stats;
+        },
+        otherStats(){
+            return this.ownIndex === 1 ? this.team1Stats : this.team2Stats;
+        },
+        //your attack against their defence and the other way round, as shares of one bar
+        duels(){
+            let share = (a, b) => a.add(b).gt(0) ? a.div(a.add(b)).toNumber() * 100 : 50;
+            return [
+                {id: "att", icon: "attack", label: "Your Attack vs their Defense", own: this.ownStats.attack, other: this.otherStats.defense,
+                    share: share(this.ownStats.attack, this.otherStats.defense)},
+                {id: "def", icon: "defend", label: "Your Defense vs their Attack", own: this.ownStats.defense, other: this.otherStats.attack,
+                    share: share(this.ownStats.defense, this.otherStats.attack)}
+            ];
+        },
+        scorers(){
+            let list = [[], []];
+            for(let e of this.match.gameEvents){
+                if(e.event === 0 || e.event === 1){
+                    list[e.teamIndex].push(e);
+                }
+            }
+            return list;
+        },
+        divisionName(){
+            let division = this.$root.league.divisions[this.match.divisionRank];
+            return division ? division.getName() : "";
+        },
+        restTime(){
+            return this.$root.team.getTimeUntilRested();
+        },
         canPlayNextMatch(){
             return (this.match.time === 0 || this.match.ended) && game.team.canPlayNextMatch();
         }
     },
-    template: `<div class="match">
+    template: `<div class="match match-page">
 <transition name="goal-pop">
     <div v-if="goal" :key="goal.key" class="goal-overlay" :class="{against: !goal.own}">
         <div class="burst"></div>
@@ -127,77 +162,103 @@ app.component("match", {
         <p class="goal-scorer"><ui-icon name="ball"></ui-icon> {{goal.scorer || goal.team}}</p>
     </div>
 </transition>
-<div class="stats">
-    <p class="match-state" :class="state.name">{{state.text}}</p>
-    <p class="time">{{formatTime(match.time)}}<button :disabled="!canPlayNextMatch" v-if="match.time === 0" @click="playNextMatch()">Start</button></p>
-    <div class="score">
-        <div class="icon-flex">
+<section class="scoreboard" :class="state.name">
+    <div class="sb-top">
+        <span class="sb-state" :class="state.name"><i></i>{{state.text}}</span>
+        <span class="sb-meta" v-if="divisionName"><ui-icon name="trophy"></ui-icon> {{divisionName}}</span>
+    </div>
+    <div class="sb-main">
+        <div class="sb-team" :class="{own: ownIndex === 0}">
             <team-logo :logo="match.team1.logo"></team-logo>
-            <p>{{match.team1.name}}</p>
-        </div> 
-        <p class="numbers" :class="{flash: scoreFlash}">{{match.score1}} - {{match.score2}}</p> 
-        <div class="icon-flex">
-            <p>{{match.team2.name}}</p>
+            <p class="sb-name">{{match.team1.name}}</p>
+            <ul class="sb-scorers">
+                <li v-for="e in scorers[0]"><ui-icon :name="e.event === 0 ? 'ball' : 'redcard'"></ui-icon><span>{{e.name}} {{e.minute}}'</span></li>
+            </ul>
+        </div>
+        <div class="sb-center">
+            <p class="sb-score" :class="{flash: scoreFlash}"><span>{{match.score1}}</span><i>-</i><span>{{match.score2}}</span></p>
+            <p class="sb-clock">{{formatTime(match.time)}}</p>
+        </div>
+        <div class="sb-team away" :class="{own: ownIndex === 1}">
             <team-logo :logo="match.team2.logo"></team-logo>
+            <p class="sb-name">{{match.team2.name}}</p>
+            <ul class="sb-scorers">
+                <li v-for="e in scorers[1]"><ui-icon :name="e.event === 0 ? 'ball' : 'redcard'"></ui-icon><span>{{e.name}} {{e.minute}}'</span></li>
+            </ul>
         </div>
     </div>
-    <p class="win-chance-label">{{match.ended ? "Final Result" : "Chances for " + $root.team.name + " (estimate)"}}</p>
-    <div class="win-chance">
-        <div class="win" :style="{width: chances.win * 100 + '%'}" :title="'Win ' + (chances.win * 100).toFixed(0) + '%'">Win {{(chances.win * 100).toFixed(0)}}%</div>
-        <div class="draw" :style="{width: chances.draw * 100 + '%'}" :title="'Draw ' + (chances.draw * 100).toFixed(0) + '%'">Draw {{(chances.draw * 100).toFixed(0)}}%</div>
-        <div class="lose" :style="{width: chances.lose * 100 + '%'}" :title="'Lose ' + (chances.lose * 100).toFixed(0) + '%'">Lose {{(chances.lose * 100).toFixed(0)}}%</div>
+    <div class="sb-actions" v-if="match.time === 0 || match.ended">
+        <button class="kick" :disabled="!canPlayNextMatch" @click="playNextMatch()">
+            <ui-icon name="play"></ui-icon> {{match.ended ? "Play next Match" : "Kick off"}}</button>
+        <p class="sb-hint" v-if="!canPlayNextMatch">Put at least 1 Player in your Team first</p>
+        <p class="sb-hint" v-else-if="restTime > 0"><ui-icon name="timer"></ui-icon> Team fully rested in {{formatTime(Math.ceil(restTime))}}</p>
     </div>
-    <div class="power">
-        <p><span :class="{stronger: team1Stats.attack.gt(team2Stats.defense)}">ATT {{formatNumber(team1Stats.attack)}}</span>
-            <span :class="{stronger: team1Stats.defense.gt(team2Stats.attack)}">DEF {{formatNumber(team1Stats.defense)}}</span></p>
-        <p></p>
-        <p><span :class="{stronger: team2Stats.attack.gt(team1Stats.defense)}">ATT {{formatNumber(team2Stats.attack)}}</span>
-            <span :class="{stronger: team2Stats.defense.gt(team1Stats.attack)}">DEF {{formatNumber(team2Stats.defense)}}</span></p>
+</section>
+<div class="match-body">
+    <div class="pitch-card">
+        <match-view :match="match"></match-view>
+        <div class="speed-row">
+            <ui-icon name="bolt"></ui-icon>
+            <span class="speed-label">Match Speed</span>
+            <input type="range" step="any" v-model="matchTimeScaleLog" @input="setTimeScale()" min="0" :max="maxTimeScaleLog" aria-label="Match Speed"/>
+            <b class="speed-value">x{{timeScale.toFixed(0)}}</b>
+        </div>
     </div>
-</div>
-<match-view :match="match"></match-view>
-<div class="events">
-    <div>
-        <p v-for="g in team1Events">
-            <template v-if="g.event === 2"><span class="sub-in"><ui-icon name="subin"></ui-icon> {{g.name}}</span>&nbsp;<span class="sub-out"><ui-icon name="subout"></ui-icon> {{g.nameOut}}</span>&nbsp;{{g.minute}}'</template>
-            <template v-else>{{g.name}} {{g.minute}}'</template>
-            <ui-icon class="event-goal" v-if="g.event === 0" name="ball"></ui-icon>
-            <ui-icon class="event-red" v-else-if="g.event === 1" name="redcard"></ui-icon>
-        </p>
-    </div>
-    <div>
-    
-    </div>
-    <div>
-        <p v-for="g in team2Events">
-            <ui-icon class="event-goal" v-if="g.event === 0" name="ball"></ui-icon>
-            <ui-icon class="event-red" v-else-if="g.event === 1" name="redcard"></ui-icon>
-            <template v-if="g.event === 2">{{g.minute}}'&nbsp;<span class="sub-in"><ui-icon name="subin"></ui-icon> {{g.name}}</span>&nbsp;<span class="sub-out"><ui-icon name="subout"></ui-icon> {{g.nameOut}}</span></template>
-            <template v-else>{{g.name}} {{g.minute}}'</template>
-        </p>
-    </div>
+    <aside class="match-side">
+        <section class="m-panel odds">
+            <h3>{{match.ended ? "Final Result" : "Win Chances"}} <small v-if="!match.ended">estimate for {{$root.team.name}}</small></h3>
+            <div class="odds-bar">
+                <i class="win" :style="{width: chances.win * 100 + '%'}"></i>
+                <i class="draw" :style="{width: chances.draw * 100 + '%'}"></i>
+                <i class="lose" :style="{width: chances.lose * 100 + '%'}"></i>
+            </div>
+            <div class="odds-legend">
+                <span class="win"><i></i>Win <b>{{(chances.win * 100).toFixed(0)}}%</b></span>
+                <span class="draw"><i></i>Draw <b>{{(chances.draw * 100).toFixed(0)}}%</b></span>
+                <span class="lose"><i></i>Lose <b>{{(chances.lose * 100).toFixed(0)}}%</b></span>
+            </div>
+        </section>
+        <section class="m-panel duels">
+            <h3>Power</h3>
+            <div class="duel" v-for="d in duels" :key="d.id" :class="[d.id, {ahead: d.share > 50}]">
+                <p class="duel-head"><ui-icon :name="d.icon"></ui-icon><span>{{d.label}}</span></p>
+                <div class="duel-bar"><i :style="{width: d.share + '%'}"></i></div>
+                <p class="duel-nums"><b>{{formatNumber(d.own)}}</b><span>{{formatNumber(d.other)}}</span></p>
+            </div>
+        </section>
+        <section class="m-panel feed">
+            <h3>Events</h3>
+            <p class="feed-empty" v-if="match.gameEvents.length === 0">Nothing has happened yet.</p>
+            <ul v-else>
+                <li v-for="(g, i) in match.gameEvents" :key="i" :class="['kind-' + g.event, g.teamIndex === ownIndex ? 'own' : 'other']">
+                    <span class="feed-min">{{g.minute}}'</span>
+                    <span class="feed-icon"><ui-icon :name="['ball', 'redcard', 'swap', 'settings'][g.event] || 'ball'"></ui-icon></span>
+                    <span class="feed-text" v-if="g.event === 2"><span class="sub-in"><ui-icon name="subin"></ui-icon> {{g.name}}</span><span class="sub-out"><ui-icon name="subout"></ui-icon> {{g.nameOut}}</span></span>
+                    <span class="feed-text" v-else>{{g.name}}</span>
+                    <span class="feed-team">{{g.teamIndex === 1 ? match.team2.name : match.team1.name}}</span>
+                </li>
+            </ul>
+        </section>
+    </aside>
 </div>
 <transition name="window-grow">
-    <window v-if="match.ended && windowOpen" @closed="windowOpen = false">
-        <template v-slot:header><div class="icon-flex"><ui-icon name="match"></ui-icon><span>Match Ended</span></div></template>
+    <window class="full-time" v-if="match.ended && windowOpen" @closed="windowOpen = false">
+        <template v-slot:header><div class="icon-flex"><ui-icon name="match"></ui-icon><span>Full Time</span></div></template>
         <template v-slot:body>
-            <p class="result-banner" :class="result.name">{{result.text}}</p>
-            <p class="final-score">{{match.team1.name}} {{match.score1}} - {{match.score2}} {{match.team2.name}}</p>
-            <p>Your performance in this match rewarded you:</p>
-            <p class="reward">+ {{formatNumber(reward)}} $</p>
-            <div v-if="stadiumUnlocked">
-                <p>Your Stadium earned you:</p>
-                <p class="reward">+ {{formatNumber(match.stadiumReward)}} $</p>
+            <p class="ft-result" :class="result.name">{{result.text}}</p>
+            <div class="ft-score">
+                <span class="ft-team"><team-logo :logo="match.team1.logo"></team-logo><b>{{match.team1.name}}</b></span>
+                <span class="ft-nums">{{match.score1}} - {{match.score2}}</span>
+                <span class="ft-team away"><b>{{match.team2.name}}</b><team-logo :logo="match.team2.logo"></team-logo></span>
             </div>
-            <p>You now have {{formatNumber(money)}} $</p>
-            <p>
-                <button @click="playNextMatch()"><ui-icon name="arrow"></ui-icon> Play next Match</button>
-            </p>
+            <ul class="ft-money">
+                <li><ui-icon name="match"></ui-icon><span>Match reward</span><b class="pos">+{{formatNumber(reward)}} $</b></li>
+                <li v-if="stadiumUnlocked"><ui-icon name="stadium"></ui-icon><span>Stadium tickets</span><b class="pos">+{{formatNumber(match.stadiumReward)}} $</b></li>
+                <li class="total"><ui-icon name="coins"></ui-icon><span>Balance</span><b>{{formatNumber(money)}} $</b></li>
+            </ul>
+            <button class="kick" :disabled="!canPlayNextMatch" @click="playNextMatch()"><ui-icon name="play"></ui-icon> Play next Match</button>
         </template>
     </window>
 </transition>
-<div class="speed-controls">
-    <label>Match Speed (x{{timeScale.toFixed(0)}})<br/><input type="range" step="any" v-model="matchTimeScaleLog" @input="setTimeScale()" min="0" :max="maxTimeScaleLog"/></label>
-</div>
 </div>`
 });

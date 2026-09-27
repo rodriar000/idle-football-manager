@@ -15,7 +15,7 @@ app.component("season-archive", {
     },
     methods: {
         badge(s){
-            return {promoted: "▲", relegated: "▼", champion: "★", stayed: "="}[s.outcome];
+            return {promoted: "promo", relegated: "releg", champion: "trophy", stayed: "balance"}[s.outcome];
         },
         outcomeText(s){
             return {promoted: "Promoted", relegated: "Relegated", champion: "Champion", stayed: "Stayed"}[s.outcome];
@@ -30,7 +30,7 @@ app.component("season-archive", {
     <p v-if="seasons.length === 0" class="empty">Finished seasons will be listed here.</p>
     <div class="row" v-for="s in shownSeasons" :key="s.number">
         <span class="matchday">{{s.number}}</span>
-        <span class="result" :class="s.outcome" :title="outcomeText(s)">{{badge(s)}}</span>
+        <span class="result" :class="s.outcome" :title="outcomeText(s)"><ui-icon :name="badge(s)"></ui-icon></span>
         <span class="teams"><b>{{s.position}}. of {{s.teams}}</b> · {{s.divisionName}} (Division {{s.divisionNumber}})
             <small>{{countryName(s)}} · {{s.win}} W · {{s.draw}} D · {{s.lose}} L · Goals {{s.goalsShot}} - {{s.goalsOpponent}}</small></span>
         <span class="points">{{s.points}} Pts</span>

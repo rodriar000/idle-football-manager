@@ -8,7 +8,7 @@ app.component("window-season", {
             return this.$root.lastSeason;
         },
         emblem(){
-            return {champion: "🏆", promoted: "▲", relegated: "▼", stayed: "⚽"}[this.season.outcome];
+            return {champion: "trophy", promoted: "promo", relegated: "releg", stayed: "ball"}[this.season.outcome];
         },
         celebrate(){
             return this.season.outcome === "champion" || this.season.outcome === "promoted";
@@ -38,10 +38,10 @@ app.component("window-season", {
         }
     },
     template: `<window class="window-season" @closed="$emit('closed')">
-    <template v-slot:header><div class="icon-flex"><img src="images/icons/league.png"/><span>Season Summary</span></div></template>
+    <template v-slot:header><div class="icon-flex"><ui-icon name="league"></ui-icon><span>Season Summary</span></div></template>
     <template v-slot:body>
         <div class="confetti" v-if="celebrate" aria-hidden="true"><i v-for="c in confetti" :style="c"></i></div>
-        <div class="season-emblem" :class="season.outcome">{{emblem}}</div>
+        <div class="season-emblem" :class="season.outcome"><ui-icon :name="emblem"></ui-icon></div>
         <p class="season-division">{{season.divisionName}} (Division {{season.divisionNumber}})</p>
         <p class="position">{{season.position}}. of {{season.teams}}</p>
         <p class="outcome" :class="season.outcome">{{outcomeText}}</p>
@@ -60,7 +60,7 @@ app.component("window-season", {
         </div>
         <div v-if="season.topScorers.length" class="scorers">
             <h4>Top Scorers</h4>
-            <p v-for="s in season.topScorers">⚽ {{s.name}}: {{s.goals}}</p>
+            <p v-for="s in season.topScorers"><ui-icon name="ball"></ui-icon> {{s.name}}: {{s.goals}}</p>
         </div>
     </template>
 </window>`

@@ -38,14 +38,14 @@ app.component("tab-league", {
     <transition name="window-grow">
         <window-team v-if="selectedTeam" :team="selectedTeam" @closed="selectedTeam = null"></window-team>
     </transition>
-    <p class="big-heading">🏆 {{division.getName()}} (Division {{divisionNumber}})</p>
+    <p class="big-heading"><ui-icon name="trophy"></ui-icon> {{division.getName()}} (Division {{divisionNumber}})</p>
     <p class="big-heading">Matchday {{division.matchDay}} / {{division.matchDays}}</p>
     <div class="division-scroll"><division @team-selected="selectedTeam = $event" :division="division"></division></div>
     <div class="next-match">
         <button v-if="canPlayMatch" @click="playNextMatch()">Play next Match<br/>{{nextMatch.team1.name}} - {{nextMatch.team2.name}}</button>
         <button disabled v-else-if="matchRunning">You are already in a Match.</button>
         <button disabled v-else>You need at least 1 Player in your Team to play the next Match!</button>
-        <p class="ready-in" v-if="canPlayMatch" :class="{rested: restTime <= 0}">{{restTime <= 0 ? "✅ Team rested" : "⏳ Team ready in " + formatTime(Math.ceil(restTime))}}</p>
+        <p class="ready-in" v-if="canPlayMatch" :class="{rested: restTime <= 0}"><ui-icon :name="restTime <= 0 ? 'check' : 'timer'"></ui-icon> {{restTime <= 0 ? "Team rested" : "Team ready in " + formatTime(Math.ceil(restTime))}}</p>
     </div>
     <season-calendar></season-calendar>
     <match-history :history="matchHistory"></match-history>

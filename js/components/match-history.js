@@ -21,7 +21,7 @@ app.component("match-history", {
         <span class="matchday">{{m.matchDay}}</span>
         <span class="result" :class="resultLetter(m)">{{resultLetter(m)}}</span>
         <span class="teams"><span :class="{own: m.ownIndex === 0}">{{m.team1}}</span> {{m.score1}} - {{m.score2}} <span :class="{own: m.ownIndex === 1}">{{m.team2}}</span>
-            <small v-if="ownGoals(m)">⚽ {{ownGoals(m)}}</small></span>
+            <small v-if="ownGoals(m)"><ui-icon name="ball"></ui-icon> {{ownGoals(m)}}</small></span>
         <span class="reward-money">+{{formatNumber(m.reward)}} $</span>
     </div>
 </div>`

@@ -6,6 +6,9 @@ app.component("achievement", {
         }
     },
     computed: {
+        icon(){
+            return Icons.forImage(this.achievement.image);
+        },
         desc(){
             return typeof this.achievement.description === "string" ? this.achievement.description : this.achievement.description();
         }
@@ -15,6 +18,6 @@ app.component("achievement", {
     <h4 v-html="achievement.title"></h4>
     <p v-html="desc"></p>
 </div>
-<img @mouseenter="popup = true" @mouseleave="popup = false" alt="" :src="achievement.image"/>
+<span class="achievement-icon" @mouseenter="popup = true" @mouseleave="popup = false"><ui-icon :name="icon"></ui-icon></span>
 </div>`
 });

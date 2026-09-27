@@ -137,6 +137,6 @@ app.component("tab-settings", {
         </textarea>
     </div>
     <h3 class="big-heading">Social</h3>
-    <a target="_blank" href="https://veprogames.github.io" class="icon-flex"><img alt="" src="images/icons/website.png"/> Visit my Website</a>
+    <a target="_blank" href="https://veprogames.github.io" class="icon-flex"><ui-icon name="link"></ui-icon> Visit my Website</a>
 </div>`
 });

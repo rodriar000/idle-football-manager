@@ -6,7 +6,7 @@ function loadImage(src){
 }
 
 let images = {
-    ball: loadImage("images/icons/football.png"),
+    ball: loadImage("images/ball.svg"),
     goalL: loadImage("images/goalL.png"),
     goalR: loadImage("images/goalR.png"),
     background: loadImage("images/background.png")

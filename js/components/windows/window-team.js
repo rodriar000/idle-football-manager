@@ -15,7 +15,7 @@ app.component("window-team", {
         DEF <span>{{formatNumber(team.getCombinedDefense())}}</span></p>
     <div class="players">
         <div class="icon-flex" v-for="p in team.getActivePlayers()">
-            <img alt="" src="images/player.png"/>
+            <ui-icon name="player"></ui-icon>
             <p>{{p.name}}</p>
         </div>
     </div>

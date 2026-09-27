@@ -14,7 +14,7 @@ app.component("tutorial", {
     template: `<div class="tutorial">
 <window-tutorial v-if="stage === 0" @closed="stage++" @page="stage = $event" @tutorialexit="exitTutorial()">
     <template v-slot:header>
-        <div class="icon-flex"><img src="images/icons/help.png"/> Tutorial</div>
+        <div class="icon-flex"><ui-icon name="help"></ui-icon> Tutorial</div>
     </template>
     <template v-slot:body>
         <p>Welcome to Idle Football Manager, 
@@ -25,7 +25,7 @@ app.component("tutorial", {
     </template>
 </window-tutorial>
 <window-tutorial v-if="stage === 1" @closed="stage++" @page="stage = $event" @tutorialexit="exitTutorial()">
-    <template v-slot:header><div class="icon-flex"><img src="images/icons/help.png"/> Your Team</div></template>
+    <template v-slot:header><div class="icon-flex"><ui-icon name="help"></ui-icon> Your Team</div></template>
     <template v-slot:body><p>You can add up to 11 Players to your Team. The overall strength of your Team is determined by the sum of your
     Players stats. Your Teams strength is multiplied by <b>Synergy</b>.</p>
     <p>The more Players that are active in your team, the higher your synergy is.
@@ -38,37 +38,37 @@ app.component("tutorial", {
     </template>
 </window-tutorial>
 <window-tutorial v-if="stage === 2" @closed="stage++" @page="stage = $event" @tutorialexit="exitTutorial()">
-    <template v-slot:header><div class="icon-flex"><img src="images/icons/help.png"/> Player Market</div></template>
+    <template v-slot:header><div class="icon-flex"><ui-icon name="help"></ui-icon> Player Market</div></template>
     <template v-slot:body><p>This is the Place where you can buy <b>new Players</b> for your Team. The more expensive a player is, the more money you have
     to pay.</p>
     <p>The Market <b>refreshes every few Matchdays</b> and on new Seasons. <b>You can re-buy sold Players</b> while they are still there.</p></template>
     <template v-slot:image>
-        <img alt="" src="images/icons/player-market.png"/>
+        <ui-icon class="tutorial-icon" name="market"></ui-icon>
     </template>
 </window-tutorial>
 <window-tutorial v-if="stage === 3" @closed="stage++" @page="stage = $event" @tutorialexit="exitTutorial()">
-    <template v-slot:header><div class="icon-flex"><img src="images/icons/help.png"/> Upgrades</div></template>
+    <template v-slot:header><div class="icon-flex"><ui-icon name="help"></ui-icon> Upgrades</div></template>
     <template v-slot:body><p>Upgrades are bought with Money and let you boost different aspects of the Game. <b>You need to have at least one Player in your Team</b>
     to be able to buy Upgrades.</p></template>
     <template v-slot:image>
-        <img alt="" src="images/icons/upgrades.png"/>
+        <ui-icon class="tutorial-icon" name="upgrades"></ui-icon>
     </template>
 </window-tutorial>
 <window-tutorial v-if="stage === 4" @closed="stage++" @page="stage = $event" @tutorialexit="exitTutorial()">
-    <template v-slot:header><div class="icon-flex"><img src="images/icons/help.png"/> League</div></template>
+    <template v-slot:header><div class="icon-flex"><ui-icon name="help"></ui-icon> League</div></template>
     <template v-slot:body><p>This is the main part of the Game. Each League has <b>ten divisions</b>, of which each has <b>18 Matchdays</b>.
     At the end of the Season, you can either <b>promote</b> to a higher division (green cells) or <b>relegate</b> to a lower division (red cells).</p>
     <p><b>Click on a Team Name</b> to get more Information about the Team. You can also hover it for a moment to see its Attack and Defense</p></template>
     <template v-slot:image>
-        <img alt="" src="images/icons/league.png"/>
+        <ui-icon class="tutorial-icon" name="league"></ui-icon>
     </template>
 </window-tutorial>
 <window-tutorial v-if="stage === 5" @closed="exitTutorial()" @page="stage = $event" @tutorialexit="exitTutorial()">
-    <template v-slot:header><div class="icon-flex"><img src="images/icons/help.png"/> Match</div></template>
+    <template v-slot:header><div class="icon-flex"><ui-icon name="help"></ui-icon> Match</div></template>
     <template v-slot:body><p>In the Match tab, you can watch the Game live. <b>Adjust the Speed of the Game</b> to your liking. At the end of a Match,
     you get money based on if you won, drew or lost the game. The <b>reward changes based on the division</b> you are in.</p></template>
     <template v-slot:image>
-        <img alt="" src="images/icons/football.png"/>
+        <ui-icon class="tutorial-icon" name="match"></ui-icon>
     </template>
 </window-tutorial>
 </div>`

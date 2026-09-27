@@ -1,17 +1,17 @@
 //tabs shown in the header, also used for keyboard shortcuts
 function getVisibleTabs(){
     return [
-        {id: "tab-team", name: "Team", logo: true},
-        {id: "tab-player-market", name: "Market", img: "images/icons/player-market.png"},
-        {id: "tab-upgrades", name: "Upgrades", img: "images/icons/upgrades.png"},
-        {id: "tab-league", name: "League", img: "images/icons/league.png"},
-        {id: "tab-match", name: "Match", img: "images/icons/football.png"},
-        {id: "tab-stadium", name: "Stadium", img: "images/icons/stadium.png", unlocked: () => Stadium.isUnlocked},
-        {id: "tab-player-training", name: "Training", img: "images/icons/player-training.png", unlocked: () => PlayerTraining.isUnlocked},
-        {id: "tab-tv-channels", name: "TV", img: "images/tv-filled.png", unlocked: () => game.tv.isUnlocked()},
-        {id: "tab-countries", name: "Countries", img: "images/icons/country.png", unlocked: () => Country.isUnlocked},
-        {id: "tab-achievements", name: "Achievements", img: "images/icons/achievements.png"},
-        {id: "tab-settings", name: "Settings", img: "images/icons/settings.png"}
+        {id: "tab-team", name: "Team", icon: "team"},
+        {id: "tab-player-market", name: "Market", icon: "market"},
+        {id: "tab-upgrades", name: "Upgrades", icon: "upgrades"},
+        {id: "tab-league", name: "League", icon: "league"},
+        {id: "tab-match", name: "Match", icon: "match"},
+        {id: "tab-stadium", name: "Stadium", icon: "stadium", unlocked: () => Stadium.isUnlocked},
+        {id: "tab-player-training", name: "Training", icon: "training", unlocked: () => PlayerTraining.isUnlocked},
+        {id: "tab-tv-channels", name: "TV", icon: "tv", unlocked: () => game.tv.isUnlocked()},
+        {id: "tab-countries", name: "Countries", icon: "globe", unlocked: () => Country.isUnlocked},
+        {id: "tab-achievements", name: "Achievements", icon: "achievements"},
+        {id: "tab-settings", name: "Settings", icon: "settings"}
     ].filter(t => !t.unlocked || t.unlocked());
 }
 
@@ -53,6 +53,15 @@ app.component("game-header", {
         term(){
             return this.$root.settings.term;
         },
+        divisionName(){
+            let divisions = this.$root.league.divisions;
+            let division = divisions[this.$root.team.divisionRank];
+            return division ? division.getName() + " · Division " + (divisions.length - division.rank) : "";
+        },
+        liveMinute(){
+            let match = this.$root.currentMatch;
+            return match && !match.ended && match.time > 0 ? Math.min(90, match.getMinute()) + "'" : "";
+        },
         tabs(){
             //touch reactive state the unlock checks depend on
             this.$root.maxDivisionRank; this.$root.country; this.$root.stadium.upgrades.capacity.level;
@@ -60,13 +69,20 @@ app.component("game-header", {
         }
     },
     template: `<header>
-<h1>Idle <span>{{term}}</span> Manager</h1>
-<p class="header-money" :class="{up: moneyUp}"><img alt="" src="images/icons/money.png"/>{{formatNumber($root.money)}} $</p>
+<h1 class="brand"><span class="brand-mark"><ui-icon name="ball"></ui-icon></span><span class="brand-text">Idle <span>{{term}}</span> Manager</span></h1>
+<div class="club-bar">
+    <div class="club-id" @click="changeTab('tab-team')">
+        <team-logo :logo="logo"></team-logo>
+        <p><b>{{$root.team.name}}</b><small>{{divisionName}}</small></p>
+    </div>
+    <p class="header-money" :class="{up: moneyUp}"><ui-icon name="coins"></ui-icon>{{formatNumber($root.money)}} $</p>
+</div>
 <nav>
     <ul>
         <li v-for="(t, i) in tabs" :key="t.id" class="icon-flex" :class="{active: $root.tab === t.id}" @click="changeTab(t.id)"
             :title="getTabShortcut(i) ? 'Shortcut: ' + getTabShortcut(i) : ''">
-            <team-logo v-if="t.logo" :logo="logo"></team-logo><img v-else :src="t.img"/> {{t.name}}
+            <ui-icon :name="t.icon"></ui-icon><span class="tab-name">{{t.name}}</span>
+            <span class="tab-badge" v-if="t.id === 'tab-match' && liveMinute">{{liveMinute}}</span>
         </li>
     </ul>
 </nav>

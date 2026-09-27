@@ -68,9 +68,9 @@ app.component("team-management", {
     <p>DEF {{formatNumber(totalDefense)}}</p>
     <p>Synergy {{formatNumber(team.getSynergy() * 100)}} %</p>
     <p class="ready-in" v-if="activePlayers.length > 0" :class="{rested: restTime <= 0}" title="Time until every Player in the Team is at full Stamina">
-        <template v-if="restTime <= 0">✅ Team rested</template>
-        <template v-else-if="restPaused">⏸ Ready in {{formatTime(Math.ceil(restTime))}} after the Match</template>
-        <template v-else>⏳ Ready in {{formatTime(Math.ceil(restTime))}}</template>
+        <template v-if="restTime <= 0"><ui-icon name="check"></ui-icon> Team rested</template>
+        <template v-else-if="restPaused"><ui-icon name="pause"></ui-icon> Ready in {{formatTime(Math.ceil(restTime))}} after the Match</template>
+        <template v-else><ui-icon name="timer"></ui-icon> Ready in {{formatTime(Math.ceil(restTime))}}</template>
     </p>
     <button class="best-eleven" :disabled="playerCount === 0" @click="pickBestEleven()" title="Put the 11 strongest rested players in the Team; protected players stay (B)">Best XI</button>
     <div class="auto-sub">
@@ -85,15 +85,15 @@ app.component("team-management", {
 <div class="strategies">
     <div class="strategy">
         <h4>Strategy</h4>
-        <button :class="{'selected': strategySelected(strategyNormal)}" @click="setStrategy(strategyNormal)"><img alt="Neutral" src="images/icons/strategy/neutral.png"/><br/>ATT x1<br/>DEF x1</button>
-        <button :class="{'selected': strategySelected(strategyOffensive)}" @click="setStrategy(strategyOffensive)"><img alt="Offensive" src="images/icons/strategy/offensive.png"/><br/>ATT x1.3<br/>DEF &div;1.3</button>
-        <button :class="{'selected': strategySelected(strategyDefensive)}" @click="setStrategy(strategyDefensive)"><img alt="Defensive" src="images/icons/strategy/defensive.png"/><br/>DEF x1.3<br/>ATT &div;1.3</button>
+        <button :class="{'selected': strategySelected(strategyNormal)}" @click="setStrategy(strategyNormal)"><ui-icon name="balance"></ui-icon><b>Balanced</b>ATT x1<br/>DEF x1</button>
+        <button :class="{'selected': strategySelected(strategyOffensive)}" @click="setStrategy(strategyOffensive)"><ui-icon class="att" name="attack"></ui-icon><b>Offensive</b>ATT x1.3<br/>DEF &div;1.3</button>
+        <button :class="{'selected': strategySelected(strategyDefensive)}" @click="setStrategy(strategyDefensive)"><ui-icon class="def" name="defend"></ui-icon><b>Defensive</b>DEF x1.3<br/>ATT &div;1.3</button>
     </div>
     <div class="strategy">
         <h4>Aggressiveness</h4>
-        <button :class="{'selected': aggressivitySelected(strategyNormal)}" @click="setAggressivity(strategyNormal)"><img alt="Neutral" src="images/icons/strategy/neutral.png"/><br/>ATT x1, DEF x1<br/>Red Cards x1</button>
-        <button :class="{'selected': aggressivitySelected(strategyOffensive)}" @click="setAggressivity(strategyOffensive)"><img alt="Offensive" src="images/icons/strategy/offensive.png"/><br/>ATT x1.1, DEF x1.1<br/>Red Cards x2</button>
-        <button :class="{'selected': aggressivitySelected(strategyDefensive)}" @click="setAggressivity(strategyDefensive)"><img alt="Defensive" src="images/icons/strategy/defensive.png"/><br/>ATT &div;1.1, DEF &div;1.1<br/>Red Cards &div;2</button>
+        <button :class="{'selected': aggressivitySelected(strategyNormal)}" @click="setAggressivity(strategyNormal)"><ui-icon name="balance"></ui-icon><b>Balanced</b>ATT x1, DEF x1<br/>Red Cards x1</button>
+        <button :class="{'selected': aggressivitySelected(strategyOffensive)}" @click="setAggressivity(strategyOffensive)"><ui-icon class="att" name="flame"></ui-icon><b>Hot</b>ATT x1.1, DEF x1.1<br/>Red Cards x2</button>
+        <button :class="{'selected': aggressivitySelected(strategyDefensive)}" @click="setAggressivity(strategyDefensive)"><ui-icon class="def" name="drop"></ui-icon><b>Calm</b>ATT &div;1.1, DEF &div;1.1<br/>Red Cards &div;2</button>
     </div>
 </div>
 <div>

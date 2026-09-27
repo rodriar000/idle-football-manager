@@ -9,6 +9,7 @@ function getVisibleTabs(){
         {id: "tab-upgrades", name: "Upgrades", icon: "upgrades"},
         {id: "tab-league", name: "League", icon: "league"},
         {id: "tab-cup", name: "Cup", icon: "cup"},
+        {id: "tab-sponsors", name: "Sponsors", icon: "sponsor"},
         {id: "tab-match", name: "Match", icon: "match"},
         {id: "tab-stadium", name: "Stadium", icon: "stadium", unlocked: () => Stadium.isUnlocked},
         {id: "tab-player-training", name: "Training", icon: "training", unlocked: () => PlayerTraining.isUnlocked},

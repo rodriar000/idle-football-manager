@@ -1,5 +1,5 @@
 class Player {
-    constructor(name, attack, defense, aggressivity, stamina, active, marketValue = new Decimal(0)) {
+    constructor(name, attack, defense, aggressivity, stamina, active, marketValue = new Decimal(0), position = null) {
         this.name = name;
         this.attack = attack;
         this.defense = defense;
@@ -13,6 +13,8 @@ class Player {
         this.redCard = 0;
         //protected: can't be sold or taken out of the Team (only a red card still benches them)
         this.locked = false;
+        //GK, DEF, MID or FWD (see formation.js)
+        this.position = position;
     }
 
     //used for display on player component
@@ -89,5 +91,7 @@ class Player {
         this.redCard = Number(obj.redCard);
         this.trainingFactor = obj.trainingFactor ? obj.trainingFactor : new Decimal(1);
         this.locked = obj.locked === true;
+        //players saved before positions existed get one from how attacking they are
+        this.position = Positions.list.includes(obj.position) ? obj.position : Positions.fromShare(Positions.attackShare(this));
     }
 }

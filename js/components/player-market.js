@@ -12,14 +12,16 @@ app.component("player-market", {
         };
     },
     computed: {
-        //the affordable player that raises the ATT + DEF of your best eleven the most
+        //the affordable player that raises the ATT + DEF of your best eleven the most, in your formation
         bestSigning(){
+            let formation = this.$root.team.formation;
+            let tilt = Formations.get(formation);
             let power = p => p.getBaseAttack().add(p.getBaseDefense());
             let bestEleven = players => {
-                let eleven = [...players].sort((a, b) => power(b).cmp(power(a))).slice(0, 11);
+                let slots = Formations.assign(players, formation, power).filter(s => s.player);
                 return {
-                    attack: eleven.reduce((s, p) => s.add(p.getBaseAttack()), new Decimal(0)),
-                    defense: eleven.reduce((s, p) => s.add(p.getBaseDefense()), new Decimal(0))
+                    attack: slots.reduce((s, x) => s.add(x.player.getBaseAttack().mul(x.fit)), new Decimal(0)).mul(tilt.att),
+                    defense: slots.reduce((s, x) => s.add(x.player.getBaseDefense().mul(x.fit)), new Decimal(0)).mul(tilt.def)
                 };
             };
             let team = this.$root.team.players;

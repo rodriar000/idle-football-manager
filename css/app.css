@@ -4277,3 +4277,285 @@ button.kick:hover:not(:disabled){
         font-size: 90%;
     }
 }
+
+/*Positions and formation*/
+
+:root{
+    --pos-gk: #d99a0b;
+    --pos-def: #2f7fe0;
+    --pos-mid: #12a86b;
+    --pos-fwd: #e0542b;
+}
+
+.p-pos, .p-misfit{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    padding: 0.05rem 0.4rem;
+    border-radius: 6px;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.35;
+    white-space: nowrap;
+}
+
+.p-pos{
+    color: #fff;
+    background-color: var(--pos-mid);
+}
+
+.p-pos.pos-GK, .lp-slot.pos-GK .lp-dot{
+    background-color: var(--pos-gk);
+}
+
+.p-pos.pos-DEF, .lp-slot.pos-DEF .lp-dot{
+    background-color: var(--pos-def);
+}
+
+.p-pos.pos-MID, .lp-slot.pos-MID .lp-dot{
+    background-color: var(--pos-mid);
+}
+
+.p-pos.pos-FWD, .lp-slot.pos-FWD .lp-dot{
+    background-color: var(--pos-fwd);
+}
+
+.p-misfit{
+    color: #1a1204;
+    background-color: var(--ui-accent);
+}
+
+.p-misfit .ico{
+    width: 0.85em;
+    height: 0.85em;
+}
+
+.pcard .p-head .p-pos{
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.formation-panel{
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 1.1rem;
+    align-items: center;
+}
+
+.lineup-pitch{
+    display: grid;
+    gap: 0.35rem;
+    padding: 0.9rem 0.5rem;
+    border-radius: 14px;
+    background-color: #1f7a3c;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.35)),
+        radial-gradient(circle at 50% 0%, transparent 2.6rem, rgba(255, 255, 255, 0.35) 2.6rem, rgba(255, 255, 255, 0.35) calc(2.6rem + 2px), transparent calc(2.6rem + 2px)),
+        repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0 2.2rem, transparent 2.2rem 4.4rem);
+    background-size: 100% 2px, 100% 100%, 100% 100%;
+    background-position: 0 0, 0 0, 0 0;
+    background-repeat: no-repeat;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+}
+
+.lp-row{
+    display: flex;
+    justify-content: space-evenly;
+    gap: 0.25rem;
+    min-height: 3.6rem;
+}
+
+.lp-slot{
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 0.15rem;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 5.5rem;
+    color: #fff;
+    text-align: center;
+}
+
+.lp-dot{
+    display: grid;
+    place-items: center;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    font-family: var(--font-display);
+    font-size: 78%;
+    font-weight: 800;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.lp-slot.open .lp-dot{
+    border-style: dashed;
+    border-color: rgba(255, 255, 255, 0.6);
+    background-color: rgba(0, 0, 0, 0.15);
+    color: rgba(255, 255, 255, 0.8);
+    box-shadow: none;
+}
+
+.lp-slot.misfit .lp-dot{
+    border-color: var(--ui-accent);
+    box-shadow: 0 0 0 3px rgba(242, 174, 34, 0.45);
+}
+
+.lp-name{
+    max-width: 100%;
+    padding: 0 0.3rem;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.35);
+    font-size: 72%;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.lp-slot.open .lp-name{
+    background: none;
+    opacity: 0.7;
+}
+
+.lp-fit{
+    color: var(--ui-accent);
+    font-family: var(--font-display);
+    font-size: 72%;
+    font-weight: 800;
+}
+
+.formation-side{
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.formation-side h3{
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 0;
+}
+
+.formation-name{
+    color: var(--ui-accent-text);
+    font-size: 1.5rem;
+    letter-spacing: 0.02em;
+}
+
+.formation-chips{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.formation-chips button{
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    color: var(--ui-muted);
+    background-color: var(--ui-surface);
+    font-family: var(--font-display);
+    font-size: 95%;
+    font-weight: 800;
+}
+
+.formation-chips button.selected, .formation-chips button.selected:hover:not(:disabled){
+    color: var(--ui-accent-ink);
+    background-color: var(--ui-accent);
+    border-color: transparent;
+}
+
+.formation-tilt{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+
+.formation-tilt span{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.formation-tilt .ico{
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.formation-tilt .att .ico{
+    color: var(--ui-att);
+}
+
+.formation-tilt .def .ico{
+    color: var(--ui-def);
+}
+
+.formation-state{
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0.5rem 0.7rem;
+    border-radius: 10px;
+    background-color: var(--ui-accent-soft);
+    font-size: 90%;
+}
+
+.formation-state .ico{
+    flex: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    color: var(--ui-accent-text);
+}
+
+.formation-state.ok{
+    background-color: color-mix(in srgb, var(--ui-pos) 14%, transparent);
+}
+
+.formation-state.ok .ico{
+    color: var(--ui-pos);
+}
+
+.formation-help{
+    margin: 0;
+    color: var(--ui-muted);
+    font-size: 85%;
+}
+
+.sb-formation{
+    margin: 0;
+    color: var(--sb-muted);
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+@media (max-width: 700px){
+    .formation-panel{
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .lp-dot{
+        width: 1.9rem;
+        height: 1.9rem;
+    }
+
+    .lp-row{
+        min-height: 3.2rem;
+    }
+}
+
+.pcard .p-sub{
+    min-width: 0;
+    overflow: hidden;
+}
+
+.pcard .p-sub .p-tier{
+    flex: 0 1 auto;
+}

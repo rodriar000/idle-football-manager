@@ -13,6 +13,24 @@ let functions = {
         let times = [Math.floor(s / 60), Math.floor(s) % 60];
         return times.map(t => t.toString().padStart(2, "0")).join(":");
     },
+    //saves from before positions: the starting XI keeps its strength. Its players get the places of a 4-4-2
+    //from most defensive (keeper) to most attacking; everyone else gets a position from their stats
+    introducePositions(){
+        let team = game.team;
+        let byShare = list => Array.from(list).sort((a, b) => Positions.attackShare(a) - Positions.attackShare(b));
+        team.formation = Formations.default;
+        let active = byShare(team.getActivePlayers());
+        if(active.length === 11){
+            let places = Formations.places(team.formation);
+            active.forEach((p, i) => p.position = places[i]);
+        }
+        else{
+            let squad = byShare(active.length > 0 ? active : team.players.concat(game.training.players));
+            if(squad.length > 0){
+                squad[0].position = "GK";
+            }
+        }
+    },
     getSaveString(){
         let json = JSON.stringify(game, (key, value) => {
             if(key === "numberFormatter"){
@@ -120,6 +138,10 @@ let functions = {
 
             if(obj.training){
                 game.training.load(obj.training);
+            }
+
+            if(game.team && game.team.formation === null){
+                functions.introducePositions();
             }
 
             if(obj.tv){

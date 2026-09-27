@@ -1,14 +1,23 @@
 class GeneratorUtils {
-    static generatePlayer(seed, minStat, maxStat, active, marketValue = new Decimal(0)) {
+    //without a position the player's position comes from their stats
+    static generatePlayer(seed, minStat, maxStat, active, marketValue = new Decimal(0), position = null) {
         let r = new Random(seed);
         let weight = 0.2 + 0.6 * r.nextDouble();
+        if(position){
+            let [from, to] = Positions.shares[position];
+            weight = from + (to - from) * (weight - 0.2) / 0.6;
+        }
         let attack = minStat.add((maxStat.sub(minStat)).mul(r.nextDouble())).mul(2 * weight);
         let defense = minStat.add((maxStat.sub(minStat)).mul(r.nextDouble())).mul(2 * (1 - weight));
         let aggressivity = 0.5 + 1.5 * r.nextDouble();
         let stamina = 0.5 + 1.5 * r.nextDouble();
         let name = Utils.capitalize(firstNames[r.nextInt(firstNames.length)]) + " "
                     + Utils.capitalize(lastNames[r.nextInt(lastNames.length)]);
-        return new Player(name, attack, defense, aggressivity, stamina, active, marketValue);
+        let player = new Player(name, attack, defense, aggressivity, stamina, active, marketValue, position);
+        if(!player.position){
+            player.position = Positions.fromShare(Positions.attackShare(player));
+        }
+        return player;
     }
 
     static generateTeam(seed, rank, country) {

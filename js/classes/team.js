@@ -7,6 +7,7 @@ class Team {
         this.strategy = Strategy.NORMAL;
         this.aggressivity = Strategy.NORMAL;
         this.seed = seed; //used for team logo
+        this.formation = Formations.default;
         this.logo = this.generateLogo();
         this.resetDivisionStats();
     }
@@ -33,6 +34,12 @@ class Team {
         for(let i = 0; i < 11; i++) {
             players.push(GeneratorUtils.generatePlayer(r.nextInt(), minStat, maxStat, true));
         }
+        //every club plays its own formation, with its players in the places that suit them
+        let keys = Formations.keys();
+        this.formation = keys[new Random(this.seed + 11).nextInt(keys.length)];
+        let places = Formations.places(this.formation);
+        Array.from(players).sort((a, b) => Positions.attackShare(a) - Positions.attackShare(b))
+            .forEach((p, i) => p.position = places[i]);
         return players;
     }
 
@@ -88,13 +95,28 @@ class Team {
         return 0.25 + 0.75 * (this.getActivePlayingPlayers().length / 11) ** 2;
     }
 
+    //the playing players in the places of the formation: [{place, player, fit}]
+    getLineup(){
+        return Formations.assign(this.getActivePlayingPlayers(), this.formation);
+    }
+
+    //the place an active player plays in and how much of their stats they give there (fit 1 = own position)
+    getSlot(player){
+        return this.getLineup().find(s => s.player === player) || null;
+    }
+
     getCombinedStats() {
         let stats = {attack: new Decimal(0), defense: new Decimal(0)};
         let synergy = this.getSynergy();
-        for (let p of this.getActivePlayingPlayers()) {
-            stats.attack = stats.attack.add(p.getAttack().mul(synergy));
-            stats.defense = stats.defense.add(p.getDefense().mul(synergy));
+        for (let slot of this.getLineup()) {
+            if(slot.player){
+                stats.attack = stats.attack.add(slot.player.getAttack().mul(synergy * slot.fit));
+                stats.defense = stats.defense.add(slot.player.getDefense().mul(synergy * slot.fit));
+            }
         }
+        let formation = Formations.get(this.formation);
+        stats.attack = stats.attack.mul(formation.att);
+        stats.defense = stats.defense.mul(formation.def);
         if(this.strategy === Strategy.OFFENSIVE){
             stats.attack = stats.attack.mul(1.3);
             stats.defense = stats.defense.div(1.3);
@@ -147,11 +169,37 @@ class Team {
         this.players = this.players.filter(p => p !== player);
     }
 
+    //the positions of the formation nobody plays in, keeper first
+    getOpenPlaces(){
+        let places = Formations.places(this.formation);
+        for(let p of this.getActivePlayers()){
+            let i = places.indexOf(p.position);
+            if(i >= 0){
+                places.splice(i, 1);
+            }
+        }
+        return places;
+    }
+
+    //the bench player who adds the most in one of the places: players of that position first
+    getBestFor(place, candidates){
+        let best = null, bestValue = null;
+        for(let p of candidates){
+            let value = Formations.power(p).mul(Positions.fit(p.position, place));
+            if(bestValue === null || value.gt(bestValue)){
+                best = p;
+                bestValue = value;
+            }
+        }
+        return best;
+    }
+
     refillPlayers(){
-        let availablePlayers = this.getInactiveSortedPlayers().filter(p => !p.hasRedCard());
-        while(this.getActivePlayers().length < 11 && availablePlayers.length > 0){
-            availablePlayers[0].active = true;
-            availablePlayers = this.getInactiveSortedPlayers().filter(p => !p.hasRedCard());
+        let available = () => this.getInactivePlayers().filter(p => !p.hasRedCard());
+        while(this.getActivePlayers().length < 11 && available().length > 0){
+            let open = this.getOpenPlaces();
+            let place = open.find(pl => available().some(p => p.position === pl)) || open[0] || "MID";
+            this.getBestFor(place, available()).active = true;
         }
     }
 
@@ -164,11 +212,41 @@ class Team {
         let slots = 11 - keep.length;
         let available = this.players.filter(p => !p.hasRedCard() && !keep.includes(p));
         let rested = available.filter(p => p.currentStamina >= minStamina);
-        let power = p => p.getAttack().add(p.getDefense());
-        let byPower = list => Array.from(list).sort((p1, p2) => power(p2).cmp(power(p1)));
-        //prefer rested players, fill up with tired ones if there are not enough
-        let chosen = byPower(rested).slice(0, slots);
-        chosen = chosen.concat(byPower(available.filter(p => !chosen.includes(p))).slice(0, slots - chosen.length));
+        //places the kept players don't already take, keeper first
+        let open = Formations.places(this.formation);
+        for(let p of keep){
+            let i = open.indexOf(p.position);
+            open.splice(i >= 0 ? i : open.length - 1, 1);
+        }
+        //each place gets the strongest player of its position, rested ones first;
+        //places no one of that position is left for get whoever gives the most there
+        let chosen = [];
+        let pick = (place, ownPosition) => {
+            for(let pool of [rested, available]){
+                let candidates = pool.filter(p => !chosen.includes(p) && (!ownPosition || p.position === place));
+                let best = this.getBestFor(place, candidates);
+                if(best){
+                    return best;
+                }
+            }
+            return null;
+        };
+        let unfilled = [];
+        for(let place of open.slice(0, slots)){
+            let p = pick(place, true);
+            if(p){
+                chosen.push(p);
+            }
+            else{
+                unfilled.push(place);
+            }
+        }
+        for(let place of unfilled){
+            let p = pick(place, false);
+            if(p){
+                chosen.push(p);
+            }
+        }
         for(let p of this.players){
             if(!keep.includes(p)){
                 p.active = chosen.includes(p);
@@ -186,12 +264,30 @@ class Team {
             if(bench.length === 0){
                 break;
             }
-            let best = bench.reduce((b, p) => p.getAttack().add(p.getDefense()).gt(b.getAttack().add(b.getDefense())) ? p : b);
+            //someone for the same place: the tired player's position if they play in it
+            let best = this.getBestFor(out.position, bench);
             out.active = false;
             best.active = true;
             subs.push({out, in: best});
         }
         return subs;
+    }
+
+    //the formation that gives the current Team the most ATT+DEF (for old saves)
+    getBestFormation(){
+        let current = this.formation;
+        let best = Formations.default, bestValue = null;
+        for(let key of Formations.keys()){
+            this.formation = key;
+            let stats = this.getCombinedStats();
+            let value = stats.attack.add(stats.defense);
+            if(bestValue === null || value.gt(bestValue)){
+                best = key;
+                bestValue = value;
+            }
+        }
+        this.formation = current;
+        return best;
     }
 
     canPlayNextMatch(){
@@ -215,6 +311,8 @@ class Team {
             this.players = [];
             this.strategy = obj.strategy;
             this.aggressivity = obj.aggressivity;
+            //null for saves from before formations: the game picks one after loading
+            this.formation = Formations.list[obj.formation] ? obj.formation : null;
             for(let p of obj.players){
                 let player = new Player(p.name, p.attack, p.defense, p.aggressivity, p.stamina, p.active);
                 player.load(p);

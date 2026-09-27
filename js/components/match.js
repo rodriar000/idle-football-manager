@@ -171,6 +171,7 @@ app.component("match", {
         <div class="sb-team" :class="{own: ownIndex === 0}">
             <team-logo :logo="match.team1.logo"></team-logo>
             <p class="sb-name">{{match.team1.name}}</p>
+            <p class="sb-formation">{{match.team1.formation}}</p>
             <ul class="sb-scorers">
                 <li v-for="e in scorers[0]"><ui-icon :name="e.event === 0 ? 'ball' : 'redcard'"></ui-icon><span>{{e.name}} {{e.minute}}'</span></li>
             </ul>
@@ -182,6 +183,7 @@ app.component("match", {
         <div class="sb-team away" :class="{own: ownIndex === 1}">
             <team-logo :logo="match.team2.logo"></team-logo>
             <p class="sb-name">{{match.team2.name}}</p>
+            <p class="sb-formation">{{match.team2.formation}}</p>
             <ul class="sb-scorers">
                 <li v-for="e in scorers[1]"><ui-icon :name="e.event === 0 ? 'ball' : 'redcard'"></ui-icon><span>{{e.name}} {{e.minute}}'</span></li>
             </ul>

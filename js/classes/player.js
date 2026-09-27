@@ -22,8 +22,13 @@ class Player {
         this.academy = false;
     }
 
+    //the manager's Longevity perk keeps your players a little longer
+    getRetireAge(){
+        return this.retireAge + game.career.add("longevity");
+    }
+
     isLastSeason(){
-        return this.age >= this.retireAge;
+        return this.age >= this.getRetireAge();
     }
 
     //used for display on player component
@@ -45,7 +50,7 @@ class Player {
     }
 
     getRegenerationTime(){
-        return 500 / (this.stamina * game.moneyUpgrades.playerRegeneration.apply().toNumber());
+        return 500 / (this.stamina * game.moneyUpgrades.playerRegeneration.apply().toNumber() * game.career.mul("recovery"));
     }
 
     regenerate(dt){
@@ -60,8 +65,13 @@ class Player {
         return this.redCard > 0;
     }
 
-    getPrice(){
+    getBasePrice(){
         return this.marketValue.mul(game.moneyUpgrades.cheaperPlayers.apply());
+    }
+
+    //buying price, with the manager's Negotiator perk
+    getPrice(){
+        return this.getBasePrice().mul(game.career.mul("negotiator"));
     }
 
     canAfford(){
@@ -77,7 +87,7 @@ class Player {
     }
 
     getSellAmount(){
-        return this.getPrice().mul(this.sellMultiplier).mul(this.trainingFactor.pow(0.8));
+        return this.getBasePrice().mul(this.sellMultiplier).mul(this.trainingFactor.pow(0.8)).mul(game.career.mul("sellHigh"));
     }
 
     sell(){

@@ -32,7 +32,7 @@ app.component("window-player" , {
             <div><p><b>Age:</b> {{player.age}}<span v-if="player.academy"> · from your Academy</span></p>
                   → ATT and DEF x{{formatNumber(ageGrowth, 2, 2)}} at the end of this Season<br/>
                   <template v-if="player.isLastSeason()">→ Retires at the end of this Season</template>
-                  <template v-else>→ Retires after the Season they are {{player.retireAge}}</template></div>
+                  <template v-else>→ Retires after the Season they are {{player.getRetireAge()}}</template></div>
             <div><p><b>Attack:</b> {{formatNumber(player.getBaseAttack())}}</p>
                   → Modified by Stamina<br/>
                   → Currently {{formatNumber(player.getAttack())}}</div>

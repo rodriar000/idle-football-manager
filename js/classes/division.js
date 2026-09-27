@@ -15,6 +15,7 @@ class Division {
         let base = Decimal.pow(6, GeneratorUtils.getNormRank(this.rank, this.country)).mul(game.moneyUpgrades.matchRewards.apply());
         base = base.add(game.stadium.getPaidMoney().mul(game.tv.upgrades.matchReward.apply()).div(2000));
         base = base.mul(game.tv.channels.map(c => c.getMoneyMultiplier()).reduce((a, b) => a.mul(b)));
+        base = base.mul(game.career.mul("commercial"));
         return {
             win: base.mul(2000),
             draw: base.mul(800),

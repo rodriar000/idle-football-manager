@@ -78,7 +78,8 @@ const Formations = Object.freeze({
     //puts players into the places of a formation: first everyone who fits a place of their own position
     //(strongest first), then the rest where they fit best. Returns [{place, player, fit}], 11 entries.
     //With more than 11 players this is the best eleven for the formation.
-    assign(players, key, power = Formations.power){
+    //fitBonus raises what players give out of position (the manager's Versatility perk)
+    assign(players, key, power = Formations.power, fitBonus = 0){
         let slots = Formations.places(key).map(place => ({place, player: null, fit: 0}));
         let left = Array.from(players).sort((a, b) => power(b).cmp(power(a)));
         for(let slot of slots){
@@ -102,7 +103,7 @@ const Formations = Object.freeze({
                 }
             }
             slot.player = left.splice(best, 1)[0];
-            slot.fit = Positions.fit(slot.player.position, slot.place);
+            slot.fit = Math.min(1, Positions.fit(slot.player.position, slot.place) + fitBonus);
         }
         return slots;
     }

@@ -54,7 +54,7 @@ class Prospect{
     }
 
     grow(){
-        let speed = game.academy.upgrades.coaching.apply().toNumber();
+        let speed = Math.min(1, game.academy.upgrades.coaching.apply().toNumber() + game.career.add("mentor"));
         this.quality += (this.getPotential() - this.quality) * speed;
         this.age++;
     }
@@ -152,7 +152,7 @@ class Academy{
                 news.grown.push(p.name);
             }
         }
-        for(let p of squad.filter(p => p.age > p.retireAge)){
+        for(let p of squad.filter(p => p.age > p.getRetireAge())){
             let total = p.getBaseAttack().add(p.getBaseDefense());
             this.retired.unshift({name: p.name, position: p.position, age: p.age - 1, total, academy: p.academy === true});
             game.team.players = game.team.players.filter(x => x !== p);

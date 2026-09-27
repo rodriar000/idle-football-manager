@@ -28,6 +28,7 @@ function setup(){
         functions.loadGame();
     }
     game.academy.start();
+    game.career.start();
     gameTheme.apply();
 
     if(!error.length){

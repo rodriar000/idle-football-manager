@@ -275,6 +275,7 @@ app.component("match", {
                 <li v-if="match.staffWages.gt(0)"><ui-icon name="whistle"></ui-icon><span>Staff wages</span><b class="neg">-{{formatNumber(match.staffWages)}} $</b></li>
                 <li class="total"><ui-icon name="coins"></ui-icon><span>Balance</span><b>{{formatNumber(money)}} $</b></li>
             </ul>
+            <p class="ft-offer" v-if="match.offerNote"><ui-icon name="transfer"></ui-icon> New bid: {{match.offerNote}}</p>
             <p class="ft-sponsor" v-if="match.sponsorsReached.length"><ui-icon name="sponsor"></ui-icon> Sponsor goal reached: {{match.sponsorsReached.join(", ")}}</p>
             <p class="ft-xp" v-if="match.managerXp"><ui-icon name="manager"></ui-icon> +{{match.managerXp}} Manager XP</p>
             <button class="kick" :disabled="!canPlayNextMatch" @click="playNextMatch()"><ui-icon name="play"></ui-icon> Play next Match</button>

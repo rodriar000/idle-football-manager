@@ -19,6 +19,7 @@ class Match {
         this.staffWages = new Decimal(0); //used for display
         this.sponsorPay = new Decimal(0); //used for display
         this.sponsorsReached = []; //used for display
+        this.offerNote = ""; //used for display: a new bid for one of your players
         this.cup = null; //the Continental Cup round, null for league matches
         this.penalties = null; //[team1, team2] when a cup match ends level
 
@@ -158,6 +159,8 @@ class Match {
             this.managerXp = ManagerCareer.matchXp(own, other);
             game.career.addXp(this.managerXp);
             this.paySponsors();
+            let offer = game.world.afterMatch();
+            this.offerNote = offer ? offer.club + " bid " + functions.formatNumber(offer.amount) + " $ for " + offer.player.name : "";
 
             for(let p of playerTeam.getActivePlayers()){
                 if(p.hasRedCard()){
@@ -177,6 +180,7 @@ class Match {
                 game.lastSeason.sponsors = game.sponsors.endSeason(game.lastSeason);
                 seasonEnded = true;
                 game.league.moveTeams();
+                game.lastSeason.world = game.world.endSeason();
                 game.lastSeason.academy = game.academy.endSeason();
                 game.lastSeason.staff = game.staff.endSeason();
                 game.lastSeason.cup = game.cup.endSeason();
@@ -409,6 +413,7 @@ class Match {
         this.staffWages = obj.staffWages || new Decimal(0);
         this.sponsorPay = obj.sponsorPay || new Decimal(0);
         this.sponsorsReached = obj.sponsorsReached || [];
+        this.offerNote = obj.offerNote || "";
         if(obj.cup !== undefined && obj.cup !== null){
             this.cup = Number(obj.cup);
             this.team1 = game.cup.getTeam(obj.team1Cup);
@@ -444,7 +449,7 @@ class Match {
             winStreak: 0, bestWinStreak: 0,
             unbeatenStreak: 0, bestUnbeatenStreak: 0,
             scorers: {},
-            seasons: 0, promotions: 0, titles: 0, cups: 0, cupFinals: 0
+            seasons: 0, promotions: 0, titles: 0, cups: 0, cupFinals: 0, bestSaleRatio: 0
         };
     }
 

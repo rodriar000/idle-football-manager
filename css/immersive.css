@@ -2218,3 +2218,20 @@ kbd{
 .player button.sell.protected{
     opacity: 0.8;
 }
+
+/*bench cards have a Sell row under "Move to Team": let cards grow instead of clipping it,
+and let the desktop bench drawer grow with them*/
+.player{
+    height: auto;
+    min-height: 240px;
+}
+
+.team-management .players.inactive{
+    height: auto;
+    padding-bottom: 0.5rem;
+}
+
+/*keep the pitch cards' compare and lock buttons (z-index 1) under the open drawer*/
+.team-management .inactive-players{
+    z-index: 2;
+}

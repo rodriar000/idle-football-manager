@@ -1,6 +1,6 @@
 class PlayerTrainingTask extends GameTask{
     constructor(onComplete){
-        super(() => 30 / game.training.upgrades.trainSpeed.apply(), onComplete);
+        super(() => 30 / game.training.upgrades.trainSpeed.apply() / game.staff.trainSpeedMul(), onComplete);
     }
 
     getPlayers(){

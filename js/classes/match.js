@@ -16,6 +16,7 @@ class Match {
         this.gameEvents = []; //recorded goals
         this.stadiumReward = new Decimal(0); //used for display
         this.managerXp = 0; //used for display
+        this.staffWages = new Decimal(0); //used for display
 
         this.ballX = 0; //-1 to 1
         this.ballSpeed = 0;
@@ -167,6 +168,7 @@ class Match {
                 seasonEnded = true;
                 game.league.moveTeams();
                 game.lastSeason.academy = game.academy.endSeason();
+                game.lastSeason.staff = game.staff.endSeason();
                 game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome);
                 game.career.addXp(game.lastSeason.managerXp);
                 game.playerMarket.refresh();
@@ -175,6 +177,9 @@ class Match {
                 game.league.simulate();
             }
             game.money = game.money.add(this.getRewardMoney());
+            //the staff take their wages from every match
+            this.staffWages = Decimal.min(game.money, game.staff.getWages());
+            game.money = game.money.sub(this.staffWages);
 
             if(seasonEnded){
                 gameNotifications.seasonEnded(game.lastSeason);
@@ -293,7 +298,7 @@ class Match {
                 }
 
                 for(let p of this.getPlayerTeam().getActivePlayingPlayers()){
-                    p.currentStamina = Math.max(0, p.currentStamina - Math.random() * 3e-5 * dt * tm * (1 / p.stamina));
+                    p.currentStamina = Math.max(0, p.currentStamina - Math.random() * 3e-5 * dt * tm * (1 / p.stamina) * game.staff.tireMul());
                 }
                 this.checkSubstitutions();
                 this.checkAutoStrategy();
@@ -334,6 +339,7 @@ class Match {
         this.gameEvents = obj.gameEvents;
         this.stadiumReward = obj.stadiumReward || new Decimal(0);
         this.managerXp = Number(obj.managerXp) || 0;
+        this.staffWages = obj.staffWages || new Decimal(0);
         this.ended = obj.ended;
         this.baseStrategy = obj.baseStrategy ?? null;
     }

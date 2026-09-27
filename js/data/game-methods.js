@@ -148,6 +148,10 @@ let functions = {
                 game.career.load(obj.career);
             }
 
+            if(obj.staff){
+                game.staff.load(obj.staff);
+            }
+
             if(game.team && game.team.formation === null){
                 functions.introducePositions();
             }

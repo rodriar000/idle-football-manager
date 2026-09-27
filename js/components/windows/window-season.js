@@ -65,6 +65,8 @@ app.component("window-season", {
             <p v-if="season.academy.promoted.length"><ui-icon name="academy"></ui-icon> Joined the Team from the Academy: {{season.academy.promoted.join(", ")}}</p>
             <p v-if="season.managerXp"><ui-icon name="manager"></ui-icon> +{{season.managerXp}} Manager XP for the Season</p>
             <p v-if="season.academy.joined.length"><ui-icon name="star"></ui-icon> New prospects: {{season.academy.joined.join(", ")}}</p>
+            <p v-if="season.staff && season.staff.left.length"><ui-icon name="whistle"></ui-icon> Contract ended: {{season.staff.left.join(", ")}}</p>
+            <p v-if="season.staff"><ui-icon name="whistle"></ui-icon> New Staff candidates are waiting in the Staff tab</p>
         </div>
         <div v-if="season.topScorers.length" class="scorers">
             <h4>Top Scorers</h4>

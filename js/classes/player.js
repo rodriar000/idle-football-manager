@@ -50,7 +50,7 @@ class Player {
     }
 
     getRegenerationTime(){
-        return 500 / (this.stamina * game.moneyUpgrades.playerRegeneration.apply().toNumber() * game.career.mul("recovery"));
+        return 500 / (this.stamina * game.moneyUpgrades.playerRegeneration.apply().toNumber() * game.career.mul("recovery") * game.staff.regenMul());
     }
 
     regenerate(dt){

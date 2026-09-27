@@ -36,8 +36,12 @@ class Prospect{
         this.age = 16 + Math.floor(Math.random() * 2);
         //share of the level of the Division you play in
         this.quality = 0.25 + 0.25 * Math.random();
-        let r = Math.random();
-        this.stars = r < 0.3 ? 1 : r < 0.6 ? 2 : r < 0.82 ? 3 : r < 0.95 ? 4 : 5;
+        //the Chief Scout looks at more youngsters: the best of several rolls
+        this.stars = 1;
+        for(let i = 0; i < game.staff.prospectRolls(); i++){
+            let r = Math.random();
+            this.stars = Math.max(this.stars, r < 0.3 ? 1 : r < 0.6 ? 2 : r < 0.82 ? 3 : r < 0.95 ? 4 : 5);
+        }
         this.aggressivity = 0.5 + 1.5 * Math.random();
         this.stamina = 0.5 + 1.5 * Math.random();
     }

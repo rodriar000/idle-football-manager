@@ -124,8 +124,8 @@ class Team {
         //the manager's perks only help your own Team
         if(this === game.team){
             let career = game.career;
-            stats.attack = stats.attack.mul(career.mul("pressing") * career.mul("matchday"));
-            stats.defense = stats.defense.mul(career.mul("organisation") * career.mul("matchday"));
+            stats.attack = stats.attack.mul(career.mul("pressing") * career.mul("matchday") * game.staff.teamMul());
+            stats.defense = stats.defense.mul(career.mul("organisation") * career.mul("matchday") * game.staff.teamMul());
         }
         if(this.strategy === Strategy.OFFENSIVE){
             stats.attack = stats.attack.mul(1.3);

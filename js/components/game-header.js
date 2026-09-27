@@ -3,6 +3,7 @@ function getVisibleTabs(){
     return [
         {id: "tab-team", name: "Team", icon: "team"},
         {id: "tab-player-market", name: "Market", icon: "market"},
+        {id: "tab-academy", name: "Academy", icon: "academy"},
         {id: "tab-upgrades", name: "Upgrades", icon: "upgrades"},
         {id: "tab-league", name: "League", icon: "league"},
         {id: "tab-match", name: "Match", icon: "match"},

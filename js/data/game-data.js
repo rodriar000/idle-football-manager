@@ -41,6 +41,7 @@ let game = {
     },
     stadium: new Stadium(),
     training: new PlayerTraining(),
+    academy: new Academy(),
     tv: {
         isUnlocked: () => game.maxDivisionRank >= 8 || game.country >= 1,
         channels: [

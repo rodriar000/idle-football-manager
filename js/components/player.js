@@ -139,6 +139,7 @@ app.component("player", {
 <div class="p-extra">
     <span title="Aggressiveness: higher means more red cards"><small>AGG</small> {{formatNumber(player.aggressivity * 100)}}</span>
     <span title="Stamina: higher means faster recovery"><small>STA</small> {{formatNumber(player.stamina * 100)}}</span>
+    <span class="p-age" :class="{last: player.isLastSeason()}" :title="player.isLastSeason() ? 'Retires at the end of this Season' : 'Age: improves until 23, best from 24 to 28, declines from 29'"><small>AGE</small> {{player.age}}<ui-icon v-if="player.isLastSeason()" name="timer"></ui-icon></span>
 </div>
 <div class="p-fitness" v-if="isBought" :title="'Fitness ' + Math.round(player.currentStamina * 100) + '%'"><ui-icon class="stamina-icon" name="stamina"></ui-icon><progress-bar :value="player.currentStamina"></progress-bar></div>
 <div class="p-signing" v-else-if="signing" title="Buying this Player improves your best Eleven the most"><ui-icon name="star"></ui-icon><span><b>Best Signing</b> {{formatChange(signing.attack)}} ATT · {{formatChange(signing.defense)}} DEF</span></div>

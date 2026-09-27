@@ -256,6 +256,7 @@ app.component("match", {
             <ul class="ft-money">
                 <li><ui-icon name="match"></ui-icon><span>Match reward</span><b class="pos">+{{formatNumber(reward)}} $</b></li>
                 <li v-if="stadiumUnlocked"><ui-icon name="stadium"></ui-icon><span>Stadium tickets</span><b class="pos">+{{formatNumber(match.stadiumReward)}} $</b></li>
+                <li v-if="match.staffWages.gt(0)"><ui-icon name="whistle"></ui-icon><span>Staff wages</span><b class="neg">-{{formatNumber(match.staffWages)}} $</b></li>
                 <li class="total"><ui-icon name="coins"></ui-icon><span>Balance</span><b>{{formatNumber(money)}} $</b></li>
             </ul>
             <p class="ft-xp" v-if="match.managerXp"><ui-icon name="manager"></ui-icon> +{{match.managerXp}} Manager XP</p>

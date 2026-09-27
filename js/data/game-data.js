@@ -43,6 +43,7 @@ let game = {
     training: new PlayerTraining(),
     academy: new Academy(),
     career: new ManagerCareer(),
+    staff: new Staff(),
     tv: {
         isUnlocked: () => game.maxDivisionRank >= 8 || game.country >= 1,
         channels: [

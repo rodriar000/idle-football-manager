@@ -49,6 +49,11 @@ app.component("tab-settings", {
             a.click();
             document.body.removeChild(a);
         },
+        restoreBackup(){
+            if(confirm("Go back to the Savegame from before the last Update? Everything since then is lost.")){
+                saveGuard.restore();
+            }
+        },
         hardReset(){
             let t = 3;
             while(t > 0 && confirm("Are you sure you really want to erase EVERYTHING? There is no reward and no going back! Click " + t + " more time(s) to confirm")){
@@ -71,6 +76,12 @@ app.component("tab-settings", {
         },
         pwa(){
             return gamePwa;
+        },
+        backupDate(){
+            return saveGuard.hasBackup() ? saveGuard.backupDate() : null;
+        },
+        hasBackup(){
+            return saveGuard.hasBackup();
         },
         themes(){
             return gameTheme.options;
@@ -141,6 +152,7 @@ app.component("tab-settings", {
             <button @click="download()">Download Savegame</button>
             <button class="negative" @click="hardReset()">Hard Reset</button>
         </div>
+        <div class="set-row backup-row" v-if="hasBackup"><span>Backup from before the last Update <small v-if="backupDate">Kept on {{backupDate.toLocaleString()}}</small></span><button @click="restoreBackup()">Restore</button></div>
         <textarea v-model="saveString" aria-label="Savegame"></textarea>
     </section>
 </div>`

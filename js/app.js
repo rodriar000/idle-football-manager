@@ -25,7 +25,15 @@ function setup(){
         initializeGame();
     }
     else{
-        functions.loadGame();
+        saveGuard.backupOnUpdate();
+        try{
+            functions.loadGame();
+        }
+        catch(e){
+            //keep the save as it is, so an update that breaks loading can't erase it
+            saveGuard.locked = true;
+            throw e;
+        }
     }
     game.academy.start();
     game.career.start();
@@ -33,6 +41,7 @@ function setup(){
     gameTheme.apply();
 
     if(!error.length){
+        saveGuard.markLoaded();
         Vue.nextTick(() => {
             game.init = true;
             hideSplash();

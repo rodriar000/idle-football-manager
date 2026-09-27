@@ -61,6 +61,10 @@ let functions = {
         return btoa(unescape(encodeURIComponent(json)));
     },
     saveGame(){
+        //a save that failed to load must never be written over
+        if(saveGuard.locked){
+            return;
+        }
         localStorage.setItem("idleSoccerManager", this.getSaveString());
     },
     loadGame(str){

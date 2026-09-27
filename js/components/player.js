@@ -4,8 +4,7 @@ app.component("player", {
         return {
             showStatBreakdown: false,
             confirmSell: false,
-            confirmSellTimeout: null,
-            teamPlayers: game.team.players
+            confirmSellTimeout: null
         }
     },
     methods: {
@@ -55,8 +54,10 @@ app.component("player", {
         clearTimeout(this.confirmSellTimeout);
     },
     computed: {
+        //computed props read through this.$root: cards rendered at startup exist before the global game is reactive
         canMove(){
-            if(this.player.hasRedCard() && (game.currentMatch && !game.currentMatch.ended || !this.player.active)){
+            let match = this.$root.currentMatch;
+            if(this.player.hasRedCard() && (match && !match.ended || !this.player.active)){
                 return false;
             }
             if(this.player.active && this.player.locked){
@@ -65,13 +66,13 @@ app.component("player", {
             return (!this.teamFull && !this.player.active) || this.player.active;
         },
         canSell(){
-            return keyMap.keyPressed("Shift") || !game.settings.players.shiftToSell;
+            return keyMap.keyPressed("Shift") || !this.$root.settings.players.shiftToSell;
         },
         teamFull(){
-            return game.team.getActivePlayers().length >= 11;
+            return this.$root.team.getActivePlayers().length >= 11;
         },
         isBought(){
-            return this.teamPlayers.find(p => p === this.player) !== undefined || game.training.players.find(p => p === this.player) !== undefined;
+            return this.$root.team.players.includes(this.player) || this.$root.training.players.includes(this.player);
         },
         trainingUnlocked(){
             return PlayerTraining.isUnlocked;

@@ -118,11 +118,11 @@ app.component("player", {
         }
     },
     template: `<div class="player" :class="['tier-' + tier, {compared: isCompared, locked: player.locked}]">
-<button class="lock-toggle" v-if="isBought" :class="{active: player.locked}" @click="toggleLock()" :title="player.locked ? 'Protected: cannot be sold or taken out of the Team. Tap to unprotect' : 'Protect this Player'">{{player.locked ? "🔒" : "🔓"}}</button>
-<button class="compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" :title="isCompared ? 'Remove from Comparison' : 'Compare'">⇄</button>
-<p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><player-avatar :player="player"></player-avatar><img v-if="player.hasRedCard()" alt="" src="images/icons/red-card.png"/> {{player.name}}</div>
-<div class="icon-flex" v-if="isBought"><img alt="" src="images/icons/stamina.png"/> <progress-bar :value="player.currentStamina"></progress-bar></div>
-<div class="signing" v-else-if="signing" title="Buying this Player improves your best Eleven the most">★ Best Signing <span>{{formatChange(signing.attack)}} ATT · {{formatChange(signing.defense)}} DEF</span></div></p>
+<button class="lock-toggle" v-if="isBought" :class="{active: player.locked}" @click="toggleLock()" :title="player.locked ? 'Protected: cannot be sold or taken out of the Team. Tap to unprotect' : 'Protect this Player'"><ui-icon :name="player.locked ? 'lock' : 'unlock'"></ui-icon></button>
+<button class="compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" :title="isCompared ? 'Remove from Comparison' : 'Compare'"><ui-icon name="compare"></ui-icon></button>
+<p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><player-avatar :player="player"></player-avatar><ui-icon class="red-card" v-if="player.hasRedCard()" name="redcard"></ui-icon> {{player.name}}</div>
+<div class="icon-flex" v-if="isBought"><ui-icon class="stamina-icon" name="stamina"></ui-icon> <progress-bar :value="player.currentStamina"></progress-bar></div>
+<div class="signing" v-else-if="signing" title="Buying this Player improves your best Eleven the most"><ui-icon name="star"></ui-icon> Best Signing <span>{{formatChange(signing.attack)}} ATT · {{formatChange(signing.defense)}} DEF</span></div></p>
 <div class="stats">
     <p><span>ATT</span> {{formatNumber(player.getBaseAttack())}}</p>
     <p>{{formatNumber(player.getBaseDefense())}} <span>DEF</span></p>
@@ -136,9 +136,9 @@ app.component("player", {
             <button v-if="!player.active" @click="removeFromTraining()">Stop Training</button>
         </div>
         <div v-else>
-            <button :style="{width: buttonWidth}" :disabled="!canMove" v-if="isBought" @click="player.active = !player.active" :title="player.active && player.locked ? 'Protected: unprotect the Player (🔒) to take them out' : ''"><span v-if="!player.active">Move to Team</span><span v-else>Move from Team</span></button>
+            <button :style="{width: buttonWidth}" :disabled="!canMove" v-if="isBought" @click="player.active = !player.active" :title="player.active && player.locked ? 'Protected: unprotect the Player (lock button) to take them out' : ''"><span v-if="!player.active">Move to Team</span><span v-else>Move from Team</span></button>
             <button :style="{width: '50%'}" v-if="!player.active && trainingUnlocked" @click="addToTraining()">Train</button>
-            <button class="sell protected" disabled v-if="!player.active && player.locked" title="Unprotect the Player (🔒) to sell">🔒 Protected</button>
+            <button class="sell protected" disabled v-if="!player.active && player.locked" title="Unprotect the Player (lock button) to sell"><ui-icon name="lock"></ui-icon> Protected</button>
             <button class="negative sell" :class="{armed: confirmSell}" v-else-if="!player.active" @click="sellPlayer()" @blur="cancelSell()">
                 <span v-if="confirmSell">Tap again to sell ({{formatNumber(player.getSellAmount())}} $)</span>
                 <span v-else>Sell ({{formatNumber(player.getSellAmount())}} $)</span>

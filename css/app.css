@@ -1,0 +1,1291 @@
+/*
+3.0 look: a modern sports app. Clean background (the pitch only shows in the match and stadium),
+side menu on desktop, condensed sports type, own controls and the icon set from js/icons.js.
+Layered after immersive.css, which still styles the components; this file changes the shell and palette.
+*/
+
+@font-face{
+    font-family: "Saira Condensed";
+    src: url("../fonts/saira-condensed/saira-condensed-600.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+}
+
+@font-face{
+    font-family: "Saira Condensed";
+    src: url("../fonts/saira-condensed/saira-condensed-700.woff2") format("woff2");
+    font-weight: 700;
+    font-display: swap;
+}
+
+@font-face{
+    font-family: "Saira Condensed";
+    src: url("../fonts/saira-condensed/saira-condensed-800.woff2") format("woff2");
+    font-weight: 800 900;
+    font-display: swap;
+}
+
+@font-face{
+    font-family: "Barlow";
+    src: url("../fonts/barlow/barlow-400.woff2") format("woff2");
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face{
+    font-family: "Barlow";
+    src: url("../fonts/barlow/barlow-500.woff2") format("woff2");
+    font-weight: 500;
+    font-display: swap;
+}
+
+@font-face{
+    font-family: "Barlow";
+    src: url("../fonts/barlow/barlow-600.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+}
+
+@font-face{
+    font-family: "Barlow";
+    src: url("../fonts/barlow/barlow-700.woff2") format("woff2");
+    font-weight: 700 900;
+    font-display: swap;
+}
+
+:root{
+    --font-display: "Saira Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+    --font-body: "Barlow", "Segoe UI", system-ui, sans-serif;
+
+    --side-width: 232px;
+    --top-height: 60px;
+
+    --ui-bg: #edf0f4;
+    --ui-accent: #f2ae22;
+    --ui-accent-deep: #c98200;
+    --ui-accent-ink: #1a1204;
+    --ui-accent-text: #a86a00;
+    --ui-accent-soft: rgba(242, 174, 34, 0.16);
+    --ui-accent-glow: rgba(242, 174, 34, 0.35);
+    --ui-gold: #d6a11e;
+    --ui-pos: #12a86b;
+    --ui-neg: #e04848;
+    --ui-att: #e4652b;
+    --ui-def: #2f7fe0;
+    --ui-red: #e04848;
+    --ui-red-deep: #c53030;
+
+    --ui-surface: #ffffff;
+    --ui-surface-2: #f4f6f9;
+    --ui-line: #dce2ea;
+    --ui-ink: #0e1621;
+    --ui-muted: #5b6a7e;
+    --ui-glass: #ffffff;
+    --ui-glass-line: #dce2ea;
+    --ui-shadow: 0 1px 2px rgba(14, 22, 33, 0.06), 0 8px 24px rgba(14, 22, 33, 0.06);
+
+    --color-header: var(--ui-surface);
+    --color-background: var(--ui-bg);
+    --color-text: var(--ui-ink);
+    --color-text-dark: var(--ui-ink);
+    --color-border: var(--ui-line);
+    --color-button: var(--ui-surface-2);
+    --color-button-selected: var(--ui-accent);
+    --color-button-border-hover: var(--ui-muted);
+    --color-card: var(--ui-surface);
+    --color-card-border: var(--ui-line);
+    --color-card-stat: var(--ui-surface-2);
+    --color-table-header: var(--ui-surface-2);
+    --color-table-pos: var(--ui-surface-2);
+    --color-table-even: var(--ui-surface);
+    --color-table-odd: var(--ui-surface-2);
+    --color-window: var(--ui-surface);
+    --color-window-header: var(--ui-surface-2);
+    --color-window-border: var(--ui-line);
+}
+
+:root[data-theme="dark"]{
+    color-scheme: dark;
+
+    --ui-bg: #0a0f14;
+    --ui-accent: #ffc247;
+    --ui-accent-deep: #e5a21f;
+    --ui-accent-ink: #1a1204;
+    --ui-accent-text: #ffc247;
+    --ui-accent-soft: rgba(255, 194, 71, 0.14);
+    --ui-accent-glow: rgba(255, 194, 71, 0.3);
+    --ui-gold: #f2c14e;
+    --ui-pos: #34d399;
+    --ui-neg: #ff6b6b;
+    --ui-att: #ff8a4c;
+    --ui-def: #5aa8ff;
+    --ui-red: #ff6b6b;
+    --ui-red-deep: #d94444;
+
+    --ui-surface: #121922;
+    --ui-surface-2: #18212c;
+    --ui-line: #243040;
+    --ui-ink: #eaf0f6;
+    --ui-muted: #8b9aae;
+    --ui-glass: #121922;
+    --ui-glass-line: #243040;
+    --ui-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 10px 30px rgba(0, 0, 0, 0.35);
+
+    --color-header: var(--ui-surface);
+    --color-background: var(--ui-bg);
+    --color-text: var(--ui-ink);
+    --color-text-dark: var(--ui-ink);
+    --color-border: var(--ui-line);
+    --color-button: var(--ui-surface-2);
+    --color-button-selected: var(--ui-accent);
+    --color-button-border-hover: var(--ui-muted);
+    --color-card: var(--ui-surface);
+    --color-card-border: var(--ui-line);
+    --color-card-stat: var(--ui-surface-2);
+    --color-table-header: var(--ui-surface-2);
+    --color-table-pos: var(--ui-surface-2);
+    --color-table-even: var(--ui-surface);
+    --color-table-odd: var(--ui-surface-2);
+    --color-window: var(--ui-surface);
+    --color-window-header: var(--ui-surface-2);
+    --color-window-border: var(--ui-line);
+}
+
+/*Base*/
+
+body, button, input, select, textarea{
+    font-family: var(--font-body);
+}
+
+body{
+    background-color: var(--ui-bg);
+    color: var(--ui-ink);
+    -webkit-font-smoothing: antialiased;
+}
+
+/*no more pitch behind every tab*/
+body::before{
+    display: none;
+}
+
+main{
+    background-image: none;
+}
+
+::selection{
+    background-color: var(--ui-accent);
+    color: var(--ui-accent-ink);
+}
+
+h1, h2, h3, h4, .big-heading{
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.big-heading{
+    color: var(--ui-ink);
+    text-shadow: none;
+}
+
+.big-heading::after{
+    height: 3px;
+    width: 2.5rem;
+    background-image: none;
+    background-color: var(--ui-accent);
+}
+
+.big-heading .ico{
+    width: 0.95em;
+    height: 0.95em;
+    margin-right: 0.15em;
+    vertical-align: -0.12em;
+    color: var(--ui-accent-text);
+}
+
+a{
+    color: var(--ui-accent-text);
+}
+
+kbd{
+    border-color: var(--ui-line);
+    background-color: var(--ui-surface-2);
+    border-radius: 5px;
+}
+
+/*Icons*/
+
+.ico{
+    width: 1.25em;
+    height: 1.25em;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vertical-align: -0.25em;
+}
+
+.ico .d{
+    fill: currentColor;
+    fill-opacity: 0.2;
+    stroke: none;
+}
+
+.ico .f{
+    fill: currentColor;
+    stroke: none;
+}
+
+.icon-flex{
+    gap: 0.4em;
+}
+
+.icon-flex > .ico{
+    width: 1.35em;
+    height: 1.35em;
+}
+
+.ico.att, .event-goal{
+    color: var(--ui-att);
+}
+
+.ico.def{
+    color: var(--ui-def);
+}
+
+.event-red, .ico.red-card{
+    color: var(--ui-neg);
+}
+
+.sub-in .ico{
+    color: var(--ui-pos);
+}
+
+.sub-out .ico{
+    color: var(--ui-neg);
+}
+
+.stamina-icon{
+    color: var(--ui-pos);
+}
+
+.window .header .ico{
+    color: var(--ui-accent-text);
+}
+
+.window .header button .ico{
+    color: inherit;
+}
+
+/*Buttons: flat, the accent is for the main action*/
+
+button{
+    border: 1px solid var(--ui-line);
+    border-radius: 10px;
+    padding: 0.5rem 0.85rem;
+    font-weight: 600;
+    color: var(--ui-ink);
+    background-color: var(--ui-surface-2);
+    background-image: none;
+    box-shadow: none;
+    text-shadow: none;
+    transition: border-color 150ms, background-color 150ms, filter 150ms, opacity 150ms, transform 120ms;
+}
+
+button:hover:not(:disabled){
+    border: 1px solid var(--ui-muted);
+    filter: none;
+    box-shadow: none;
+}
+
+button:active:not(:disabled){
+    filter: none;
+    transform: translateY(1px);
+}
+
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible{
+    outline: 2px solid var(--ui-accent);
+    outline-offset: 2px;
+}
+
+button:disabled{
+    filter: none;
+    opacity: 0.45;
+}
+
+button .ico{
+    width: 1.15em;
+    height: 1.15em;
+}
+
+button.selected{
+    color: var(--ui-ink);
+    background-color: var(--ui-accent-soft);
+    border-color: var(--ui-accent);
+    box-shadow: none;
+}
+
+button.negative{
+    color: var(--ui-neg);
+    background-color: color-mix(in srgb, var(--ui-neg) 10%, var(--ui-surface-2));
+    border-color: color-mix(in srgb, var(--ui-neg) 35%, var(--ui-line));
+}
+
+button.negative:hover:not(:disabled){
+    border-color: var(--ui-neg);
+    box-shadow: none;
+}
+
+/*main actions: kick off, play next match, buy a player*/
+.match .stats .time button, .tab-league .next-match button, .match .window button,
+.player-market .player .actions button:not(:disabled):not(.cant-afford), .install-app button{
+    color: var(--ui-accent-ink);
+    background-color: var(--ui-accent);
+    border-color: transparent;
+}
+
+.match .stats .time button:hover:not(:disabled), .tab-league .next-match button:hover:not(:disabled), .match .window button:hover:not(:disabled),
+.player-market .player .actions button:hover:not(:disabled):not(.cant-afford), .install-app button:hover:not(:disabled){
+    border-color: transparent;
+    filter: brightness(1.06);
+}
+
+button.help, button.help:hover{
+    padding: 0.2rem;
+    background: none;
+    border: none;
+    color: var(--ui-muted);
+}
+
+button.help .ico{
+    width: 1.35rem;
+    height: 1.35rem;
+}
+
+/*Controls*/
+
+input[type="checkbox"]{
+    appearance: none;
+    -webkit-appearance: none;
+    position: relative;
+    flex: none;
+    width: 2.3em;
+    height: 1.35em;
+    margin: 0 0.45em 0 0;
+    border-radius: 999px;
+    background-color: var(--ui-line);
+    vertical-align: middle;
+    cursor: pointer;
+    transition: background-color 180ms;
+}
+
+input[type="checkbox"]::after{
+    content: "";
+    position: absolute;
+    top: 0.18em;
+    left: 0.18em;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    transition: transform 180ms;
+}
+
+input[type="checkbox"]:checked{
+    background-color: var(--ui-pos);
+}
+
+input[type="checkbox"]:checked::after{
+    transform: translateX(0.95em);
+}
+
+input[type="checkbox"]:disabled{
+    opacity: 0.45;
+    cursor: default;
+}
+
+input[type="radio"]{
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.15em;
+    height: 1.15em;
+    margin: 0 0.35em 0 0;
+    border-radius: 50%;
+    border: 2px solid var(--ui-muted);
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+input[type="radio"]:checked{
+    border-color: var(--ui-accent);
+    background-color: var(--ui-accent);
+    box-shadow: inset 0 0 0 3px var(--ui-surface);
+}
+
+input[type="range"]{
+    appearance: none;
+    -webkit-appearance: none;
+    height: 1.4em;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track{
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--ui-line);
+}
+
+input[type="range"]::-moz-range-track{
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--ui-line);
+}
+
+input[type="range"]::-moz-range-progress{
+    height: 6px;
+    border-radius: 999px;
+    background-color: var(--ui-accent);
+}
+
+input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    margin-top: -6px;
+    border-radius: 50%;
+    background-color: var(--ui-surface);
+    border: 3px solid var(--ui-accent);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb{
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--ui-surface);
+    border: 3px solid var(--ui-accent);
+}
+
+input[type="range"]:disabled{
+    opacity: 0.4;
+    cursor: default;
+}
+
+input[type="text"], input[type="number"], input[type="email"], input[type="password"], select, textarea{
+    border: 1px solid var(--ui-line);
+    border-radius: 10px;
+    background-color: var(--ui-surface-2);
+    color: var(--ui-ink);
+    padding: 0.45rem 0.6rem;
+}
+
+/*Panels*/
+
+.card, .team-settings, .upgrade, .country, .window, .division, .match-history, .season-calendar{
+    background-color: var(--ui-surface);
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    box-shadow: var(--ui-shadow);
+}
+
+.upgrade::before{
+    background-image: none;
+    background-color: var(--ui-accent);
+    height: 3px;
+}
+
+.upgrade .icon-flex .ico{
+    color: var(--ui-accent-text);
+}
+
+.money{
+    background-color: var(--ui-surface);
+    border-color: var(--ui-line);
+    color: var(--ui-ink);
+    text-shadow: none;
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+
+.window .header{
+    color: var(--ui-ink);
+    background-image: none;
+    background-color: var(--ui-surface-2);
+    border-bottom: 1px solid var(--ui-line);
+    font-family: var(--font-display);
+    font-size: 110%;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.window .header button{
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border-radius: 50%;
+    color: var(--ui-ink);
+}
+
+.progress-bar .front{
+    background-image: none;
+    background-color: var(--ui-pos);
+}
+
+.progress-bar .bg{
+    background-color: var(--ui-line);
+}
+
+/*Header: side menu on desktop, top bar + bottom tabs on phones*/
+
+header{
+    color: var(--ui-ink);
+    background-color: var(--ui-surface);
+    background-image: none;
+    border-bottom: 1px solid var(--ui-line);
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+header h1{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 125%;
+    line-height: 1;
+    background: none;
+    color: var(--ui-ink);
+    filter: none;
+    -webkit-text-fill-color: currentColor;
+}
+
+header h1 span{
+    color: inherit;
+    -webkit-text-fill-color: currentColor;
+}
+
+header h1 .brand-text span{
+    color: var(--ui-accent-text);
+    -webkit-text-fill-color: var(--ui-accent-text);
+}
+
+header .brand-mark{
+    display: grid;
+    place-items: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    flex: none;
+    border-radius: 10px;
+    background-color: var(--ui-accent);
+    color: var(--ui-accent-ink);
+    -webkit-text-fill-color: currentColor;
+}
+
+header .brand-mark .ico{
+    width: 1.4rem;
+    height: 1.4rem;
+}
+
+.club-bar{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.club-id{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.club-id canvas{
+    width: 2rem;
+    height: 2rem;
+    flex: none;
+}
+
+.club-id p{
+    min-width: 0;
+    line-height: 1.15;
+}
+
+.club-id b{
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-display);
+    font-size: 115%;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.club-id small{
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--ui-muted);
+    font-size: 80%;
+}
+
+.header-money{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-left: auto;
+    padding: 0.3rem 0.85rem 0.3rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--ui-line);
+    background-color: var(--ui-surface-2);
+    color: var(--ui-ink);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 120%;
+    text-shadow: none;
+}
+
+.header-money .ico{
+    color: var(--ui-accent-text);
+}
+
+.header-money.up{
+    box-shadow: 0 0 0 2px var(--ui-accent-glow);
+    transform: none;
+    border-color: var(--ui-accent);
+}
+
+header ul li{
+    font-weight: 600;
+    color: var(--ui-muted);
+}
+
+header ul li .ico{
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+header ul li.active{
+    color: var(--ui-ink);
+}
+
+header ul li.active .ico{
+    color: var(--ui-accent-text);
+}
+
+.tab-badge{
+    margin-left: auto;
+    padding: 0.15rem 0.4rem;
+    border-radius: 999px;
+    border: 1px solid var(--ui-line);
+    background-color: var(--ui-surface-2);
+    color: var(--ui-neg);
+    font-family: var(--font-display);
+    font-size: 80%;
+    font-weight: 700;
+    line-height: 1;
+}
+
+@media (min-width: 901px){
+    #app{
+        height: auto;
+        min-height: 100vh;
+        padding-left: var(--side-width);
+        padding-top: var(--top-height);
+    }
+
+    header{
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 8;
+        width: var(--side-width);
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 0;
+        padding: 0 0.75rem 1rem;
+        border-bottom: 0;
+        border-right: 1px solid var(--ui-line);
+        overflow-y: auto;
+    }
+
+    header h1{
+        height: var(--top-height);
+        padding: 0 0.5rem;
+        font-size: 105%;
+        line-height: 1.05;
+        white-space: normal;
+        flex: none;
+    }
+
+    header h1 .brand-text{
+        max-width: 9em;
+    }
+
+    /*the club and money sit in a bar across the top*/
+    .club-bar{
+        position: fixed;
+        top: 0;
+        left: var(--side-width);
+        right: 0;
+        z-index: 8;
+        height: var(--top-height);
+        padding: 0 1.75rem;
+        background-color: var(--ui-surface);
+        border-bottom: 1px solid var(--ui-line);
+    }
+
+    header nav{
+        order: 0;
+        width: auto;
+        margin: 0.5rem 0 0;
+        padding: 0;
+        border-top: 0;
+    }
+
+    header ul{
+        flex-direction: column;
+        flex-wrap: nowrap;
+        gap: 2px;
+    }
+
+    header ul li{
+        display: flex;
+        gap: 0.75rem;
+        margin: 0;
+        padding: 0.6rem 0.75rem;
+        border-radius: 10px;
+        font-size: 100%;
+    }
+
+    header ul li:hover{
+        color: var(--ui-ink);
+        background-color: var(--ui-surface-2);
+        text-decoration: none;
+    }
+
+    header ul li.active{
+        color: var(--ui-ink);
+        background-color: var(--ui-accent-soft);
+        box-shadow: none;
+    }
+
+    header ul li img, header ul li canvas{
+        margin: 0;
+    }
+
+    header ul li .ico{
+        margin: 0;
+    }
+
+    .live-score{
+        left: auto;
+    }
+}
+
+/*tablets: one bar on top with the menu under it*/
+@media (min-width: 701px) and (max-width: 900px){
+    header{
+        flex-wrap: wrap;
+        padding: 0.5rem 1rem 0.4rem;
+    }
+
+    header h1 .brand-text{
+        display: none;
+    }
+
+    .club-bar{
+        flex: 1;
+    }
+
+    header nav{
+        order: 4;
+        width: 100%;
+        margin: 0;
+        padding-top: 0.4rem;
+        border-top: 1px solid var(--ui-line);
+    }
+
+    header ul{
+        justify-content: center;
+    }
+
+    header ul li{
+        gap: 0.35rem;
+        border-radius: 999px;
+    }
+
+    header ul li.active{
+        background-color: var(--ui-accent-soft);
+        box-shadow: none;
+        color: var(--ui-ink);
+    }
+
+    .tab-badge{
+        margin-left: 0.2rem;
+    }
+}
+
+@media (max-width: 700px){
+    header{
+        padding: 0.45rem 0.75rem;
+        background-color: var(--ui-surface);
+    }
+
+    header h1{
+        display: none;
+    }
+
+    .club-bar{
+        flex: 1;
+        gap: 0.6rem;
+    }
+
+    .club-id canvas{
+        width: 1.7rem;
+        height: 1.7rem;
+    }
+
+    .club-id b{
+        font-size: 105%;
+    }
+
+    .header-money{
+        font-size: 105%;
+        padding: 0.2rem 0.65rem 0.2rem 0.45rem;
+    }
+
+    header nav{
+        background-color: var(--ui-surface);
+        border-top: 1px solid var(--ui-line);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    header ul li{
+        gap: 0.2rem;
+        opacity: 1;
+        font-size: 70%;
+        color: var(--ui-muted);
+    }
+
+    header ul li .ico{
+        width: 1.45rem;
+        height: 1.45rem;
+        transition: transform 200ms;
+    }
+
+    header ul li.active{
+        color: var(--ui-ink);
+        background-color: transparent;
+    }
+
+    header ul li.active::before{
+        background-color: var(--ui-accent);
+        box-shadow: none;
+    }
+
+    header ul li.active .ico{
+        transform: translateY(-1px);
+    }
+
+    header ul li .tab-name{
+        white-space: nowrap;
+    }
+
+    .tab-badge{
+        position: absolute;
+        top: 0.3rem;
+        right: 0.4rem;
+        font-size: 75%;
+        padding: 0.1rem 0.3rem;
+    }
+}
+
+/*Team: strategy picks as segmented controls*/
+
+.team-management > .header, .team-management .strategies{
+    background-color: var(--ui-surface);
+    border: 1px solid var(--ui-line);
+    box-shadow: var(--ui-shadow);
+    color: var(--ui-ink);
+}
+
+.team-management > .header h4, .team-management .strategy h4{
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ui-muted);
+}
+
+.team-management > .header h4{
+    color: var(--ui-ink);
+}
+
+.team-management .strategy{
+    gap: 0.25rem;
+}
+
+.team-management .strategy button{
+    display: inline-grid;
+    justify-items: center;
+    align-content: start;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0.55rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-color: var(--ui-surface-2);
+    color: var(--ui-muted);
+    font-size: 80%;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.team-management .strategy button b{
+    color: var(--ui-ink);
+    font-size: 125%;
+    font-weight: 700;
+}
+
+.team-management .strategy button .ico{
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+.team-management .strategy button.selected{
+    border-color: var(--ui-accent);
+    background-color: var(--ui-accent-soft);
+    color: var(--ui-ink);
+}
+
+.team-management .strategy button:hover:not(:disabled){
+    border-color: var(--ui-line);
+}
+
+.team-management .strategy button.selected:hover:not(:disabled){
+    border-color: var(--ui-accent);
+}
+
+.team-management .auto-sub label{
+    display: flex;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+    white-space: nowrap;
+}
+
+/*a slider label: text on top, slider under it*/
+.team-management .auto-sub label:has(input[type="range"]){
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.ready-in .ico{
+    color: var(--ui-accent-text);
+}
+
+.ready-in.rested, .ready-in.rested .ico{
+    color: var(--ui-pos);
+}
+
+.bench-title{
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/*Player cards keep their layout for now; icons and colours follow the new set*/
+
+.player button.compare-toggle, .player button.lock-toggle{
+    display: grid;
+    place-items: center;
+    padding: 0;
+    color: var(--ui-ink);
+    background-color: var(--ui-surface);
+    border: 1px solid var(--ui-line);
+}
+
+.player button.compare-toggle .ico, .player button.lock-toggle .ico{
+    width: 0.85rem;
+    height: 0.85rem;
+}
+
+.player button.compare-toggle.active, .player button.lock-toggle.active{
+    color: var(--ui-accent-ink);
+    background-color: var(--ui-accent);
+    border-color: transparent;
+}
+
+.player .header .signing .ico{
+    color: var(--ui-accent-text);
+}
+
+.player > .stats p > span{
+    font-family: var(--font-display);
+    letter-spacing: 0.05em;
+}
+
+/*Match*/
+
+.match .stats .score .numbers, .live-score .numbers, .match .stats .time{
+    font-family: var(--font-display);
+}
+
+.match .events .ico{
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.goal-overlay .goal-text{
+    font-family: var(--font-display);
+}
+
+.goal-overlay .goal-scorer .ico{
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.match .power span.stronger{
+    color: #04120a;
+    background-color: var(--ui-pos);
+}
+
+.match .window button .ico{
+    margin-right: 0.2em;
+}
+
+/*Season*/
+
+.window-season .season-emblem{
+    display: grid;
+    place-items: center;
+}
+
+.window-season .season-emblem .ico{
+    width: 58%;
+    height: 58%;
+    stroke-width: 1.6;
+}
+
+.window-season .season-emblem.promoted{
+    background-image: none;
+    background-color: var(--ui-pos);
+    color: #04120a;
+}
+
+.window-season .scorers .ico, .match-history .ico{
+    color: var(--ui-muted);
+}
+
+.season-archive .result{
+    display: inline-grid;
+    place-items: center;
+}
+
+.season-archive .result .ico{
+    width: 1.1em;
+    height: 1.1em;
+}
+
+/*League*/
+
+.division tr.promotion{
+    box-shadow: inset 4px 0 0 var(--ui-pos);
+}
+
+.division tr.promotion .pos{
+    color: var(--ui-pos);
+}
+
+/*Achievements: drawn badges instead of clip art*/
+
+.achievement{
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 18px;
+    border: 1px solid var(--ui-line);
+    background-color: var(--ui-surface);
+    background-image: none;
+    color: var(--ui-muted);
+    box-shadow: var(--ui-shadow);
+}
+
+.achievement .achievement-icon{
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+.achievement .ico{
+    width: 2.6rem;
+    height: 2.6rem;
+    stroke-width: 1.6;
+    opacity: 0.45;
+}
+
+.achievement.completed{
+    border-color: var(--ui-accent);
+    background-color: var(--ui-accent-soft);
+    background-image: none;
+    color: var(--ui-accent-text);
+}
+
+.achievement.completed .ico{
+    opacity: 1;
+}
+
+.achievement .popup{
+    background-color: var(--ui-ink);
+    color: var(--ui-bg);
+    border-radius: 10px;
+    padding: 0.5rem 0.6rem;
+}
+
+/*Tutorial and misc*/
+
+.tutorial-icon{
+    width: 3.5rem;
+    height: 3.5rem;
+    color: var(--ui-accent-text);
+    stroke-width: 1.5;
+}
+
+.cloud-save h4 .ico{
+    color: var(--ui-accent-text);
+}
+
+.tab-settings a.icon-flex .ico{
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.compare-bar .ico{
+    color: var(--ui-accent);
+}
+
+/*the bench is its own block under the XI instead of a drawer over it*/
+.team-management .inactive-players{
+    position: static;
+    width: auto;
+    opacity: 1;
+    margin: 0 1rem 1rem;
+    padding: 1rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    background-color: var(--ui-surface);
+    box-shadow: var(--ui-shadow);
+}
+
+.team-management .players.active{
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+}
+
+.team-management .players.inactive{
+    overflow-x: auto;
+}
+
+.team-management > .header h4{
+    white-space: nowrap;
+}
+
+.team-management .auto-sub{
+    display: grid;
+    grid-template-columns: auto minmax(9rem, 14rem);
+    gap: 0.5rem 1.25rem;
+    align-items: center;
+}
+
+.team-management .auto-sub label{
+    margin-left: 0;
+}
+
+.team-management .auto-sub input[type="range"]{
+    margin-left: 0;
+    width: 100%;
+}
+
+.team-management > .header{
+    flex-wrap: wrap;
+    row-gap: 0.6rem;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+.team-management .strategies{
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+.match .match-state, .match .power span, .match .events div p{
+    color: var(--ui-ink);
+    background-color: var(--ui-surface);
+    border: 1px solid var(--ui-line);
+    text-shadow: none;
+}
+
+.match .power span.stronger{
+    border-color: transparent;
+}
+
+.match .match-state.live{
+    color: var(--ui-neg);
+}
+
+/*a card with its stat window open sits above the cards after it*/
+.player:has(> .window){
+    z-index: 10;
+    overflow: visible;
+}
+
+.window .header button:hover:not(:disabled){
+    color: #fff;
+    border-color: transparent;
+    background-color: var(--ui-red-deep);
+}
+
+.transfer-window{
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+
+.transfer-window .window-title{
+    font-family: var(--font-display);
+    color: var(--ui-accent-text);
+    text-shadow: none;
+}
+
+.live-score{
+    color: var(--ui-ink);
+    background-color: var(--ui-surface);
+    border: 1px solid var(--ui-line);
+    box-shadow: var(--ui-shadow), 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.live-score:hover{
+    border-color: var(--ui-accent);
+}
+
+.live-score .numbers{
+    background-color: var(--ui-surface-2);
+    border: 1px solid var(--ui-line);
+}

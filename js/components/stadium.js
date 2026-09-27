@@ -14,10 +14,10 @@ app.component("stadium", {
         }
     },
     template: `<div class="stadium">
-<h2 class="big-heading">🏟 Your Stadium <button class="help" @click="showHelpDialog()"><img src="images/icons/help.png"/></button></h2>
+<h2 class="big-heading"><ui-icon name="stadium"></ui-icon> Your Stadium <button class="help" @click="showHelpDialog()"><ui-icon name="help"></ui-icon></button></h2>
 <transition name="window-grow">
     <window v-if="helpDialogActive" @closed="hideHelpDialog()">
-        <template v-slot:header><div class="icon-flex"><img src="images/stadium.png"/> Stadium</div></template>
+        <template v-slot:header><div class="icon-flex"><ui-icon name="stadium"></ui-icon> Stadium</div></template>
         <template v-slot:body><p>Every good Football Team needs a Stadium! Building a stadium earns you <b>more money</b> after each Match.</p>
         <p>When a Match begins, a <b>random amount</b> of viewers come to watch your Match (0% - 100%) plus all the <b>fans</b> you have (fans are guaranteed viewers).</p>
         <p>There also are <b>Upgrades</b> to boost your Stadium income.</p></template>

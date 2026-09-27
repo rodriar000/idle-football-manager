@@ -15,7 +15,7 @@ app.component("window-player" , {
     template: `<window class="window-player">
     <template v-slot:header>
         <div class="icon-flex">
-            <img src="images/player.png"/>
+            <ui-icon name="player"></ui-icon>
             <h4>{{player.name}}</h4>
         </div>
     </template>

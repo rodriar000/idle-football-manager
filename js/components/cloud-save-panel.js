@@ -11,7 +11,7 @@ app.component("cloud-save-panel", {
         }
     },
     template: `<div class="cloud-save card" v-if="cloud.configured">
-    <h4>☁ Cloud Save</h4>
+    <h4><ui-icon name="cloud"></ui-icon> Cloud Save</h4>
     <p class="cloud-intro" v-if="!cloud.user">Sign in with your email to keep your Game in the Cloud and play it on any device.</p>
     <template v-if="!cloud.ready">
         <p>Connecting…</p>

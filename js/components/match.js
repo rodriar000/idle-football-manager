@@ -124,7 +124,7 @@ app.component("match", {
     <div v-if="goal" :key="goal.key" class="goal-overlay" :class="{against: !goal.own}">
         <div class="burst"></div>
         <p class="goal-text">{{goal.own ? "GOAL!" : "Goal"}}</p>
-        <p class="goal-scorer">⚽ {{goal.scorer || goal.team}}</p>
+        <p class="goal-scorer"><ui-icon name="ball"></ui-icon> {{goal.scorer || goal.team}}</p>
     </div>
 </transition>
 <div class="stats">
@@ -159,10 +159,10 @@ app.component("match", {
 <div class="events">
     <div>
         <p v-for="g in team1Events">
-            <template v-if="g.event === 2"><span class="sub-in">▲ {{g.name}}</span>&nbsp;<span class="sub-out">▼ {{g.nameOut}}</span>&nbsp;{{g.minute}}'</template>
+            <template v-if="g.event === 2"><span class="sub-in"><ui-icon name="subin"></ui-icon> {{g.name}}</span>&nbsp;<span class="sub-out"><ui-icon name="subout"></ui-icon> {{g.nameOut}}</span>&nbsp;{{g.minute}}'</template>
             <template v-else>{{g.name}} {{g.minute}}'</template>
-            <img alt="⚽" v-if="g.event === 0" src="images/icons/football.png"/>
-            <img alt="🟥" v-else-if="g.event === 1" src="images/icons/red-card.png"/>
+            <ui-icon class="event-goal" v-if="g.event === 0" name="ball"></ui-icon>
+            <ui-icon class="event-red" v-else-if="g.event === 1" name="redcard"></ui-icon>
         </p>
     </div>
     <div>
@@ -170,16 +170,16 @@ app.component("match", {
     </div>
     <div>
         <p v-for="g in team2Events">
-            <img alt="⚽" v-if="g.event === 0" src="images/icons/football.png"/>
-            <img alt="🟥" v-else-if="g.event === 1" src="images/icons/red-card.png"/>
-            <template v-if="g.event === 2">{{g.minute}}'&nbsp;<span class="sub-in">▲ {{g.name}}</span>&nbsp;<span class="sub-out">▼ {{g.nameOut}}</span></template>
+            <ui-icon class="event-goal" v-if="g.event === 0" name="ball"></ui-icon>
+            <ui-icon class="event-red" v-else-if="g.event === 1" name="redcard"></ui-icon>
+            <template v-if="g.event === 2">{{g.minute}}'&nbsp;<span class="sub-in"><ui-icon name="subin"></ui-icon> {{g.name}}</span>&nbsp;<span class="sub-out"><ui-icon name="subout"></ui-icon> {{g.nameOut}}</span></template>
             <template v-else>{{g.name}} {{g.minute}}'</template>
         </p>
     </div>
 </div>
 <transition name="window-grow">
     <window v-if="match.ended && windowOpen" @closed="windowOpen = false">
-        <template v-slot:header><div class="icon-flex"><img src="images/icons/football.png"/><span>Match Ended</span></div></template>
+        <template v-slot:header><div class="icon-flex"><ui-icon name="match"></ui-icon><span>Match Ended</span></div></template>
         <template v-slot:body>
             <p class="result-banner" :class="result.name">{{result.text}}</p>
             <p class="final-score">{{match.team1.name}} {{match.score1}} - {{match.score2}} {{match.team2.name}}</p>
@@ -191,7 +191,7 @@ app.component("match", {
             </div>
             <p>You now have {{formatNumber(money)}} $</p>
             <p>
-                <button @click="playNextMatch()">→ Play next Match</button>
+                <button @click="playNextMatch()"><ui-icon name="arrow"></ui-icon> Play next Match</button>
             </p>
         </template>
     </window>

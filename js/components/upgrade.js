@@ -2,7 +2,7 @@ app.component("upgrade", {
     props: ["upgrade"],
     template: `<div class="upgrade">
 <div class="icon-flex">
-    <img src="images/icons/upgrades.png"/>
+    <ui-icon name="upgrades"></ui-icon>
     <h4><slot name="title"></slot></h4>
 </div>
 <p><slot name="description"></slot></p>

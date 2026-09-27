@@ -66,7 +66,7 @@ app.component("player-compare", {
     template: `<div class="player-compare-container">
 <transition name="window-grow">
 <window v-if="players.length === 2" class="window-compare" @closed="clear()">
-    <template v-slot:header><div class="icon-flex"><img src="images/player.png"/><span>Compare Players</span></div></template>
+    <template v-slot:header><div class="icon-flex"><ui-icon name="compare"></ui-icon><span>Compare Players</span></div></template>
     <template v-slot:body>
         <table>
             <thead><tr><th></th><th>{{players[0].name}}</th><th>{{players[1].name}}</th></tr></thead>
@@ -81,7 +81,7 @@ app.component("player-compare", {
 </window>
 </transition>
 <div class="compare-bar" v-if="players.length === 1">
-    <span>Comparing <b>{{players[0].name}}</b>. Pick another Player with <b>⇄</b></span>
+    <span>Comparing <b>{{players[0].name}}</b>. Pick another Player with <ui-icon name="compare"></ui-icon></span>
     <button @click="clear()">Cancel</button>
 </div>
 </div>`

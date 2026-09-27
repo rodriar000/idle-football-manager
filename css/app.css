@@ -1470,49 +1470,143 @@ header ul li.active .ico{
 }
 
 .pcard, .prow{
-    --tier: #9aa7b4;
     position: relative;
     display: grid;
     min-width: 0;
     color: var(--ui-ink);
 }
 
-.tier-bronze{
-    --tier: #c27c47;
-}
-
-.tier-silver{
-    --tier: #9aa7b4;
-}
-
-.tier-gold{
-    --tier: var(--ui-gold);
-}
-
-.tier-elite{
-    --tier: #a66bff;
-}
+/*card levels: fixed colours by ATT+DEF (js/card-levels.js), --tier and --tier-2 paint the head, --tier-ink is the text on it*/
+.card-bronze{ --tier: #7a4a26; --tier-2: #c2875a; --tier-ink: #fff5ec; }
+.card-bronze.rare{ --tier: #9c5d2c; --tier-2: #e3a36d; }
+.card-silver{ --tier: #6c7884; --tier-2: #b9c3cd; --tier-ink: #0f1720; }
+.card-silver.rare{ --tier: #8793a0; --tier-2: #e3e9ef; }
+.card-gold{ --tier: #a87a0c; --tier-2: #e8c24a; --tier-ink: #1d1400; }
+.card-gold.rare{ --tier: #c4920f; --tier-2: #ffe07a; }
+.card-inform{ --tier: #0d0f13; --tier-2: #2e323b; --tier-ink: #f3cd55; }
+.card-inform.rare{ --tier: #14161b; --tier-2: #4a4331; }
+.card-future{ --tier: #05706b; --tier-2: #25c9bb; --tier-ink: #f0fffd; }
+.card-future.rare{ --tier: #078a84; --tier-2: #5cf0e0; --tier-ink: #03211f; }
+.card-headliner{ --tier: #8f0f25; --tier-2: #e2383f; --tier-ink: #fff1f1; }
+.card-headliner.rare{ --tier: #b3122e; --tier-2: #ff6a5c; }
+.card-hero{ --tier: #4a1b9c; --tier-2: #8d5cf0; --tier-ink: #f6f0ff; }
+.card-hero.rare{ --tier: #5b21b6; --tier-2: #b18cff; }
+.card-tots{ --tier: #0f5bb8; --tier-2: #4ea6ff; --tier-ink: #f2f8ff; }
+.card-tots.rare{ --tier: #1570d6; --tier-2: #8fcaff; --tier-ink: #041a33; }
+.card-toty{ --tier: #0a1a42; --tier-2: #1f3f8f; --tier-ink: #ffd666; }
+.card-toty.rare{ --tier: #0d2257; --tier-2: #3159b8; }
+.card-icon{ --tier: #c9b27a; --tier-2: #f6ecd0; --tier-ink: #3b2c05; }
+.card-icon.rare{ --tier: #dcc38a; --tier-2: #fffaea; }
+.card-ultimate{ --tier: #8a0f5e; --tier-2: #e64bb3; --tier-ink: #fff0fa; }
+.card-ultimate.rare{ --tier: #a3136f; --tier-2: #ff85d6; }
+.card-legend{ --tier: #045a3c; --tier-2: #22b37a; --tier-ink: #effff7; }
+.card-legend.rare{ --tier: #06734c; --tier-2: #4be3a6; --tier-ink: #022517; }
+.card-mythic{ --tier: #2a0409; --tier-2: #8f0f25; --tier-ink: #ffd0d0; }
+.card-mythic.rare{ --tier: #3a0710; --tier-2: #c51f3a; }
+.card-cosmic{ --tier: #140833; --tier-2: #4d24a8; --tier-ink: #ece2ff; }
+.card-cosmic.rare{ --tier: #1b0b3a; --tier-2: #7a4be0; }
+.card-galactic{ --tier: hsl(var(--hue) 70% 16%); --tier-2: hsl(calc(var(--hue) + 40) 85% 45%); --tier-ink: #fff; }
+.card-galactic.rare{ --tier-2: hsl(calc(var(--hue) + 40) 95% 58%); }
 
 .pcard{
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-        "avatar id ovr"
-        "stats stats stats"
-        "extra extra tools"
-        "fit fit fit"
-        "actions actions actions";
+        "head head"
+        "stats stats"
+        "extra tools"
+        "fit fit"
+        "actions actions";
     align-items: center;
     gap: 0.55rem 0.6rem;
-    padding: 0.85rem 0.85rem 0.8rem;
-    border: 1px solid var(--ui-line);
+    padding: 0 0.85rem 0.8rem;
+    border: 1px solid color-mix(in srgb, var(--tier-2) 45%, var(--ui-line));
     border-radius: 14px;
     background-color: var(--ui-surface);
-    box-shadow: inset 0 3px 0 var(--tier), var(--ui-shadow);
+    box-shadow: var(--ui-shadow);
     transition: border-color 150ms;
 }
 
+.pcard > .p-head{
+    grid-area: head;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "avatar id ovr";
+    align-items: center;
+    gap: 0.45rem 0.6rem;
+    margin: 0 -0.85rem;
+    padding: 0.75rem 0.85rem;
+    border-radius: 13px 13px 0 0;
+    background-image: linear-gradient(135deg, var(--tier), var(--tier-2));
+    color: var(--tier-ink);
+}
+
+/*rare cards get a sheen across the head*/
+.pcard.rare > .p-head{
+    background-image: linear-gradient(115deg, transparent 20%, rgba(255, 255, 255, 0.28) 38%, transparent 52%, rgba(255, 255, 255, 0.12) 66%, transparent 74%), linear-gradient(135deg, var(--tier), var(--tier-2));
+}
+
+.pcard.card-galactic > .p-head{
+    background-size: 220% 100%, 100% 100%;
+    animation: galactic-sheen 6s linear infinite;
+}
+
+@keyframes galactic-sheen{
+    from{ background-position: 100% 0, 0 0; }
+    to{ background-position: -120% 0, 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce){
+    .pcard.card-galactic > .p-head{
+        animation: none;
+    }
+}
+
+.pcard .p-head .p-ovr small, .pcard .p-head .p-sub .red-card, .pcard .p-head .p-sub .p-locked{
+    color: inherit;
+}
+
+.pcard .p-head .p-ovr small{
+    opacity: 0.75;
+}
+
+.pcard .p-head .p-id:hover .p-name{
+    text-decoration-color: currentColor;
+}
+
+.pcard .p-head .p-tier{
+    background-color: rgba(0, 0, 0, 0.22);
+    color: inherit;
+}
+
+.pcard .p-head .p-sub .red-card{
+    color: #ff5a5a;
+}
+
+/*the list keeps its columns: the head just lays its parts out in the row*/
+.prow > .p-head{
+    display: contents;
+}
+
+.prow .p-ovr{
+    justify-items: center;
+    padding: 0.25rem 0.35rem;
+    border-radius: 9px;
+    background-image: linear-gradient(135deg, var(--tier), var(--tier-2));
+    color: var(--tier-ink);
+}
+
+.prow .p-ovr small{
+    color: inherit;
+    opacity: 0.75;
+}
+
+.prow .p-tier{
+    background-image: linear-gradient(135deg, var(--tier), var(--tier-2));
+    color: var(--tier-ink);
+}
+
 .pcard:hover{
-    border-color: color-mix(in srgb, var(--tier) 55%, var(--ui-line));
+    border-color: var(--tier-2);
 }
 
 .pcard.compared, .prow.compared{
@@ -1525,13 +1619,13 @@ header ul li.active .ico{
     z-index: 10;
 }
 
-.pcard > .p-avatar, .prow > .p-avatar{
+.pcard .p-avatar, .prow .p-avatar{
     grid-area: avatar;
     width: 2.75rem;
     height: 2.75rem;
     border-radius: 50%;
     background-color: var(--ui-surface-2);
-    box-shadow: 0 0 0 2px var(--tier);
+    box-shadow: 0 0 0 2px var(--tier-2);
     cursor: pointer;
 }
 
@@ -1564,10 +1658,15 @@ header ul li.active .ico{
 }
 
 .p-tier{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    min-width: 0;
     padding: 0 0.4rem;
     border-radius: 999px;
-    background-color: color-mix(in srgb, var(--tier) 22%, transparent);
-    color: var(--ui-ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-family: var(--font-display);
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -1577,6 +1676,12 @@ header ul li.active .ico{
 .p-sub .ico{
     width: 1.05rem;
     height: 1.05rem;
+}
+
+.p-tier .ico{
+    flex: none;
+    width: 0.85em;
+    height: 0.85em;
 }
 
 .p-sub .red-card{
@@ -1808,13 +1913,13 @@ header ul li.active .ico{
 }
 
 .prow{
-    grid-template-columns: 2.4rem minmax(8rem, 1.3fr) 4rem minmax(10rem, 1.3fr) 7.5rem minmax(5rem, 0.8fr) auto 13.5rem;
+    grid-template-columns: 2.4rem minmax(7rem, 1.1fr) 5.4rem minmax(12.5rem, 1.4fr) 7rem minmax(4rem, 0.7fr) auto 13.5rem;
     grid-template-areas: "avatar id ovr stats extra fit tools actions";
     align-items: center;
     gap: 0.4rem 0.9rem;
     padding: 0.55rem 1.1rem;
     border-top: 1px solid var(--ui-line);
-    box-shadow: inset 3px 0 0 var(--tier);
+    box-shadow: inset 4px 0 0 var(--tier-2);
 }
 
 .player-list > .prow:first-child{
@@ -1825,13 +1930,14 @@ header ul li.active .ico{
     background-color: var(--ui-surface-2);
 }
 
-.prow > .p-avatar{
+.prow .p-avatar{
     width: 2.3rem;
     height: 2.3rem;
 }
 
 .prow .p-ovr b{
-    font-size: 1.3rem;
+    font-size: 1.15rem;
+    white-space: nowrap;
 }
 
 .prow .p-extra{
@@ -2019,18 +2125,19 @@ header ul li.active .ico{
 
     /*narrow cards: the name gets its own line*/
     .pcard{
-        grid-template-areas:
-            "avatar . ovr"
-            "id id id"
-            "stats stats stats"
-            "extra extra tools"
-            "fit fit fit"
-            "actions actions actions";
         gap: 0.45rem;
-        padding: 0.7rem 0.65rem 0.65rem;
+        padding: 0 0.65rem 0.65rem;
     }
 
-    .pcard > .p-avatar{
+    .pcard > .p-head{
+        grid-template-areas:
+            "avatar . ovr"
+            "id id id";
+        margin: 0 -0.65rem;
+        padding: 0.65rem;
+    }
+
+    .pcard .p-avatar{
         width: 2.2rem;
         height: 2.2rem;
     }
@@ -3134,4 +3241,77 @@ a.set-row:hover span{
     .set-row input[type="text"], .set-row select, .set-row input[type="range"]{
         flex: 1 1 10rem;
     }
+}
+
+/*Card levels guide*/
+
+.card-guide{
+    display: inline-flex;
+}
+
+.market-tools .card-guide{
+    margin-left: auto;
+}
+
+.market-tools .card-guide + .seg{
+    margin-left: 0;
+}
+
+.guide-intro{
+    margin: 0 0 0.75rem;
+    color: var(--ui-muted);
+    font-size: 90%;
+}
+
+.guide-intro .ico{
+    width: 0.9em;
+    height: 0.9em;
+    color: var(--ui-accent-text);
+}
+
+.guide-list{
+    display: grid;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.guide-list li{
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 90%;
+}
+
+.guide-swatch{
+    padding: 0.2rem 0.5rem;
+    border-radius: 7px;
+    background-image: linear-gradient(135deg, var(--tier), var(--tier-2));
+    color: var(--tier-ink);
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-align: center;
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.guide-name{
+    font-weight: 600;
+}
+
+.guide-range{
+    color: var(--ui-muted);
+    font-family: var(--font-display);
+    white-space: nowrap;
+}
+
+.guide-list .guide-more{
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--ui-muted);
 }

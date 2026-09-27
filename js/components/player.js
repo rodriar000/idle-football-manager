@@ -86,32 +86,13 @@ app.component("player", {
         canCompare(){
             return this.isCompared || playerCompare.players.length < 2;
         },
-        //card colour: strength compared to the typical (median) Player of your Team
-        tier(){
-            let team = this.$root.team;
-            let ref = team.getActivePlayers();
-            if(ref.length === 0){
-                ref = team.players;
-            }
-            if(ref.length === 0){
-                return "gold";
-            }
-            let total = p => p.getBaseAttack().add(p.getBaseDefense());
-            let totals = ref.map(total).sort((a, b) => a.cmp(b));
-            let median = totals[Math.floor(totals.length / 2)];
-            let ratio = total(this.player).div(median).toNumber();
-            return ratio >= 1.6 ? "elite" : ratio >= 1.15 ? "gold" : ratio >= 0.85 ? "silver" : "bronze";
+        //card colour: a fixed level by ATT+DEF, the same for every Player at that strength
+        card(){
+            return CardLevels.of(this.total);
         },
-        tierTitle(){
-            return {
-                elite: "Elite: much stronger than your typical Player",
-                gold: "Gold: stronger than your typical Player",
-                silver: "Silver: about as strong as your typical Player",
-                bronze: "Bronze: weaker than your typical Player"
-            }[this.tier];
-        },
-        tierName(){
-            return {elite: "Elite", gold: "Gold", silver: "Silver", bronze: "Bronze"}[this.tier];
+        cardTitle(){
+            let c = this.card;
+            return c.label + ": ATT+DEF from " + functions.formatNumber(c.min) + " to under " + functions.formatNumber(c.max);
         },
         total(){
             return this.player.getBaseAttack().add(this.player.getBaseDefense());
@@ -122,17 +103,19 @@ app.component("player", {
             return total.gt(0) ? Math.round(this.player.getBaseAttack().div(total).toNumber() * 100) : 50;
         }
     },
-    template: `<div :class="[layout === 'row' ? 'prow' : 'pcard', 'tier-' + tier, {compared: isCompared, locked: player.locked, owned: isBought, 'cant-afford': !isBought && !player.canAfford(), 'window-open': showStatBreakdown}]">
-<player-avatar class="p-avatar" :player="player" @click="showStatBreakdown = true"></player-avatar>
-<div class="p-id" @click="showStatBreakdown = true" title="Show all stats">
-    <b class="p-name" :title="player.name">{{player.name}}</b>
-    <span class="p-sub">
-        <span class="p-tier" :title="tierTitle">{{tierName}}</span>
-        <ui-icon class="red-card" v-if="player.hasRedCard()" name="redcard" title="Red card"></ui-icon>
-        <ui-icon class="p-locked" v-if="player.locked" name="lock"></ui-icon>
-    </span>
+    template: `<div :style="card.hue !== null ? {'--hue': card.hue} : null" :class="[layout === 'row' ? 'prow' : 'pcard', 'card-' + card.id, {rare: card.rare, compared: isCompared, locked: player.locked, owned: isBought, 'cant-afford': !isBought && !player.canAfford(), 'window-open': showStatBreakdown}]">
+<div class="p-head">
+    <player-avatar class="p-avatar" :player="player" @click="showStatBreakdown = true"></player-avatar>
+    <div class="p-id" @click="showStatBreakdown = true" title="Show all stats">
+        <b class="p-name" :title="player.name">{{player.name}}</b>
+        <span class="p-sub">
+            <span class="p-tier" :title="cardTitle"><ui-icon v-if="card.rare" name="star"></ui-icon>{{card.short}}</span>
+            <ui-icon class="red-card" v-if="player.hasRedCard()" name="redcard" title="Red card"></ui-icon>
+            <ui-icon class="p-locked" v-if="player.locked" name="lock"></ui-icon>
+        </span>
+    </div>
+    <div class="p-ovr" :title="'Attack + Defense. ' + cardTitle"><b>{{formatNumber(total)}}</b><small>ATT+DEF</small></div>
 </div>
-<div class="p-ovr" :title="'Attack + Defense. ' + tierTitle"><b>{{formatNumber(total)}}</b><small>ATT+DEF</small></div>
 <div class="p-stats">
     <p class="p-att"><small>ATT</small><b>{{formatNumber(player.getBaseAttack())}}</b></p>
     <div class="p-split" :title="attackShare + '% Attack, ' + (100 - attackShare) + '% Defense'"><i :style="{width: attackShare + '%'}"></i></div>

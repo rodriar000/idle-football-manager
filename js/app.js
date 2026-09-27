@@ -30,6 +30,7 @@ function setup(){
     game.academy.start();
     game.career.start();
     game.staff.start();
+    game.cup.start();
     gameTheme.apply();
 
     if(!error.length){

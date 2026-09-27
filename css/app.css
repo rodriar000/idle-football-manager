@@ -5393,3 +5393,359 @@ button.kick:hover:not(:disabled){
         padding: 0.75rem;
     }
 }
+
+/*Continental Cup*/
+
+.tab-cup{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+    text-align: left;
+}
+
+.scoreboard.cup{
+    background-image:
+        radial-gradient(90% 120% at 50% 0%, rgba(242, 193, 78, 0.16), transparent 60%),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.025) 0 56px, transparent 56px 112px);
+}
+
+.scoreboard.cup .sb-meta{
+    color: #f2c14e;
+}
+
+.ft-pens{
+    margin: -0.25rem 0 0;
+    text-align: center;
+    color: var(--ui-muted);
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.ft-cup{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--ui-accent-text);
+    font-weight: 700;
+    text-align: center;
+}
+
+.ft-cup .ico{
+    flex: none;
+    width: 1.15rem;
+    height: 1.15rem;
+}
+
+.cup-status{
+    flex: none;
+    margin: 0 0 0 auto;
+    padding: 0.4rem 0.85rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 999px;
+    background-color: var(--ui-surface-2);
+    font-family: var(--font-display);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cup-status.won{
+    color: var(--ui-accent-ink);
+    background-color: var(--ui-gold);
+    border-color: transparent;
+}
+
+.cup-status.out{
+    color: var(--ui-muted);
+}
+
+.cup-status.in{
+    color: var(--ui-pos);
+}
+
+.cup-flag{
+    display: inline-block;
+    flex: none;
+    width: 1.2rem;
+    height: 0.85rem;
+    border-radius: 3px;
+    box-shadow: 0 0 0 1px var(--ui-line);
+}
+
+.cup-next{
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 16px;
+    background-color: var(--ui-surface);
+    background-image: radial-gradient(120% 120% at 100% 0%, var(--ui-accent-soft), transparent 60%);
+    box-shadow: var(--ui-shadow);
+}
+
+.cup-next.out{
+    background-image: none;
+}
+
+.cn-text{
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.cn-text > small,
+.cn-prize small{
+    color: var(--ui-muted);
+    font-size: 75%;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.cn-vs{
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.cn-vs b{
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cn-vs canvas,
+.cn-vs > .ico{
+    flex: none;
+    width: 2.2rem;
+    height: 2.2rem;
+}
+
+.cup-next.done .cn-vs > .ico{
+    color: var(--ui-gold);
+}
+
+.cn-when{
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin: 0;
+    color: var(--ui-muted);
+    font-size: 88%;
+}
+
+.cn-when .ico{
+    width: 1rem;
+    height: 1rem;
+}
+
+.cn-prize{
+    display: grid;
+    justify-items: end;
+    gap: 0.1rem;
+}
+
+.cn-prize b{
+    color: var(--ui-pos);
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    white-space: nowrap;
+}
+
+.cup-next button.kick{
+    grid-column: 1 / -1;
+    margin: 0;
+}
+
+.cup-bracket{
+    display: grid;
+    grid-template-columns: repeat(4, minmax(210px, 1fr));
+    gap: 0.75rem;
+    padding-bottom: 0.25rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+}
+
+.cb-round{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.cb-round h4{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.35rem 0.6rem;
+    border-radius: 10px;
+    background-color: var(--ui-surface-2);
+    font-size: 90%;
+}
+
+.cb-round h4 small{
+    color: var(--ui-pos);
+    font-family: var(--font-display);
+    white-space: nowrap;
+}
+
+.cb-round.current h4{
+    color: var(--ui-accent-ink);
+    background-color: var(--ui-accent);
+}
+
+.cb-round.current h4 small{
+    color: inherit;
+}
+
+.cb-ties{
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 0.5rem;
+}
+
+.cb-tie{
+    display: grid;
+    border: 1px solid var(--ui-line);
+    border-radius: 12px;
+    background-color: var(--ui-surface);
+    overflow: hidden;
+}
+
+.cb-tie.own{
+    border-color: var(--ui-accent);
+    box-shadow: 0 0 0 1px var(--ui-accent);
+}
+
+.cb-side{
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+    min-height: 2.1rem;
+    padding: 0.3rem 0.55rem;
+    font-size: 86%;
+}
+
+.cb-side + .cb-side{
+    border-top: 1px solid var(--ui-line);
+}
+
+.cb-side canvas{
+    flex: none;
+    width: 1.35rem;
+    height: 1.35rem;
+}
+
+.cb-name{
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cb-name.tbd{
+    color: var(--ui-muted);
+    font-style: italic;
+}
+
+.cb-side.won .cb-name{
+    font-weight: 800;
+}
+
+.cb-side.lost{
+    opacity: 0.55;
+}
+
+.cb-side.mine .cb-name{
+    color: var(--ui-accent-text);
+}
+
+.cb-score{
+    flex: none;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+}
+
+.cb-score small{
+    color: var(--ui-muted);
+    font-size: 78%;
+}
+
+.cup-honours{
+    display: grid;
+    gap: 0.75rem;
+}
+
+.cup-trophies{
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    background-color: var(--ui-surface);
+}
+
+.cup-trophies .ico{
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--ui-gold);
+}
+
+.cup-trophies b{
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+}
+
+.cup-trophies span{
+    color: var(--ui-muted);
+}
+
+.cup-honours .retired{
+    justify-content: space-between;
+}
+
+.cup-honours small.cup-won{
+    color: var(--ui-accent-text);
+    font-weight: 800;
+}
+
+@media (max-width: 700px){
+    .tab-cup{
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .tab-cup .page-head{
+        flex-wrap: wrap;
+    }
+
+    .cup-next{
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .cn-prize{
+        justify-items: start;
+    }
+
+    .cup-bracket{
+        grid-template-columns: repeat(4, minmax(200px, 72vw));
+    }
+}

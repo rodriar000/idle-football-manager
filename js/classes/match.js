@@ -17,6 +17,8 @@ class Match {
         this.stadiumReward = new Decimal(0); //used for display
         this.managerXp = 0; //used for display
         this.staffWages = new Decimal(0); //used for display
+        this.cup = null; //the Continental Cup round, null for league matches
+        this.penalties = null; //[team1, team2] when a cup match ends level
 
         this.ballX = 0; //-1 to 1
         this.ballSpeed = 0;
@@ -116,6 +118,10 @@ class Match {
         for(let p of this.team1.players.concat(this.team2.players)){
             p.redCard = Math.max(0, p.redCard - 1);
         }
+        if(this.cup !== null){
+            this.endCupGame();
+            return;
+        }
 
         if(this.score1 > this.score2) {
             this.team1.divisionStats.win++;
@@ -169,12 +175,14 @@ class Match {
                 game.league.moveTeams();
                 game.lastSeason.academy = game.academy.endSeason();
                 game.lastSeason.staff = game.staff.endSeason();
-                game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome);
+                game.lastSeason.cup = game.cup.endSeason();
+                game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome) + game.lastSeason.cup.xp;
                 game.career.addXp(game.lastSeason.managerXp);
                 game.playerMarket.refresh();
             }
             else{
                 game.league.simulate();
+                game.cup.check();
             }
             game.money = game.money.add(this.getRewardMoney());
             //the staff take their wages from every match
@@ -189,6 +197,46 @@ class Match {
             }
         }
 
+        this.ended = true;
+    }
+
+    //Continental Cup: no table, a level score goes to penalties and the league match comes next
+    endCupGame(){
+        if(this.score1 === this.score2){
+            let power = this.getNormPower();
+            this.penalties = Cup.penalties(power.team1, power.team2);
+        }
+        if(this.getPlayerTeam()){
+            let playerTeam = this.getPlayerTeam();
+            game.stadium.changeFans(this.getGameResult());
+            let reward = game.stadium.getPaidMoney().mul(game.career.mul("tickets"));
+            game.money = game.money.add(reward);
+            this.stadiumReward = reward;
+            game.stadium.emptyStadium();
+            let ownIndex = this.team1 === playerTeam ? 0 : 1;
+            let own = ownIndex === 0 ? this.score1 : this.score2, other = ownIndex === 0 ? this.score2 : this.score1;
+            Match.updateRecords({
+                team1: this.team1.name, team2: this.team2.name, score1: this.score1, score2: this.score2, ownIndex,
+                result: this.getGameResult(),
+                goals: this.gameEvents.filter(e => e.event === 0).map(e => ({teamIndex: e.teamIndex, name: e.name, minute: e.minute})),
+                reward: this.getRewardMoney().add(this.stadiumReward)
+            }, "Continental Cup");
+            this.managerXp = ManagerCareer.matchXp(own, other);
+            game.career.addXp(this.managerXp);
+            for(let p of playerTeam.getActivePlayers()){
+                if(p.hasRedCard()){
+                    p.active = false;
+                }
+            }
+            if(game.settings.team.refillPlayers){
+                playerTeam.refillPlayers();
+            }
+            game.money = game.money.add(this.getRewardMoney());
+            this.staffWages = Decimal.min(game.money, game.staff.getWages());
+            game.money = game.money.sub(this.staffWages);
+            game.cup.finishOwnTie(this);
+            gameNotifications.matchEnded(this);
+        }
         this.ended = true;
     }
 
@@ -236,6 +284,10 @@ class Match {
     getGameResult(){
         let ownScore = game.team === this.team1 ? this.score1 : this.score2;
         let otherScore = game.team === this.team1 ? this.score2 : this.score1;
+        if(ownScore === otherScore && this.penalties){
+            let own = game.team === this.team1 ? 0 : 1;
+            return this.penalties[own] > this.penalties[1 - own] ? MATCH_WIN : MATCH_LOSE;
+        }
         if(ownScore > otherScore){
             return MATCH_WIN;
         }
@@ -250,6 +302,9 @@ class Match {
     getRewardMoney(){
         let rewards = game.league.divisions[this.divisionRank].getRewards();
         let result = this.getGameResult();
+        if(this.cup !== null){
+            return result === MATCH_WIN ? game.cup.getPrize(this.cup) : rewards.lose;
+        }
         if(result === MATCH_WIN){
             return rewards.win;
         }
@@ -340,6 +395,12 @@ class Match {
         this.stadiumReward = obj.stadiumReward || new Decimal(0);
         this.managerXp = Number(obj.managerXp) || 0;
         this.staffWages = obj.staffWages || new Decimal(0);
+        if(obj.cup !== undefined && obj.cup !== null){
+            this.cup = Number(obj.cup);
+            this.team1 = game.cup.getTeam(obj.team1Cup);
+            this.team2 = game.cup.getTeam(obj.team2Cup);
+            this.penalties = obj.penalties || null;
+        }
         this.ended = obj.ended;
         this.baseStrategy = obj.baseStrategy ?? null;
     }
@@ -369,7 +430,7 @@ class Match {
             winStreak: 0, bestWinStreak: 0,
             unbeatenStreak: 0, bestUnbeatenStreak: 0,
             scorers: {},
-            seasons: 0, promotions: 0, titles: 0
+            seasons: 0, promotions: 0, titles: 0, cups: 0, cupFinals: 0
         };
     }
 
@@ -466,6 +527,8 @@ class Match {
     }
 
     static from(match){
-        return new Match(match.team1, match.team2, match.divisionRank);
+        let m = new Match(match.team1, match.team2, match.divisionRank);
+        m.cup = match.cup ?? null;
+        return m;
     }
 }

@@ -8,6 +8,7 @@ class Team {
         this.aggressivity = Strategy.NORMAL;
         this.seed = seed; //used for team logo
         this.formation = Formations.default;
+        this.boost = 1; //rival clubs get stronger or weaker every Season
         this.logo = this.generateLogo();
         this.resetDivisionStats();
     }
@@ -30,6 +31,7 @@ class Team {
         minStat = minStat.mul(new Decimal(17 / 16).pow(Math.max(0, normRank - 4)).add(1));
         minStat = minStat.mul(new Decimal(20 / 17).pow(Math.max(0, normRank - 12)).add(1));
         minStat = minStat.mul(new Decimal(1.1).pow(Decimal.pow(1.01, Decimal.max(0, normRank - 50))));
+        minStat = minStat.mul(this.boost || 1);
         let maxStat = minStat.mul(1 + 0.5 * r.nextDouble());
         for(let i = 0; i < 11; i++) {
             players.push(GeneratorUtils.generatePlayer(r.nextInt(), minStat, maxStat, true));
@@ -330,6 +332,7 @@ class Team {
             }
         }
         else{
+            this.boost = Number(obj.boost) || 1;
             this.players = this.generatePlayers();
         }
     }

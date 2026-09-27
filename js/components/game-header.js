@@ -3,6 +3,7 @@ function getVisibleTabs(){
     return [
         {id: "tab-team", name: "Team", icon: "team"},
         {id: "tab-player-market", name: "Market", icon: "market"},
+        {id: "tab-transfers", name: "Transfers", icon: "transfer"},
         {id: "tab-academy", name: "Academy", icon: "academy"},
         {id: "tab-manager", name: "Manager", icon: "manager"},
         {id: "tab-staff", name: "Staff", icon: "whistle"},
@@ -67,6 +68,9 @@ app.component("game-header", {
             let match = this.$root.currentMatch;
             return match && !match.ended && match.time > 0 ? Math.min(90, match.getMinute()) + "'" : "";
         },
+        offerCount(){
+            return this.$root.world.offers.length;
+        },
         freePoints(){
             return this.$root.career.getFreePoints();
         },
@@ -91,6 +95,7 @@ app.component("game-header", {
             :title="getTabShortcut(i) ? 'Shortcut: ' + getTabShortcut(i) : ''">
             <ui-icon :name="t.icon"></ui-icon><span class="tab-name">{{t.name}}</span>
             <span class="tab-badge" v-if="t.id === 'tab-match' && liveMinute">{{liveMinute}}</span>
+            <span class="tab-badge points" v-if="t.id === 'tab-transfers' && offerCount > 0" :title="offerCount + ' bids for your Players'">{{offerCount}}</span>
             <span class="tab-badge points" v-if="t.id === 'tab-manager' && freePoints > 0" :title="freePoints + ' skill points to spend'">{{freePoints}}</span>
         </li>
     </ul>

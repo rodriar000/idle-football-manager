@@ -60,6 +60,7 @@ const Icons = {
         "link": '<path d="M10 14 20 4M14 4h6v6M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/>',
         "training-star": '<path class="d" d="M8 6h3.4l3.8 12.5H4.2z"/><path d="M8 6h3.4l3.8 12.5H4.2zM2.5 20.5h14.5M6 12.5h7.6"/><path class="f" d="m18.5 2.6 1 2.1 2.3.3-1.7 1.6.4 2.3-2-1.1-2 1.1.4-2.3-1.7-1.6 2.3-.3z"/>',
         "tv-off": '<rect x="3" y="7" width="18" height="12.5" rx="2.5"/><path d="m8 3 4 4 4-4M9 23h6"/>',
+        "transfer": '<rect class="d" x="3" y="3" width="18" height="18" rx="5"/><path d="M7 9.5h10.5M14.5 6.5l3 3-3 3M17 14.5H6.5M9.5 11.5l-3 3 3 3"/>',
         "sponsor": '<path class="d" d="M2.5 10.5 7 6l3 1.5L13.5 6l8 4.5-4 5.5-5.5-.5L7 16z"/><path d="M2.5 10.5 7 6l3 1.5M21.5 10.5 17 6l-3.5 1.5L9.8 11a1.3 1.3 0 0 0 1.7 2l2.3-1.5 4.2 4.5M17.8 16l-1.4 1.4M7 16l2.5 2.5a1.3 1.3 0 0 0 1.9-1.8M9 14l3 3a1.3 1.3 0 0 0 1.9-1.8M11.4 11.9l3.5 3.5a1.3 1.3 0 0 0 1.9-1.8"/>',
         "cup": '<path class="d" d="M7 3.5h10v5a5 5 0 0 1-10 0z"/><path d="M7 3.5h10v5a5 5 0 0 1-10 0zM7 5.5H5.2a2 2 0 0 0-2 2.2c.3 2.4 2 3.8 4.3 4M17 5.5h1.8a2 2 0 0 1 2 2.2c-.3 2.4-2 3.8-4.3 4M12 13.5V17M8 20.5h8M9 20.5c0-2 1.3-3.5 3-3.5s3 1.5 3 3.5"/>',
         "whistle": '<path class="d" d="M3.5 13.5a5.5 5.5 0 1 0 11 0v-2h7v-4h-11.5a5.5 5.5 0 0 0-6.5 6z"/><path d="M3.5 13.5a5.5 5.5 0 1 0 11 0v-2h7v-4h-11.5M9 8a5.5 5.5 0 0 0-5.5 5.5M7 4.5 5.5 2.5M11 4.5l1.5-2"/><circle class="f" cx="9" cy="13.5" r="1.6"/>',
@@ -97,7 +98,8 @@ const Icons = {
         "images/icons/settings.png": "settings",
         "images/icons/website.png": "link",
         "images/icons/cup.png": "cup",
-        "images/icons/sponsor.png": "sponsor"
+        "images/icons/sponsor.png": "sponsor",
+        "images/icons/transfer.png": "transfer"
     },
 
     forImage(src){

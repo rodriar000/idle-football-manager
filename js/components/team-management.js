@@ -193,6 +193,7 @@ app.component("team-management", {
     <div class="squad-head">
         <h3>Starting XI</h3>
         <span class="count-chip">{{activePlayers.length}} / 11</span>
+        <card-guide></card-guide>
         <div class="squad-tools">
             <div class="seg" role="group" aria-label="Show Players as">
                 <button :class="{selected: view === 'cards'}" @click="setView('cards')" aria-label="Cards" title="Cards"><ui-icon name="grid"></ui-icon></button>

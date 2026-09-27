@@ -72,6 +72,7 @@ app.component("player-market", {
         <div class="chips" role="group" aria-label="Sort Players by">
             <button v-for="s in sorts" :key="s.id" :class="{selected: sort === s.id}" @click="setSort(s.id)"><ui-icon :name="s.icon"></ui-icon> {{s.label}}</button>
         </div>
+        <card-guide></card-guide>
         <div class="seg" role="group" aria-label="Show Players as">
             <button :class="{selected: view === 'cards'}" @click="setView('cards')" aria-label="Cards" title="Cards"><ui-icon name="grid"></ui-icon></button>
             <button :class="{selected: view === 'list'}" @click="setView('list')" aria-label="List" title="List"><ui-icon name="list"></ui-icon></button>

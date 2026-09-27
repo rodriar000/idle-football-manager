@@ -1,11 +1,25 @@
 //top-down view of the match: your stadium, both teams and the ball.
 //Only a picture of match.ballX and the score, it doesn't change the match.
-const FORMATION = [
-    [0.04, 0.5],
-    [0.2, 0.17], [0.17, 0.39], [0.17, 0.61], [0.2, 0.83],
-    [0.4, 0.14], [0.37, 0.38], [0.37, 0.62], [0.4, 0.86],
-    [0.58, 0.4], [0.58, 0.6]
-];
+//where each place of a formation stands, for the home side (the away side is mirrored): keeper first
+function formationLayout(key){
+    let cache = formationLayout.cache || (formationLayout.cache = {});
+    if(!cache[key]){
+        let places = Formations.places(key);
+        let lines = {GK: 0.04, DEF: 0.19, MID: 0.37, FWD: 0.56};
+        let layout = [];
+        for(let place of ["GK", "DEF", "MID", "FWD"]){
+            let count = places.filter(p => p === place).length;
+            for(let i = 0; i < count; i++){
+                //the wide players of a line stand a little further forward
+                let y = count === 1 ? 0.5 : 0.14 + 0.72 * i / (count - 1);
+                let wide = place === "GK" ? 0 : Math.abs(y - 0.5) * 0.06;
+                layout.push([lines[place] + wide, y]);
+            }
+        }
+        cache[key] = layout;
+    }
+    return cache[key];
+}
 
 //"rgb(1, 2, 3)", "#abc" or "white" -> [r, g, b]
 function colorToRGB(color){
@@ -83,7 +97,7 @@ app.component("match-view", {
                 kit2 = options.find(c => colorDistance(kit1, c) >= 110) || "#f8fafc";
             }
             this.kits = [kit1, kit2];
-            this.players = [0, 1].map(team => FORMATION.map(([x, y]) => ({x: team === 0 ? x : 1 - x, y})));
+            this.players = [0, 1].map(team => this.getLayout(team).map(([x, y]) => ({x: team === 0 ? x : 1 - x, y})));
             this.ball = {y: 0.5, target: 0.5, next: 0};
             this.lastScore = this.match.score1 + this.match.score2;
         },
@@ -112,7 +126,7 @@ app.component("match-view", {
                     }
                 }
                 for(let i = 0; i < count; i++){
-                    let [fx, fy] = FORMATION[i];
+                    let [fx, fy] = this.getLayout(team)[i];
                     let shift = (bx - 0.5) * (i === 0 ? 0.06 : 0.5);
                     let tx = (team === 0 ? fx : 1 - fx) + shift;
                     let ty = fy + (ball.y - 0.5) * (i === 0 ? 0.3 : 0.25);
@@ -126,6 +140,9 @@ app.component("match-view", {
                     list[i].y += (Math.max(0.03, Math.min(0.97, ty)) - list[i].y) * follow;
                 }
             }
+        },
+        getLayout(team){
+            return formationLayout((team === 0 ? this.match.team1 : this.match.team2).formation);
         },
         getPlayerCount(team){
             let t = team === 0 ? this.match.team1 : this.match.team2;

@@ -82,6 +82,35 @@ app.component("team-management", {
         },
         benchSorted(){
             return this.team.getInactiveSortedPlayers();
+        },
+        formationKeys(){
+            return Formations.keys();
+        },
+        formationInfo(){
+            return Formations.get(this.team.formation);
+        },
+        lineup(){
+            return this.team.getLineup();
+        },
+        //the pitch from the attack down to the keeper
+        pitchRows(){
+            return ["FWD", "MID", "DEF", "GK"].map(place => ({place, slots: this.lineup.filter(s => s.place === place)}));
+        },
+        misfits(){
+            return this.lineup.filter(s => s.player && s.fit < 1).length;
+        },
+        //the positions the formation lacks a Player of, as "2 MID, 1 FWD"
+        neededPlaces(){
+            let count = {};
+            for(let s of this.lineup){
+                if(!s.player || s.fit < 1){
+                    count[s.place] = (count[s.place] || 0) + 1;
+                }
+            }
+            return Object.keys(count).map(k => count[k] + " " + k).join(", ");
+        },
+        openPlaces(){
+            return this.lineup.filter(s => !s.player).length;
         }
     },
     methods: {
@@ -96,6 +125,16 @@ app.component("team-management", {
             if(match && !match.ended && match.baseStrategy !== null){
                 match.baseStrategy = strategy;
             }
+        },
+        setFormation(key){
+            this.team.formation = key;
+        },
+        shortName(p){
+            let parts = p.name.split(" ");
+            return parts[parts.length - 1];
+        },
+        tiltText(value){
+            return value === 1 ? "x1" : value > 1 ? "x" + value : "\u00f7" + (1 / value).toFixed(2);
         },
         setAggressivity(strategy){
             this.team.aggressivity = strategy;
@@ -157,6 +196,31 @@ app.component("team-management", {
         <small>{{activePlayers.length === 0 ? "Move Players to the Team" : restTime <= 0 ? "Everyone at full Stamina" : restPaused ? "Resting after the Match" : "Until everyone is rested"}}</small>
     </div>
 </div>
+<section class="club-panel formation-panel">
+    <div class="lineup-pitch" aria-label="Your formation">
+        <div class="lp-row" v-for="row in pitchRows" :key="row.place">
+            <div class="lp-slot" v-for="(s, i) in row.slots" :key="i" :class="[s.player ? 'pos-' + s.player.position : 'open', {misfit: s.player && s.fit < 1}]"
+                :title="s.player ? s.player.name + ' (' + s.player.position + ') in ' + s.place + ': ' + Math.round(s.fit * 100) + '%' : 'Open ' + s.place + ' place'">
+                <span class="lp-dot">{{s.player ? s.player.position : s.place}}</span>
+                <span class="lp-name">{{s.player ? shortName(s.player) : "Open"}}</span>
+                <span class="lp-fit" v-if="s.player && s.fit < 1">{{Math.round(s.fit * 100)}}%</span>
+            </div>
+        </div>
+    </div>
+    <div class="formation-side">
+        <h3>Formation <b class="formation-name">{{team.formation}}</b></h3>
+        <div class="formation-chips" role="group" aria-label="Formation">
+            <button v-for="key in formationKeys" :key="key" :class="{selected: team.formation === key}" @click="setFormation(key)">{{key}}</button>
+        </div>
+        <p class="formation-tilt"><span class="att"><ui-icon name="attack"></ui-icon> ATT {{tiltText(formationInfo.att)}}</span><span class="def"><ui-icon name="defend"></ui-icon> DEF {{tiltText(formationInfo.def)}}</span></p>
+        <p class="formation-state" :class="{ok: misfits === 0 && openPlaces === 0}">
+            <ui-icon :name="misfits === 0 && openPlaces === 0 ? 'check' : 'swap'"></ui-icon>
+            <span v-if="misfits === 0 && openPlaces === 0">Every Player is in their own position</span>
+            <span v-else><template v-if="misfits">{{misfits}} out of position</template><template v-if="misfits && openPlaces"> · </template><template v-if="openPlaces">{{openPlaces}} open</template>. Needs {{neededPlaces}}: try Best XI, or sign one in the Market.</span>
+        </p>
+        <p class="formation-help">Players give all their stats in their own position: 85% next to it, 70% far from it, 50% in or out of goal.</p>
+    </div>
+</section>
 <div class="club-panels">
     <section class="club-panel tactics">
         <h3>Tactics</h3>
@@ -199,7 +263,7 @@ app.component("team-management", {
                 <button :class="{selected: view === 'cards'}" @click="setView('cards')" aria-label="Cards" title="Cards"><ui-icon name="grid"></ui-icon></button>
                 <button :class="{selected: view === 'list'}" @click="setView('list')" aria-label="List" title="List"><ui-icon name="list"></ui-icon></button>
             </div>
-            <button class="best-eleven" :disabled="playerCount === 0" @click="pickBestEleven()" title="Put the 11 strongest rested players in the Team; protected players stay (B)"><ui-icon name="star"></ui-icon> Best XI</button>
+            <button class="best-eleven" :disabled="playerCount === 0" @click="pickBestEleven()" title="Put the strongest rested Player of each position in your formation; protected players stay (B)"><ui-icon name="star"></ui-icon> Best XI</button>
         </div>
     </div>
     <div class="no-players" v-if="playerCount === 0">You don't have any Players yet. Buy some in the Market first.</div>

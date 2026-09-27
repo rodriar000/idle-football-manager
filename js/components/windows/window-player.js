@@ -8,6 +8,9 @@ app.component("window-player" , {
         regenerationTimeLeft(){
             return this.player.getRegenerationTime() * (1 - this.player.currentStamina);
         },
+        positionName(){
+            return Positions.names[this.player.position] || "";
+        },
         trainingUnlocked(){
             return PlayerTraining.isUnlocked;
         }
@@ -21,6 +24,8 @@ app.component("window-player" , {
     </template>
     <template v-slot:body>
         <div class="stats">
+            <div><p><b>Position:</b> {{positionName}}</p>
+                  → Gives all their stats in their own position, less anywhere else</div>
             <div><p><b>Attack:</b> {{formatNumber(player.getBaseAttack())}}</p>
                   → Modified by Stamina<br/>
                   → Currently {{formatNumber(player.getAttack())}}</div>

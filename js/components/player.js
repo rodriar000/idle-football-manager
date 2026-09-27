@@ -86,6 +86,19 @@ app.component("player", {
         canCompare(){
             return this.isCompared || playerCompare.players.length < 2;
         },
+        //where a starter plays in the formation, and how much of their stats they give there
+        slot(){
+            if(!this.player.active || !this.$root.team.players.includes(this.player)){
+                return null;
+            }
+            return this.$root.team.getSlot(this.player);
+        },
+        misfit(){
+            return this.slot && this.slot.fit < 1 ? this.slot : null;
+        },
+        positionName(){
+            return Positions.names[this.player.position] || "";
+        },
         //card colour: a fixed level by ATT+DEF, the same for every Player at that strength
         card(){
             return CardLevels.of(this.total);
@@ -109,6 +122,8 @@ app.component("player", {
     <div class="p-id" @click="showStatBreakdown = true" title="Show all stats">
         <b class="p-name" :title="player.name">{{player.name}}</b>
         <span class="p-sub">
+            <span class="p-pos" :class="'pos-' + player.position" :title="positionName">{{player.position}}</span>
+            <span class="p-misfit" v-if="misfit" :title="'Out of position: plays ' + misfit.place + ' and gives ' + Math.round(misfit.fit * 100) + '% of their stats there'"><ui-icon name="swap"></ui-icon>{{misfit.place}} {{Math.round(misfit.fit * 100)}}%</span>
             <span class="p-tier" :title="cardTitle"><ui-icon v-if="card.rare" name="star"></ui-icon>{{card.short}}</span>
             <ui-icon class="red-card" v-if="player.hasRedCard()" name="redcard" title="Red card"></ui-icon>
             <ui-icon class="p-locked" v-if="player.locked" name="lock"></ui-icon>

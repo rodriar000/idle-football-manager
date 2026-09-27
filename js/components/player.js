@@ -42,6 +42,10 @@ app.component("player", {
             this.confirmSell = true;
             this.confirmSellTimeout = setTimeout(() => this.cancelSell(), 3000);
         },
+        toggleLock(){
+            this.player.locked = !this.player.locked;
+            this.cancelSell();
+        },
         cancelSell(){
             clearTimeout(this.confirmSellTimeout);
             this.confirmSell = false;
@@ -53,6 +57,9 @@ app.component("player", {
     computed: {
         canMove(){
             if(this.player.hasRedCard() && (game.currentMatch && !game.currentMatch.ended || !this.player.active)){
+                return false;
+            }
+            if(this.player.active && this.player.locked){
                 return false;
             }
             return (!this.teamFull && !this.player.active) || this.player.active;
@@ -109,7 +116,8 @@ app.component("player", {
             return this.player.active ? "100%" : "50%";
         }
     },
-    template: `<div class="player" :class="['tier-' + tier, {compared: isCompared}]">
+    template: `<div class="player" :class="['tier-' + tier, {compared: isCompared, locked: player.locked}]">
+<button class="lock-toggle" v-if="isBought" :class="{active: player.locked}" @click="toggleLock()" :title="player.locked ? 'Protected: cannot be sold or taken out of the Team. Tap to unprotect' : 'Protect this Player'">{{player.locked ? "🔒" : "🔓"}}</button>
 <button class="compare-toggle" :class="{active: isCompared}" :disabled="!canCompare" @click="toggleCompare()" :title="isCompared ? 'Remove from Comparison' : 'Compare'">⇄</button>
 <p class="header"><div @click="showStatBreakdown = true" class="icon-flex"><player-avatar :player="player"></player-avatar><img v-if="player.hasRedCard()" alt="" src="images/icons/red-card.png"/> {{player.name}}</div>
 <div class="icon-flex" v-if="isBought"><img alt="" src="images/icons/stamina.png"/> <progress-bar :value="player.currentStamina"></progress-bar></div>
@@ -127,9 +135,10 @@ app.component("player", {
             <button v-if="!player.active" @click="removeFromTraining()">Stop Training</button>
         </div>
         <div v-else>
-            <button :style="{width: buttonWidth}" :disabled="!canMove" v-if="isBought" @click="player.active = !player.active"><span v-if="!player.active">Move to Team</span><span v-else>Move from Team</span></button>
+            <button :style="{width: buttonWidth}" :disabled="!canMove" v-if="isBought" @click="player.active = !player.active" :title="player.active && player.locked ? 'Protected: unprotect the Player (🔒) to take them out' : ''"><span v-if="!player.active">Move to Team</span><span v-else>Move from Team</span></button>
             <button :style="{width: '50%'}" v-if="!player.active && trainingUnlocked" @click="addToTraining()">Train</button>
-            <button class="negative sell" :class="{armed: confirmSell}" v-if="!player.active" @click="sellPlayer()" @blur="cancelSell()">
+            <button class="sell protected" disabled v-if="!player.active && player.locked" title="Unprotect the Player (🔒) to sell">🔒 Protected</button>
+            <button class="negative sell" :class="{armed: confirmSell}" v-else-if="!player.active" @click="sellPlayer()" @blur="cancelSell()">
                 <span v-if="confirmSell">Tap again to sell ({{formatNumber(player.getSellAmount())}} $)</span>
                 <span v-else>Sell ({{formatNumber(player.getSellAmount())}} $)</span>
             </button>

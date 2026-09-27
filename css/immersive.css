@@ -2180,3 +2180,41 @@ kbd{
 .ready-in.rested{
     color: var(--ui-accent);
 }
+
+/*protected player: lock under the compare toggle, beside the stamina bar*/
+.player > .icon-flex + .icon-flex{
+    padding-right: 1.8rem;
+}
+
+.player button.lock-toggle{
+    position: absolute;
+    top: 1.8rem;
+    right: 0.2rem;
+    z-index: 1;
+    width: 1.4rem;
+    height: 1.4rem;
+    padding: 0;
+    font-size: 70%;
+    line-height: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.35);
+    box-shadow: none;
+    opacity: 0.55;
+}
+
+.player button.lock-toggle:hover, .player button.lock-toggle.active{
+    opacity: 1;
+}
+
+.player button.lock-toggle.active{
+    background-color: var(--ui-gold);
+}
+
+.player.locked{
+    box-shadow: 0 0 0 2px var(--ui-gold), 0 10px 22px rgba(0, 0, 0, 0.4);
+}
+
+.player button.sell.protected{
+    opacity: 0.8;
+}

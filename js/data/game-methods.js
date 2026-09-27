@@ -49,6 +49,10 @@ let functions = {
                 return value;
             }
             else if(value instanceof Match){
+                if(value.cup !== null && value.cup !== undefined){
+                    value.team1Cup = game.cup.indexOf(value.team1);
+                    value.team2Cup = game.cup.indexOf(value.team2);
+                }
                 value.team1Idx = game.league.divisions[game.team.divisionRank].teams.findIndex(t => t === value.team1);
                 value.team2Idx = game.league.divisions[game.team.divisionRank].teams.findIndex(t => t === value.team2);
             }
@@ -119,6 +123,11 @@ let functions = {
 
             if(obj.stadium){
                 game.stadium.load(obj.stadium);
+            }
+
+            //before the matches: a cup match finds its clubs in the cup
+            if(obj.cup){
+                game.cup.load(obj.cup);
             }
 
             if(obj.currentMatch){

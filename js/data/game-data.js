@@ -44,6 +44,7 @@ let game = {
     academy: new Academy(),
     career: new ManagerCareer(),
     staff: new Staff(),
+    cup: new Cup(),
     tv: {
         isUnlocked: () => game.maxDivisionRank >= 8 || game.country >= 1,
         channels: [
@@ -102,7 +103,10 @@ let game = {
         new Achievement("Invincibles", "Finish a Season without losing a Match", "images/icons/league.png", () => game.seasonArchive.some(s => s.lose === 0)),
         new Achievement("Perfect Season", "Win every Match of a Season", "images/icons/league.png", () => game.seasonArchive.some(s => s.draw === 0 && s.lose === 0)),
         new Achievement("Silverware", "Finish a Season in 1st place", "images/icons/achievements.png", () => game.records.titles >= 1),
-        new Achievement("Dynasty", "Finish 3 Seasons in 1st place", "images/icons/achievements.png", () => game.records.titles >= 3)
+        new Achievement("Dynasty", "Finish 3 Seasons in 1st place", "images/icons/achievements.png", () => game.records.titles >= 3),
+        new Achievement("Cup Run", "Reach the Final of the Continental Cup", "images/icons/cup.png", () => (game.records.cupFinals || 0) >= 1),
+        new Achievement("Continental Champion", "Win the Continental Cup", "images/icons/cup.png", () => (game.records.cups || 0) >= 1),
+        new Achievement("Cup Kings", "Win the Continental Cup 3 times", "images/icons/cup.png", () => (game.records.cups || 0) >= 3)
     ],
     tab: "tab-team",
     settings: {

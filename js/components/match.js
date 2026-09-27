@@ -110,6 +110,9 @@ app.component("match", {
             return this.match.team2 === this.$root.team ? this.match.score1 : this.match.score2;
         },
         result(){
+            if(this.match.penalties){
+                return this.match.getGameResult() === MATCH_WIN ? {name: "win", text: "Won on Penalties"} : {name: "lose", text: "Lost on Penalties"};
+            }
             if(this.ownScore > this.otherScore){
                 return {name: "win", text: "Victory"};
             }
@@ -144,8 +147,18 @@ app.component("match", {
             return list;
         },
         divisionName(){
+            if(this.match.cup !== null){
+                return "Continental Cup · " + CupRounds.names[this.match.cup];
+            }
             let division = this.$root.league.divisions[this.match.divisionRank];
             return division ? division.getName() : "";
+        },
+        cupLine(){
+            let round = this.match.cup;
+            if(this.match.getGameResult() !== MATCH_WIN){
+                return "Out of the Continental Cup in the " + CupRounds.names[round];
+            }
+            return round === CupRounds.count - 1 ? "You won the Continental Cup!" : "Through to the " + CupRounds.names[round + 1];
         },
         restTime(){
             return this.$root.team.getTimeUntilRested();
@@ -162,10 +175,10 @@ app.component("match", {
         <p class="goal-scorer"><ui-icon name="ball"></ui-icon> {{goal.scorer || goal.team}}</p>
     </div>
 </transition>
-<section class="scoreboard" :class="state.name">
+<section class="scoreboard" :class="[state.name, {cup: match.cup !== null}]">
     <div class="sb-top">
         <span class="sb-state" :class="state.name"><i></i>{{state.text}}</span>
-        <span class="sb-meta" v-if="divisionName"><ui-icon name="trophy"></ui-icon> {{divisionName}}</span>
+        <span class="sb-meta" v-if="divisionName"><ui-icon :name="match.cup !== null ? 'cup' : 'trophy'"></ui-icon> {{divisionName}}</span>
     </div>
     <div class="sb-main">
         <div class="sb-team" :class="{own: ownIndex === 0}">
@@ -253,8 +266,10 @@ app.component("match", {
                 <span class="ft-nums">{{match.score1}} - {{match.score2}}</span>
                 <span class="ft-team away"><b>{{match.team2.name}}</b><team-logo :logo="match.team2.logo"></team-logo></span>
             </div>
+            <p class="ft-pens" v-if="match.penalties">Penalties {{match.penalties[0]}} - {{match.penalties[1]}}</p>
+            <p class="ft-cup" v-if="match.cup !== null"><ui-icon name="cup"></ui-icon> {{cupLine}}</p>
             <ul class="ft-money">
-                <li><ui-icon name="match"></ui-icon><span>Match reward</span><b class="pos">+{{formatNumber(reward)}} $</b></li>
+                <li><ui-icon :name="match.cup !== null ? 'cup' : 'match'"></ui-icon><span>{{match.cup !== null && result.name === "win" ? "Cup prize" : "Match reward"}}</span><b class="pos">+{{formatNumber(reward)}} $</b></li>
                 <li v-if="stadiumUnlocked"><ui-icon name="stadium"></ui-icon><span>Stadium tickets</span><b class="pos">+{{formatNumber(match.stadiumReward)}} $</b></li>
                 <li v-if="match.staffWages.gt(0)"><ui-icon name="whistle"></ui-icon><span>Staff wages</span><b class="neg">-{{formatNumber(match.staffWages)}} $</b></li>
                 <li class="total"><ui-icon name="coins"></ui-icon><span>Balance</span><b>{{formatNumber(money)}} $</b></li>

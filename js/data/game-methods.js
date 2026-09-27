@@ -161,6 +161,10 @@ let functions = {
                 game.staff.load(obj.staff);
             }
 
+            if(obj.sponsors){
+                game.sponsors.load(obj.sponsors);
+            }
+
             if(game.team && game.team.formation === null){
                 functions.introducePositions();
             }

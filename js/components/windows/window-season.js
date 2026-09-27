@@ -66,6 +66,8 @@ app.component("window-season", {
             <p v-if="season.managerXp"><ui-icon name="manager"></ui-icon> +{{season.managerXp}} Manager XP for the Season</p>
             <p v-if="season.academy.joined.length"><ui-icon name="star"></ui-icon> New prospects: {{season.academy.joined.join(", ")}}</p>
             <p v-if="season.cup"><ui-icon name="cup"></ui-icon> Continental Cup: {{season.cup.won ? "Winner! +" + season.cup.xp + " Manager XP" : "out in the " + season.cup.reached}}</p>
+            <p v-if="season.sponsors && season.sponsors.reached.length"><ui-icon name="sponsor"></ui-icon> Sponsor goals reached: {{season.sponsors.reached.join(", ")}}</p>
+            <p v-if="season.sponsors && season.sponsors.missed.length"><ui-icon name="sponsor"></ui-icon> Sponsor goals missed: {{season.sponsors.missed.join(", ")}}</p>
             <p v-if="season.staff && season.staff.left.length"><ui-icon name="whistle"></ui-icon> Contract ended: {{season.staff.left.join(", ")}}</p>
             <p v-if="season.staff"><ui-icon name="whistle"></ui-icon> New Staff candidates are waiting in the Staff tab</p>
         </div>

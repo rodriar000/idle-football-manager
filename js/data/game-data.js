@@ -45,6 +45,7 @@ let game = {
     career: new ManagerCareer(),
     staff: new Staff(),
     cup: new Cup(),
+    sponsors: new Sponsors(),
     tv: {
         isUnlocked: () => game.maxDivisionRank >= 8 || game.country >= 1,
         channels: [
@@ -106,6 +107,8 @@ let game = {
         new Achievement("Dynasty", "Finish 3 Seasons in 1st place", "images/icons/achievements.png", () => game.records.titles >= 3),
         new Achievement("Cup Run", "Reach the Final of the Continental Cup", "images/icons/cup.png", () => (game.records.cupFinals || 0) >= 1),
         new Achievement("Continental Champion", "Win the Continental Cup", "images/icons/cup.png", () => (game.records.cups || 0) >= 1),
+        new Achievement("Brand Ambassador", "Reach the goal of a Sponsor", "images/icons/sponsor.png", () => game.sponsors.totalBonus >= 1),
+        new Achievement("Commercial Giant", "Reach 10 Sponsor goals", "images/icons/sponsor.png", () => game.sponsors.totalBonus >= 10),
         new Achievement("Cup Kings", "Win the Continental Cup 3 times", "images/icons/cup.png", () => (game.records.cups || 0) >= 3)
     ],
     tab: "tab-team",

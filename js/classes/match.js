@@ -17,6 +17,8 @@ class Match {
         this.stadiumReward = new Decimal(0); //used for display
         this.managerXp = 0; //used for display
         this.staffWages = new Decimal(0); //used for display
+        this.sponsorPay = new Decimal(0); //used for display
+        this.sponsorsReached = []; //used for display
         this.cup = null; //the Continental Cup round, null for league matches
         this.penalties = null; //[team1, team2] when a cup match ends level
 
@@ -155,6 +157,7 @@ class Match {
             let own = ownIndex === 0 ? this.score1 : this.score2, other = ownIndex === 0 ? this.score2 : this.score1;
             this.managerXp = ManagerCareer.matchXp(own, other);
             game.career.addXp(this.managerXp);
+            this.paySponsors();
 
             for(let p of playerTeam.getActivePlayers()){
                 if(p.hasRedCard()){
@@ -171,11 +174,13 @@ class Match {
                     game.canEnterNextCountry = true;
                 }
                 Match.createSeasonSummary();
+                game.lastSeason.sponsors = game.sponsors.endSeason(game.lastSeason);
                 seasonEnded = true;
                 game.league.moveTeams();
                 game.lastSeason.academy = game.academy.endSeason();
                 game.lastSeason.staff = game.staff.endSeason();
                 game.lastSeason.cup = game.cup.endSeason();
+                game.sponsors.makeOffers();
                 game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome) + game.lastSeason.cup.xp;
                 game.career.addXp(game.lastSeason.managerXp);
                 game.playerMarket.refresh();
@@ -198,6 +203,12 @@ class Match {
         }
 
         this.ended = true;
+    }
+
+    paySponsors(){
+        let paid = game.sponsors.payMatch();
+        this.sponsorPay = paid.fees.add(paid.bonus);
+        this.sponsorsReached = paid.reached;
     }
 
     //Continental Cup: no table, a level score goes to penalties and the league match comes next
@@ -235,6 +246,7 @@ class Match {
             this.staffWages = Decimal.min(game.money, game.staff.getWages());
             game.money = game.money.sub(this.staffWages);
             game.cup.finishOwnTie(this);
+            this.paySponsors();
             gameNotifications.matchEnded(this);
         }
         this.ended = true;
@@ -395,6 +407,8 @@ class Match {
         this.stadiumReward = obj.stadiumReward || new Decimal(0);
         this.managerXp = Number(obj.managerXp) || 0;
         this.staffWages = obj.staffWages || new Decimal(0);
+        this.sponsorPay = obj.sponsorPay || new Decimal(0);
+        this.sponsorsReached = obj.sponsorsReached || [];
         if(obj.cup !== undefined && obj.cup !== null){
             this.cup = Number(obj.cup);
             this.team1 = game.cup.getTeam(obj.team1Cup);

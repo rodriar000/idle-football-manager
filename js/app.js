@@ -31,6 +31,7 @@ function setup(){
     game.career.start();
     game.staff.start();
     game.cup.start();
+    game.sponsors.start();
     gameTheme.apply();
 
     if(!error.length){

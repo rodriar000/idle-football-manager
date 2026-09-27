@@ -5749,3 +5749,214 @@ button.kick:hover:not(:disabled){
         grid-template-columns: repeat(4, minmax(200px, 72vw));
     }
 }
+
+/*Sponsors*/
+
+.tab-sponsors{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem;
+    text-align: left;
+}
+
+.staff-wages.sponsor-income b{
+    color: var(--ui-pos);
+}
+
+.sponsor-section{
+    display: grid;
+    gap: 0.75rem;
+}
+
+.sponsor-section .section-title{
+    margin-bottom: 0;
+}
+
+.sponsor-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 0.75rem;
+}
+
+.sponsor-card{
+    display: grid;
+    align-content: start;
+    gap: 0.65rem;
+    min-width: 0;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 16px;
+    background-color: var(--ui-surface);
+    box-shadow: var(--ui-shadow);
+}
+
+.sponsor-card.signed{
+    background-image: radial-gradient(120% 90% at 100% 0%, var(--ui-accent-soft), transparent 55%);
+}
+
+.sponsor-card.done{
+    border-color: var(--ui-pos);
+}
+
+.sponsor-card.slot{
+    place-items: center;
+    align-content: center;
+    min-height: 11rem;
+    border-style: dashed;
+    background: none;
+    box-shadow: none;
+    color: var(--ui-muted);
+    text-align: center;
+}
+
+.sponsor-card.slot .ico{
+    width: 1.8rem;
+    height: 1.8rem;
+    opacity: 0.6;
+}
+
+.sp-head{
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    min-width: 0;
+}
+
+.sp-badge{
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 12px;
+    color: #fff;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
+}
+
+.sp-title{
+    display: grid;
+    min-width: 0;
+}
+
+.sp-title b{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1.05rem;
+}
+
+.sp-title small{
+    font-size: 72%;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.sp-title small.lvl-0{
+    color: var(--ui-pos);
+}
+
+.sp-title small.lvl-1{
+    color: var(--ui-accent-text);
+}
+
+.sp-title small.lvl-2{
+    color: var(--ui-neg);
+}
+
+.sp-goal{
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.sp-goal .ico{
+    flex: none;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: 0.05rem;
+    color: var(--ui-accent-text);
+}
+
+.sp-progress{
+    display: grid;
+    gap: 0.25rem;
+}
+
+.sp-progress .bar{
+    margin: 0;
+}
+
+.sp-progress .bar i{
+    background-color: var(--ui-pos);
+}
+
+.sp-progress small{
+    color: var(--ui-muted);
+    font-size: 85%;
+}
+
+.sp-pay{
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    background-color: var(--ui-surface-2);
+    list-style: none;
+    font-size: 88%;
+}
+
+.sp-pay li{
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.sp-pay span{
+    color: var(--ui-muted);
+}
+
+.sp-pay b{
+    color: var(--ui-pos);
+    font-family: var(--font-display);
+    white-space: nowrap;
+}
+
+.sp-pay b.paid{
+    color: var(--ui-muted);
+}
+
+.ft-sponsor{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--ui-pos);
+    font-weight: 700;
+    text-align: center;
+}
+
+.ft-sponsor .ico{
+    flex: none;
+    width: 1.15rem;
+    height: 1.15rem;
+}
+
+@media (max-width: 700px){
+    .tab-sponsors{
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+}

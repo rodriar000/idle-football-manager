@@ -150,6 +150,11 @@ app.component("match", {
             if(this.match.cup !== null){
                 return "Continental Cup · " + CupRounds.names[this.match.cup];
             }
+            if(this.match.worldCup !== null){
+                let wc = this.$root.worldCup;
+                let own = wc.indexOf(this.$root.team);
+                return "World Cup · " + (this.match.worldCup < 3 && own >= 0 ? "Group " + WorldCupStages.groups[wc.getGroupOf(own)] : WorldCupStages.steps[this.match.worldCup]);
+            }
             let division = this.$root.league.divisions[this.match.divisionRank];
             return division ? division.getName() : "";
         },
@@ -175,15 +180,15 @@ app.component("match", {
         <p class="goal-scorer"><ui-icon name="ball"></ui-icon> {{goal.scorer || goal.team}}</p>
     </div>
 </transition>
-<section class="scoreboard" :class="[state.name, {cup: match.cup !== null}]">
+<section class="scoreboard" :class="[state.name, {cup: match.cup !== null || match.worldCup !== null}]">
     <div class="sb-top">
         <span class="sb-state" :class="state.name"><i></i>{{state.text}}</span>
-        <span class="sb-meta" v-if="divisionName"><ui-icon :name="match.cup !== null ? 'cup' : 'trophy'"></ui-icon> {{divisionName}}</span>
+        <span class="sb-meta" v-if="divisionName"><ui-icon :name="match.worldCup !== null ? 'worldcup' : match.cup !== null ? 'cup' : 'trophy'"></ui-icon> {{divisionName}}</span>
     </div>
     <div class="sb-main">
         <div class="sb-team" :class="{own: ownIndex === 0}">
             <team-logo :logo="match.team1.logo"></team-logo>
-            <p class="sb-name">{{match.team1.name}}</p>
+            <p class="sb-name">{{match.getTeamName(0)}}</p>
             <p class="sb-formation">{{match.team1.formation}}</p>
             <ul class="sb-scorers">
                 <li v-for="e in scorers[0]"><ui-icon :name="e.event === 0 ? 'ball' : 'redcard'"></ui-icon><span>{{e.name}} {{e.minute}}'</span></li>
@@ -195,7 +200,7 @@ app.component("match", {
         </div>
         <div class="sb-team away" :class="{own: ownIndex === 1}">
             <team-logo :logo="match.team2.logo"></team-logo>
-            <p class="sb-name">{{match.team2.name}}</p>
+            <p class="sb-name">{{match.getTeamName(1)}}</p>
             <p class="sb-formation">{{match.team2.formation}}</p>
             <ul class="sb-scorers">
                 <li v-for="e in scorers[1]"><ui-icon :name="e.event === 0 ? 'ball' : 'redcard'"></ui-icon><span>{{e.name}} {{e.minute}}'</span></li>
@@ -221,7 +226,7 @@ app.component("match", {
     </div>
     <aside class="match-side">
         <section class="m-panel odds">
-            <h3>{{match.ended ? "Final Result" : "Win Chances"}} <small v-if="!match.ended">estimate for {{$root.team.name}}</small></h3>
+            <h3>{{match.ended ? "Final Result" : "Win Chances"}} <small v-if="!match.ended">estimate for {{match.getTeamName(ownIndex)}}</small></h3>
             <div class="odds-bar">
                 <i class="win" :style="{width: chances.win * 100 + '%'}"></i>
                 <i class="draw" :style="{width: chances.draw * 100 + '%'}"></i>
@@ -250,7 +255,7 @@ app.component("match", {
                     <span class="feed-icon"><ui-icon :name="['ball', 'redcard', 'swap', 'settings'][g.event] || 'ball'"></ui-icon></span>
                     <span class="feed-text" v-if="g.event === 2"><span class="sub-in"><ui-icon name="subin"></ui-icon> {{g.name}}</span><span class="sub-out"><ui-icon name="subout"></ui-icon> {{g.nameOut}}</span></span>
                     <span class="feed-text" v-else>{{g.name}}</span>
-                    <span class="feed-team">{{g.teamIndex === 1 ? match.team2.name : match.team1.name}}</span>
+                    <span class="feed-team">{{match.getTeamName(g.teamIndex === 1 ? 1 : 0)}}</span>
                 </li>
             </ul>
         </section>
@@ -262,14 +267,15 @@ app.component("match", {
         <template v-slot:body>
             <p class="ft-result" :class="result.name">{{result.text}}</p>
             <div class="ft-score">
-                <span class="ft-team"><team-logo :logo="match.team1.logo"></team-logo><b>{{match.team1.name}}</b></span>
+                <span class="ft-team"><team-logo :logo="match.team1.logo"></team-logo><b>{{match.getTeamName(0)}}</b></span>
                 <span class="ft-nums">{{match.score1}} - {{match.score2}}</span>
-                <span class="ft-team away"><b>{{match.team2.name}}</b><team-logo :logo="match.team2.logo"></team-logo></span>
+                <span class="ft-team away"><b>{{match.getTeamName(1)}}</b><team-logo :logo="match.team2.logo"></team-logo></span>
             </div>
             <p class="ft-pens" v-if="match.penalties">Penalties {{match.penalties[0]}} - {{match.penalties[1]}}</p>
             <p class="ft-cup" v-if="match.cup !== null"><ui-icon name="cup"></ui-icon> {{cupLine}}</p>
+            <p class="ft-cup" v-if="match.worldCupLine"><ui-icon name="worldcup"></ui-icon> {{match.worldCupLine}}</p>
             <ul class="ft-money">
-                <li><ui-icon :name="match.cup !== null ? 'cup' : 'match'"></ui-icon><span>{{match.cup !== null && result.name === "win" ? "Cup prize" : "Match reward"}}</span><b class="pos">+{{formatNumber(reward)}} $</b></li>
+                <li><ui-icon :name="match.worldCup !== null ? 'worldcup' : match.cup !== null ? 'cup' : 'match'"></ui-icon><span>{{result.name === "win" && match.worldCup !== null ? "World Cup prize" : match.cup !== null && result.name === "win" ? "Cup prize" : "Match reward"}}</span><b class="pos">+{{formatNumber(reward)}} $</b></li>
                 <li v-if="stadiumUnlocked"><ui-icon name="stadium"></ui-icon><span>Stadium tickets</span><b class="pos">+{{formatNumber(match.stadiumReward)}} $</b></li>
                 <li v-if="match.sponsorPay.gt(0)"><ui-icon name="sponsor"></ui-icon><span>{{match.sponsorsReached.length ? "Sponsors + goal bonus" : "Sponsors"}}</span><b class="pos">+{{formatNumber(match.sponsorPay)}} $</b></li>
                 <li v-if="match.staffWages.gt(0)"><ui-icon name="whistle"></ui-icon><span>Staff wages</span><b class="neg">-{{formatNumber(match.staffWages)}} $</b></li>

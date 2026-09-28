@@ -10,6 +10,7 @@ function getVisibleTabs(){
         {id: "tab-upgrades", name: "Upgrades", icon: "upgrades"},
         {id: "tab-league", name: "League", icon: "league"},
         {id: "tab-cup", name: "Cup", icon: "cup"},
+        {id: "tab-worldcup", name: "World Cup", icon: "worldcup"},
         {id: "tab-sponsors", name: "Sponsors", icon: "sponsor"},
         {id: "tab-match", name: "Match", icon: "match"},
         {id: "tab-stadium", name: "Stadium", icon: "stadium", unlocked: () => Stadium.isUnlocked},
@@ -96,6 +97,7 @@ app.component("game-header", {
             <ui-icon :name="t.icon"></ui-icon><span class="tab-name">{{t.name}}</span>
             <span class="tab-badge" v-if="t.id === 'tab-match' && liveMinute">{{liveMinute}}</span>
             <span class="tab-badge points" v-if="t.id === 'tab-transfers' && offerCount > 0" :title="offerCount + ' bids for your Players'">{{offerCount}}</span>
+            <span class="tab-badge" v-if="t.id === 'tab-worldcup' && $root.worldCup.running" title="The World Cup is on">Live</span>
             <span class="tab-badge points" v-if="t.id === 'tab-manager' && freePoints > 0" :title="freePoints + ' skill points to spend'">{{freePoints}}</span>
         </li>
     </ul>

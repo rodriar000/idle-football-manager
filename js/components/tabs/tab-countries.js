@@ -6,7 +6,7 @@ app.component("tab-countries", {
     },
     methods: {
         enterNextCountry(){
-            if(game.canEnterNextCountry){
+            if(game.canEnterNextCountry && !game.worldCup.running){
                 game.country++;
                 game.league = GeneratorUtils.generateLeague(0, game.country);
                 game.league.divisions[0].teams[0] = game.team;
@@ -25,6 +25,9 @@ app.component("tab-countries", {
         canEnterNextCountry(){
             return game.canEnterNextCountry && game.team.divisionRank === game.league.divisions.length - 1;
         },
+        worldCupRunning(){
+            return game.worldCup.running;
+        },
         country(){
             return game.country;
         }
@@ -37,7 +40,11 @@ app.component("tab-countries", {
     has a Football League. How far can you go? Good Luck!</p>
 </div>
 <div class="next-country">
-    <button :disabled="!canEnterNextCountry" v-if="canEnterNextCountry" @click="enterNextCountry()">
+    <button disabled v-if="canEnterNextCountry && worldCupRunning">
+        <h4>Next Country</h4>
+        <p>Finish the World Cup first: you can move once it is over.</p>
+    </button>
+    <button :disabled="!canEnterNextCountry" v-else-if="canEnterNextCountry" @click="enterNextCountry()">
         <h4>Next Country</h4>
         <p>Moving to the next Country will immediately move you to a new League with much higher rewards awaiting...<br/>
         You can move anytime, but you can't go back.</p>

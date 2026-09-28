@@ -22,6 +22,8 @@ class Match {
         this.offerNote = ""; //used for display: a new bid for one of your players
         this.cup = null; //the Continental Cup round, null for league matches
         this.penalties = null; //[team1, team2] when a cup match ends level
+        this.worldCup = null; //the World Cup step, null for other matches
+        this.worldCupLine = ""; //used for display: where the World Cup match left you
 
         this.ballX = 0; //-1 to 1
         this.ballSpeed = 0;
@@ -125,6 +127,10 @@ class Match {
             this.endCupGame();
             return;
         }
+        if(this.worldCup !== null){
+            this.endWorldCupGame();
+            return;
+        }
 
         if(this.score1 > this.score2) {
             this.team1.divisionStats.win++;
@@ -188,6 +194,7 @@ class Match {
                 game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome) + game.lastSeason.cup.xp;
                 game.career.addXp(game.lastSeason.managerXp);
                 game.playerMarket.refresh();
+                game.lastSeason.worldCup = game.worldCup.afterSeason();
             }
             else{
                 game.league.simulate();
@@ -256,6 +263,51 @@ class Match {
         this.ended = true;
     }
 
+    //World Cup: group games can end level, knockout games go to penalties; the league waits until it ends
+    endWorldCupGame(){
+        if(this.score1 === this.score2 && game.worldCup.isKnockout(this.worldCup)){
+            let power = this.getNormPower();
+            this.penalties = Cup.penalties(power.team1, power.team2);
+        }
+        if(this.getPlayerTeam()){
+            let playerTeam = this.getPlayerTeam();
+            let ownIndex = this.team1 === playerTeam ? 0 : 1;
+            let own = ownIndex === 0 ? this.score1 : this.score2, other = ownIndex === 0 ? this.score2 : this.score1;
+            Match.updateRecords({
+                team1: this.getTeamName(0), team2: this.getTeamName(1), score1: this.score1, score2: this.score2, ownIndex,
+                result: this.getGameResult(),
+                goals: this.gameEvents.filter(e => e.event === 0).map(e => ({teamIndex: e.teamIndex, name: e.name, minute: e.minute})),
+                reward: this.getRewardMoney()
+            }, "World Cup");
+            this.managerXp = ManagerCareer.matchXp(own, other);
+            game.career.addXp(this.managerXp);
+            for(let p of playerTeam.getActivePlayers()){
+                if(p.hasRedCard()){
+                    p.active = false;
+                }
+            }
+            if(game.settings.team.refillPlayers){
+                playerTeam.refillPlayers();
+            }
+            game.money = game.money.add(this.getRewardMoney());
+            this.staffWages = Decimal.min(game.money, game.staff.getWages());
+            game.money = game.money.sub(this.staffWages);
+            this.paySponsors();
+            this.worldCupLine = game.worldCup.finishOwnMatch(this);
+            gameNotifications.matchEnded(this);
+        }
+        this.ended = true;
+    }
+
+    //in the World Cup your club plays as your nation
+    getTeamName(index){
+        let team = index === 0 ? this.team1 : this.team2;
+        if(this.worldCup !== null && team === game.team){
+            return WorldCup.getOwnNation().name;
+        }
+        return team.name;
+    }
+
     simulate() {
         let power = this.getNormPower();
         for(let mins = 0; mins < 90; mins++){
@@ -320,6 +372,9 @@ class Match {
         let result = this.getGameResult();
         if(this.cup !== null){
             return result === MATCH_WIN ? game.cup.getPrize(this.cup) : rewards.lose;
+        }
+        if(this.worldCup !== null){
+            return result === MATCH_WIN ? game.worldCup.getPrize(this.worldCup) : result === MATCH_DRAW ? rewards.draw : rewards.lose;
         }
         if(result === MATCH_WIN){
             return rewards.win;
@@ -420,6 +475,13 @@ class Match {
             this.team2 = game.cup.getTeam(obj.team2Cup);
             this.penalties = obj.penalties || null;
         }
+        if(obj.worldCup !== undefined && obj.worldCup !== null){
+            this.worldCup = Number(obj.worldCup);
+            this.team1 = game.worldCup.getTeam(obj.team1Wc);
+            this.team2 = game.worldCup.getTeam(obj.team2Wc);
+            this.penalties = obj.penalties || null;
+        }
+        this.worldCupLine = obj.worldCupLine || "";
         this.ended = obj.ended;
         this.baseStrategy = obj.baseStrategy ?? null;
     }
@@ -449,7 +511,7 @@ class Match {
             winStreak: 0, bestWinStreak: 0,
             unbeatenStreak: 0, bestUnbeatenStreak: 0,
             scorers: {},
-            seasons: 0, promotions: 0, titles: 0, cups: 0, cupFinals: 0, bestSaleRatio: 0
+            seasons: 0, promotions: 0, titles: 0, cups: 0, cupFinals: 0, bestSaleRatio: 0, worldCups: 0, worldCupFinals: 0
         };
     }
 
@@ -548,6 +610,7 @@ class Match {
     static from(match){
         let m = new Match(match.team1, match.team2, match.divisionRank);
         m.cup = match.cup ?? null;
+        m.worldCup = match.worldCup ?? null;
         return m;
     }
 }

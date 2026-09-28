@@ -58,7 +58,7 @@ app.component("tab-league", {
         </div>
         <div class="next-card league-next">
             <p class="eyebrow">{{matchRunning ? "Live now" : "Next Match"}}</p>
-            <div class="vs" v-if="nextMatch && nextMatch.team1"><b>{{nextMatch.team1.name}}</b><small>vs</small><b>{{nextMatch.team2.name}}</b></div>
+            <div class="vs" v-if="nextMatch && nextMatch.team1"><b>{{nextMatch.getTeamName(0)}}</b><small>vs</small><b>{{nextMatch.getTeamName(1)}}</b></div>
             <button class="primary" v-if="canPlayMatch" @click="playNextMatch()"><ui-icon name="play"></ui-icon> Play next Match</button>
             <button class="primary" v-else-if="matchRunning" @click="watch()"><ui-icon name="play"></ui-icon> Watch live</button>
             <button disabled v-else>Put at least 1 Player in your Team first</button>

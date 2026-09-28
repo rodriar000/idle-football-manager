@@ -68,6 +68,8 @@ app.component("window-season", {
             <p v-if="season.cup"><ui-icon name="cup"></ui-icon> Continental Cup: {{season.cup.won ? "Winner! +" + season.cup.xp + " Manager XP" : "out in the " + season.cup.reached}}</p>
             <p v-if="season.sponsors && season.sponsors.reached.length"><ui-icon name="sponsor"></ui-icon> Sponsor goals reached: {{season.sponsors.reached.join(", ")}}</p>
             <p v-if="season.sponsors && season.sponsors.missed.length"><ui-icon name="sponsor"></ui-icon> Sponsor goals missed: {{season.sponsors.missed.join(", ")}}</p>
+            <p class="ws-worldcup" v-if="season.worldCup && season.worldCup.started"><ui-icon name="worldcup"></ui-icon> The World Cup starts now! You play in Group {{season.worldCup.group}}, and the league waits until it ends.</p>
+            <p v-else-if="season.worldCup && season.worldCup.next"><ui-icon name="worldcup"></ui-icon> Next World Cup: after Season {{season.worldCup.next}}</p>
             <p v-if="season.world && season.world.risers.length"><ui-icon name="upgrades"></ui-icon> Rivals who got stronger: {{season.world.risers.join(", ")}}</p>
             <p v-if="season.staff && season.staff.left.length"><ui-icon name="whistle"></ui-icon> Contract ended: {{season.staff.left.join(", ")}}</p>
             <p v-if="season.staff"><ui-icon name="whistle"></ui-icon> New Staff candidates are waiting in the Staff tab</p>

@@ -6,7 +6,8 @@ app.component("tab-worldcup", {
         },
         //games change after every match of yours, read them for reactivity
         tick(){
-            return [this.wc.games.length, this.wc.step, this.wc.running, this.wc.entries.length, this.$root.records.seasons];
+            return [this.wc.games.length, this.wc.step, this.wc.running, this.wc.entries.length, this.$root.records.seasons,
+                this.wc.qual && this.wc.qual.games.length, this.wc.qual && this.wc.qual.season];
         },
         own(){
             this.tick;
@@ -32,6 +33,9 @@ app.component("tab-worldcup", {
             this.tick;
             if(this.wc.running){
                 return {name: "in", text: "Live · " + WorldCupStages.steps[this.wc.step]};
+            }
+            if(this.qual){
+                return {name: "in", text: "Qualifying · " + this.qual.place + (["st", "nd", "rd", "th", "th"][this.qual.place - 1])};
             }
             if(this.wc.note && this.wc.note.won){
                 return {name: "won", text: "World Champions"};
@@ -105,6 +109,40 @@ app.component("tab-worldcup", {
                 return {key: i, stage: WorldCupStages.steps[m.step], opponent: this.entryView(home ? m.b : m.a), score: mine + " - " + theirs + pens, result};
             });
         },
+        //the qualifying group of this Season
+        qual(){
+            this.tick; this.$root.nextMatch;
+            let q = this.wc.getQual();
+            if(!q){
+                return null;
+            }
+            let own = this.wc.getQualOwn();
+            let view = idx => {
+                let n = this.wc.getQualNation(idx);
+                return {name: n.name, flag: WorldCup.flag(n), own: idx === own};
+            };
+            let rows = this.wc.getQualStandings().map((r, i) => Object.assign({}, r, {place: i + 1, gd: r.gf - r.ga, entry: view(r.idx)}));
+            let next = null;
+            let rounds = WorldCupStages.qualRounds;
+            let step = q.step;
+            //your next round (you rest in one of the 5)
+            while(step < rounds && !this.wc.getQualPairs(step).some(p => p.includes(own))){
+                step++;
+            }
+            if(step < rounds){
+                let pair = this.wc.getQualPairs(step).find(p => p.includes(own));
+                let division = this.$root.league.divisions[this.$root.team.divisionRank];
+                let left = Math.max(0, this.wc.getQualSchedule()[step] - (division.matchDay - 1));
+                let ready = this.$root.nextMatch && this.$root.nextMatch.qualifier === step;
+                next = {round: step + 1, home: pair[0] === own, opponent: view(pair[0] === own ? pair[1] : pair[0]), left, ready, prize: this.wc.getPrize(0)};
+            }
+            let games = q.games.filter(m => m.a === own || m.b === own).map((m, i) => {
+                let home = m.a === own;
+                let mine = home ? m.s1 : m.s2, theirs = home ? m.s2 : m.s1;
+                return {key: i, stage: "Round " + (m.step + 1), opponent: view(home ? m.b : m.a), score: mine + " - " + theirs, result: mine > theirs ? "win" : mine < theirs ? "lose" : "draw"};
+            });
+            return {rows, next, games, done: q.step >= rounds, place: this.wc.getQualPlace()};
+        },
         titles(){
             return this.$root.records.worldCups || 0;
         },
@@ -137,12 +175,23 @@ app.component("tab-worldcup", {
         <template v-slot:header><div class="icon-flex"><ui-icon name="worldcup"></ui-icon> World Cup</div></template>
         <template v-slot:body>
             <p>Every <b>3 Seasons</b>, in the summer before the new league starts, <b>16 nations</b> play the World Cup. Your Players are the squad of <b>{{ownNation.name}}</b>.</p>
+            <p>It has to <b>qualify</b> first: during the Season before, 5 nations play each other between matchdays, and the <b>top 2</b> go. National teams are strong: expect to need a club near the top Divisions.</p>
             <p>There are <b>4 groups of 4</b>. A win gives 3 points and a draw 1. The <b>top 2</b> of each group reach the quarter-finals, and from there a draw goes to <b>penalties</b>.</p>
             <p>Every win pays a <b>prize</b>, and going far gives Manager XP. The league waits until the World Cup is over.</p>
         </template>
     </window>
 </transition>
-<section class="cup-next" v-if="next">
+<section class="cup-next" v-if="qual && qual.next">
+    <div class="cn-text">
+        <small>Qualifying · Round {{qual.next.round}} · {{qual.next.home ? "Home" : "Away"}}</small>
+        <p class="cn-vs"><span class="wc-flag big" :style="{background: ownNation.flag}"></span><b>{{ownNation.name}}</b><span class="wc-vs">vs</span><span class="wc-flag big" :style="{background: qual.next.opponent.flag}"></span><b>{{qual.next.opponent.name}}</b></p>
+        <p class="cn-when" v-if="qual.next.ready"><ui-icon name="play"></ui-icon> Ready to play in the Match tab</p>
+        <p class="cn-when" v-else><ui-icon name="calendar"></ui-icon> After {{qual.next.left}} more league {{qual.next.left === 1 ? "match" : "matches"}}</p>
+    </div>
+    <div class="cn-prize"><small>Win it for</small><b>+{{formatNumber(qual.next.prize)}} $</b></div>
+    <button class="kick" v-if="qual.next.ready" @click="goToMatch()"><ui-icon name="play"></ui-icon> Go to the Match</button>
+</section>
+<section class="cup-next" v-else-if="next">
     <div class="cn-text">
         <small>Next: {{next.stage}}</small>
         <p class="cn-vs"><span class="wc-flag big" :style="{background: ownNation.flag}"></span><b>{{ownNation.name}}</b><span class="wc-vs">vs</span><span class="wc-flag big" :style="{background: next.opponent.flag}"></span><b>{{next.opponent.name}}</b></p>
@@ -151,22 +200,48 @@ app.component("tab-worldcup", {
     <div class="cn-prize"><small>Win it for</small><b>+{{formatNumber(next.prize)}} $</b></div>
     <button class="kick" @click="goToMatch()"><ui-icon name="play"></ui-icon> Go to the Match</button>
 </section>
-<section class="cup-next" :class="wc.note.won ? 'done' : 'out'" v-else-if="wc.note && seasonsLeft === 3">
+<section class="cup-next" :class="wc.note.won ? 'done' : 'out'" v-else-if="!qual && wc.note && seasonsLeft === 3">
     <div class="cn-text">
         <small>World Cup after Season {{wc.note.season}}</small>
-        <p class="cn-vs"><ui-icon name="worldcup"></ui-icon><b>{{wc.note.won ? ownNation.name + " are World Champions!" : "Out in the " + wc.note.reached}}</b></p>
+        <p class="cn-vs"><ui-icon name="worldcup"></ui-icon><b>{{wc.note.won ? ownNation.name + " are World Champions!" : wc.note.qualified === false ? "Didn't qualify. " + wc.note.winner + " won it." : "Out in the " + wc.note.reached}}</b></p>
         <p class="cn-when"><ui-icon name="calendar"></ui-icon> The next one is played after Season {{nextSeason}}</p>
     </div>
     <div class="cn-prize" v-if="wc.note.xp"><small>Manager XP</small><b>+{{wc.note.xp}}</b></div>
 </section>
-<section class="wc-hero" v-else>
+<section class="wc-hero" v-else-if="!qual">
     <span class="wc-flag huge" :style="{background: ownNation.flag}"></span>
     <div class="wc-hero-text">
         <small>Your nation</small>
         <b>{{ownNation.name}}</b>
-        <p>The next World Cup is played after <b>Season {{nextSeason}}</b>, {{seasonsLeft === 1 ? "at the end of this Season" : "in " + seasonsLeft + " Seasons"}}. Your Players will be the national squad.</p>
+        <p>The next World Cup is played after <b>Season {{nextSeason}}</b>. First {{ownNation.name}} must qualify: a group of 5 nations during Season {{nextSeason}}, the top 2 go. Your Players are the national squad.</p>
     </div>
     <div class="wc-countdown"><b>{{seasonsLeft}}</b><small>{{seasonsLeft === 1 ? "Season" : "Seasons"}} to go</small></div>
+</section>
+<section class="wc-section" v-if="qual">
+    <h3 class="section-title">Qualifying group</h3>
+    <div class="wc-group own wc-qual">
+        <h4>Top 2 go to the World Cup<template v-if="qual.done"> · {{qual.place <= 2 ? "Qualified!" : "Not qualified"}}</template></h4>
+        <table>
+            <thead><tr><th></th><th class="wg-name">Nation</th><th>P</th><th>GD</th><th>Pts</th></tr></thead>
+            <tbody>
+                <tr v-for="r in qual.rows" :key="r.idx" :class="{mine: r.entry.own, through: r.place <= 2}">
+                    <td class="wg-place">{{r.place}}</td>
+                    <td class="wg-name"><span class="wc-flag" :style="{background: r.entry.flag}"></span><span :title="r.entry.name">{{r.entry.name}}</span></td>
+                    <td>{{r.p}}</td>
+                    <td>{{r.gd > 0 ? "+" + r.gd : r.gd}}</td>
+                    <td class="wg-pts">{{r.pts}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="wc-games" v-if="qual.games.length">
+        <div class="wc-game" v-for="g in qual.games" :key="g.key" :class="g.result">
+            <small>{{g.stage}}</small>
+            <span class="wc-flag" :style="{background: g.opponent.flag}"></span>
+            <b :title="g.opponent.name">{{g.opponent.name}}</b>
+            <span class="wc-score">{{g.score}}</span>
+        </div>
+    </div>
 </section>
 <section class="wc-section" v-if="ownGames.length">
     <h3 class="section-title">Your matches</h3>

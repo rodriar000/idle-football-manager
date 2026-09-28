@@ -1,3 +1,25 @@
+//players cost a wage after every match of yours: a share of a win reward of your Division,
+//more for the stronger players of your squad (an average one earns 1.5 % of a win)
+const PlayerWages = Object.freeze({
+    share: 0.015,
+    maxSquad: 25,
+
+    //ATT+DEF of the average player of your squad
+    getAverage(){
+        let players = game.team.players;
+        if(players.length === 0){
+            return new Decimal(1);
+        }
+        return players.reduce((sum, p) => sum.add(p.getBaseAttack()).add(p.getBaseDefense()), new Decimal(0)).div(players.length).max(1e-9);
+    },
+
+    //what the whole squad earns per match
+    getBill(){
+        let average = PlayerWages.getAverage();
+        return game.team.players.reduce((sum, p) => sum.add(p.getWage(average)), new Decimal(0));
+    }
+});
+
 class Player {
     constructor(name, attack, defense, aggressivity, stamina, active, marketValue = new Decimal(0), position = null) {
         this.name = name;
@@ -10,7 +32,9 @@ class Player {
         this.aggressivity = aggressivity;
         this.currentStamina = 1;
         this.trainingFactor = new Decimal(1);
-        this.redCard = 0;
+        this.redCard = 0; //matches left out after a red card or a suspension (counted down after each of your matches)
+        this.injury = 0; //matches left out injured
+        this.yellows = 0; //yellow cards this Season: 5 mean a one match suspension
         //protected: can't be sold or taken out of the Team (only a red card still benches them)
         this.locked = false;
         //GK, DEF, MID or FWD (see formation.js)
@@ -65,6 +89,22 @@ class Player {
         return this.redCard > 0;
     }
 
+    isInjured(){
+        return this.injury > 0;
+    }
+
+    //sent off, suspended or injured: can't play
+    isUnavailable(){
+        return this.redCard > 0 || this.injury > 0;
+    }
+
+    //what the player earns for every match of yours
+    getWage(average = PlayerWages.getAverage()){
+        let power = this.getBaseAttack().add(this.getBaseDefense()).div(average).toNumber();
+        let win = game.league.divisions[game.team.divisionRank].getRewards().win;
+        return win.mul(PlayerWages.share * Math.max(0.3, Math.min(3, power)));
+    }
+
     getBasePrice(){
         return this.marketValue.mul(game.moneyUpgrades.cheaperPlayers.apply());
     }
@@ -78,8 +118,17 @@ class Player {
         return game.money.gte(this.getPrice());
     }
 
+    //your squad: the Team and the players in training
+    static getSquadSize(){
+        return game.team.players.length + game.training.players.length;
+    }
+
+    static isSquadFull(){
+        return Player.getSquadSize() >= PlayerWages.maxSquad;
+    }
+
     buy(){
-        if(!this.isBought() && this.canAfford()){
+        if(!this.isBought() && this.canAfford() && !Player.isSquadFull()){
             game.money = game.money.sub(this.getPrice());
             game.team.players.push(this);
             game.playerMarket.players = game.playerMarket.players.filter(p => p !== this);
@@ -107,7 +156,9 @@ class Player {
         this.currentStamina = obj.currentStamina;
         this.marketValue = obj.marketValue;
         this.sellMultiplier = obj.sellMultiplier;
-        this.redCard = Number(obj.redCard);
+        this.redCard = Number(obj.redCard) || 0;
+        this.injury = Number(obj.injury) || 0;
+        this.yellows = Number(obj.yellows) || 0;
         this.trainingFactor = obj.trainingFactor ? obj.trainingFactor : new Decimal(1);
         this.locked = obj.locked === true;
         //players saved before positions existed get one from how attacking they are

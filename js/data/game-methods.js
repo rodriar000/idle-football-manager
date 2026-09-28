@@ -57,6 +57,10 @@ let functions = {
                     value.team1Wc = game.worldCup.indexOf(value.team1);
                     value.team2Wc = game.worldCup.indexOf(value.team2);
                 }
+                if(value.qualifier !== null && value.qualifier !== undefined){
+                    value.team1Wq = game.worldCup.qualIndexOf(value.team1);
+                    value.team2Wq = game.worldCup.qualIndexOf(value.team2);
+                }
                 value.team1Idx = game.league.divisions[game.team.divisionRank].teams.findIndex(t => t === value.team1);
                 value.team2Idx = game.league.divisions[game.team.divisionRank].teams.findIndex(t => t === value.team2);
             }

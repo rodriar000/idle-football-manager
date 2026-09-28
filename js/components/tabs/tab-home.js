@@ -26,6 +26,9 @@ app.component("tab-home", {
             if(m.worldCup !== null && m.worldCup !== undefined){
                 label = "World Cup · " + WorldCupStages.steps[m.worldCup];
             }
+            else if(m.qualifier !== null && m.qualifier !== undefined){
+                label = "World Cup qualifying";
+            }
             else if(m.cup !== null && m.cup !== undefined){
                 label = "Continental Cup · " + CupRounds.names[m.cup];
             }
@@ -85,7 +88,10 @@ app.component("tab-home", {
         },
         cupText(){
             let cup = this.$root.cup;
-            cup.ties.length; cup.round;
+            cup.ties.length; cup.round; cup.entries;
+            if(!cup.isQualified()){
+                return "Not qualified";
+            }
             if(cup.hasWon()){
                 return "Winner";
             }
@@ -96,9 +102,13 @@ app.component("tab-home", {
         },
         worldCupText(){
             let wc = this.$root.worldCup;
-            wc.step; wc.running;
+            wc.step; wc.running; wc.qual && wc.qual.games.length;
             if(wc.running){
                 return "Live · " + WorldCupStages.steps[wc.step];
+            }
+            if(wc.getQual()){
+                let place = wc.getQualPlace();
+                return "Qualifying · " + place + (["st", "nd", "rd", "th", "th"][place - 1]) + " of 5";
             }
             let left = wc.getNextSeason() - this.$root.records.seasons;
             return left === 1 ? "After this Season" : "In " + left + " Seasons";

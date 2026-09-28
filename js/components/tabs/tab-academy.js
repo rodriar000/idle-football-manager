@@ -6,6 +6,9 @@ app.component("tab-academy", {
         };
     },
     computed: {
+        squadFull(){
+            return this.$root.team.players.length + this.$root.training.players.length >= PlayerWages.maxSquad;
+        },
         academy(){
             return this.$root.academy;
         },
@@ -92,7 +95,7 @@ app.component("tab-academy", {
                 <small>{{seasonsLeft(p) > 0 ? "Joins the Team in " + seasonsLeft(p) + (seasonsLeft(p) === 1 ? " Season" : " Seasons") : "Joins the Team this Season end"}}</small>
             </div>
             <div class="pr-actions">
-                <button class="promote" @click="promote(p)"><ui-icon name="swap"></ui-icon> Promote</button>
+                <button class="promote" @click="promote(p)" :disabled="squadFull" :title="squadFull ? 'Your squad has 25 Players' : ''"><ui-icon name="swap"></ui-icon> {{squadFull ? "Squad full" : "Promote"}}</button>
                 <button class="negative" :class="{armed: armed === p}" @click="release(p)">{{armed === p ? "Tap again" : "Release"}}</button>
             </div>
         </div>

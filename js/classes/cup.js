@@ -1,5 +1,6 @@
 //Continental Cup: every Season 16 clubs play a knockout alongside the league. Half of them come from your
-//Division, the other half are guest clubs from abroad at the same level. Rounds are played between matchdays,
+//Division, the other half are guest clubs from abroad at the same level. You play in it only after
+//finishing the Season before in the top 3. Rounds are played between matchdays,
 //draws go to penalties, and every round you win pays a prize.
 const CupRounds = Object.freeze({
     names: ["Round of 16", "Quarter-final", "Semi-final", "Final"],
@@ -29,6 +30,19 @@ class Cup{
         this.history = []; //past cups: {season, reached, won}
         this.season = 0;
         this.guests = []; //generated guest Teams, same order as the guest entries
+    }
+
+    static get qualifyingPlace(){
+        return 3;
+    }
+
+    //you qualify with a top 3 finish in the Season just played
+    static qualifies(){
+        return game.lastSeason !== null && game.lastSeason !== undefined && game.lastSeason.position <= Cup.qualifyingPlace;
+    }
+
+    isQualified(){
+        return this.getOwnIndex() >= 0;
     }
 
     //league matches your club plays before each round
@@ -116,12 +130,13 @@ class Cup{
         return this.hasWon() ? "Winner" : CupRounds.names[reached];
     }
 
-    //the draw for a new Season: 7 clubs from your Division and 8 guests from abroad
+    //the draw for a new Season: you (if you qualified) and clubs from your Division, and 8 guests from abroad
     draw(){
         let division = game.league.divisions[game.team.divisionRank];
         let locals = division.teams.filter(t => t !== game.team);
         locals.sort(() => Math.random() - 0.5);
-        let entries = [{name: game.team.name, own: true}].concat(locals.slice(0, 7).map(t => ({name: t.name})));
+        let own = Cup.qualifies() ? [{name: game.team.name, own: true}] : [];
+        let entries = own.concat(locals.slice(0, 8 - own.length).map(t => ({name: t.name})));
         for(let i = 0; i < 8; i++){
             entries.push({seed: Math.floor(Math.random() * 1e9), nation: i});
         }
@@ -285,12 +300,14 @@ class Cup{
             }));
             this.round++;
         }
-        let news = {reached: this.getReached(), won: this.hasWon(), xp: this.hasWon() ? 200 : 0};
+        let played = this.isQualified();
+        let news = {qualified: played, reached: played ? this.getReached() : "Not qualified", won: this.hasWon(), xp: this.hasWon() ? 200 : 0};
         if(this.entries.length){
             this.history.unshift({season: this.season, reached: news.reached, won: news.won});
             this.history = this.history.slice(0, 30);
         }
         this.draw();
+        news.next = this.isQualified();
         return news;
     }
 

@@ -57,13 +57,16 @@ app.component("player", {
         //computed props read through this.$root: cards rendered at startup exist before the global game is reactive
         canMove(){
             let match = this.$root.currentMatch;
-            if(this.player.hasRedCard() && (match && !match.ended || !this.player.active)){
+            if(this.player.isUnavailable() && (match && !match.ended || !this.player.active)){
                 return false;
             }
             if(this.player.active && this.player.locked){
                 return false;
             }
             return (!this.teamFull && !this.player.active) || this.player.active;
+        },
+        squadFull(){
+            return this.$root.team.players.length + this.$root.training.players.length >= PlayerWages.maxSquad;
         },
         canSell(){
             return keyMap.keyPressed("Shift") || !this.$root.settings.players.shiftToSell;
@@ -125,7 +128,8 @@ app.component("player", {
             <span class="p-pos" :class="'pos-' + player.position" :title="positionName">{{player.position}}</span>
             <span class="p-misfit" v-if="misfit" :title="'Out of position: plays ' + misfit.place + ' and gives ' + Math.round(misfit.fit * 100) + '% of their stats there'"><ui-icon name="swap"></ui-icon>{{misfit.place}} {{Math.round(misfit.fit * 100)}}%</span>
             <span class="p-tier" :title="cardTitle"><ui-icon v-if="card.rare" name="star"></ui-icon>{{card.short}}</span>
-            <ui-icon class="red-card" v-if="player.hasRedCard()" name="redcard" title="Red card"></ui-icon>
+            <ui-icon class="red-card" v-if="player.hasRedCard()" name="redcard" :title="'Suspended: misses the next ' + (player.redCard === 1 ? 'match' : player.redCard + ' matches')"></ui-icon>
+            <span class="p-injury" v-if="player.isInjured()" :title="'Injured: out for ' + (player.injury === 1 ? '1 more match' : player.injury + ' more matches')"><ui-icon name="physio"></ui-icon>{{player.injury}}</span>
             <ui-icon class="p-locked" v-if="player.locked" name="lock"></ui-icon>
         </span>
     </div>
@@ -161,6 +165,7 @@ app.component("player", {
             </button>
         </template>
     </template>
+    <button v-else-if="squadFull" class="buy" disabled title="Your squad has 25 Players: sell one first"><ui-icon name="team"></ui-icon> Squad full (25)</button>
     <button v-else class="buy" :disabled="!player.canAfford()" :class="{'cant-afford': !player.canAfford()}" @click="buy()"><ui-icon name="coins"></ui-icon> Buy {{formatNumber(player.getPrice())}} $</button>
 </div>
 <transition name="window-grow">

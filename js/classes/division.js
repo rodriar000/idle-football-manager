@@ -66,7 +66,14 @@ class Division {
     playNextMatch(){
         game.currentMatch = Match.from(game.nextMatch); //clone
         game.currentMatch.timeScale = game.settings.match.speed;
-        game.stadium.fillStadium();
+        //tickets are only sold at your club's home matches (not for the national team)
+        let m = game.currentMatch;
+        if(m.team1 === game.team && m.worldCup === null && (m.qualifier === null || m.qualifier === undefined)){
+            game.stadium.fillStadium();
+        }
+        else{
+            game.stadium.emptyStadium();
+        }
     }
 
     getPromotionRanks(){

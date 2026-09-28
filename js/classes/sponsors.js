@@ -130,7 +130,7 @@ class Sponsors{
         let left = Math.max(1, division.matchDays - game.matchHistory.length);
         let goals = Object.keys(SponsorGoals.types);
         let cupNow = new Sponsor("cup").getProgress().value;
-        if(game.cup.isOut() || game.cup.isOver() || cupNow >= CupRounds.count - 1){
+        if(!game.cup.isQualified() || game.cup.isOut() || game.cup.isOver() || cupNow >= CupRounds.count - 1){
             goals = goals.filter(g => g !== "cup");
         }
         goals.sort(() => Math.random() - 0.5);

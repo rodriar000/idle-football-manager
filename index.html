@@ -52,6 +52,7 @@
     <signing-stamp v-if="init"></signing-stamp>
     <live-score v-if="init"></live-score>
     <main>
+        <section-tabs v-if="init"></section-tabs>
         <transition name="tab-fade" mode="out-in">
             <component :is="tab"></component>
         </transition>
@@ -156,6 +157,7 @@
 <script src="js/components/game-header.js"></script>
 
 <!-- Tabs -->
+<script src="js/components/tabs/tab-home.js"></script>
 <script src="js/components/tabs/tab-team.js"></script>
 <script src="js/components/tabs/tab-player-market.js"></script>
 <script src="js/components/tabs/tab-transfers.js"></script>

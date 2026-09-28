@@ -1,4 +1,4 @@
-//keyboard shortcuts: 1-9 / 0 switch tabs, Space plays the next match, B picks the best XI
+//keyboard shortcuts: 1-9 / 0 switch sections, Space plays the next match, B picks the best XI
 addEventListener("keydown", e => {
     if(e.ctrlKey || e.metaKey || e.altKey || e.repeat){
         return;
@@ -15,10 +15,10 @@ addEventListener("keydown", e => {
         return;
     }
 
-    let tabs = getVisibleTabs();
-    let tabIndex = tabs.findIndex((t, i) => getTabShortcut(i) === e.key);
-    if(tabIndex !== -1){
-        game.tab = tabs[tabIndex].id;
+    let sections = getVisibleSections();
+    let index = sections.findIndex((s, i) => getTabShortcut(i) === e.key);
+    if(index !== -1){
+        openSection(sections[index]);
     }
     else if(e.key === " "){
         let matchRunning = game.currentMatch && !game.currentMatch.ended;

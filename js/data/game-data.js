@@ -116,7 +116,7 @@ let game = {
         new Achievement("World Champion", "Win the World Cup", "images/icons/worldcup.png", () => (game.records.worldCups || 0) >= 1),
         new Achievement("Cup Kings", "Win the Continental Cup 3 times", "images/icons/cup.png", () => (game.records.cups || 0) >= 3)
     ],
-    tab: "tab-team",
+    tab: "tab-home",
     settings: {
         term: "Football",
         team: {

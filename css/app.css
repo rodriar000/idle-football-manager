@@ -6581,7 +6581,7 @@ td.wg-name span:last-child{
     grid-template-columns: repeat(3, minmax(210px, 1fr));
 }
 
-.ws-worldcup{
+.ws-worldcup, .ws-playoff{
     color: var(--ui-accent-text);
     font-weight: 700;
 }
@@ -6780,6 +6780,10 @@ header ul li.nav-more{
     .section-tabs button{
         padding: 0.45rem 0.8rem;
         font-size: 92%;
+    }
+
+    .section-tabs .tab-badge{
+        position: static;
     }
 
     .more-backdrop{
@@ -7034,7 +7038,7 @@ button.todo:hover{
 
 .home-tiles{
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 0.6rem;
 }
 
@@ -7109,9 +7113,6 @@ button.home-tile:hover{
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .home-tiles .home-tile:first-child{
-        grid-column: 1 / -1;
-    }
 
     .todo-go{
         font-size: 0;
@@ -7167,4 +7168,164 @@ button.home-tile:hover{
 
 .wc-group.wc-qual{
     max-width: 560px;
+}
+
+/* National Cup and promotion play-off */
+.cup-tier{
+    flex: none;
+    padding: 0.05rem 0.35rem;
+    border-radius: 6px;
+    background-color: var(--ui-surface-2, var(--ui-line));
+    color: var(--ui-muted);
+    font-size: 70%;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.cup-tier.higher{
+    background-color: var(--ui-accent-soft);
+    color: var(--ui-accent-text);
+}
+
+.home-tile span.home-playoff{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    color: var(--ui-accent-text);
+    font-weight: 700;
+}
+
+.standings tr.playoff td.pos{
+    box-shadow: inset 3px 0 0 var(--ui-accent);
+    color: var(--ui-accent-text);
+}
+
+.zones .zone.playoff i{
+    background-color: var(--ui-accent);
+}
+
+.league-playoff{
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 16px;
+    background-color: var(--ui-surface);
+}
+
+.league-playoff.live{
+    border-color: var(--ui-accent);
+    box-shadow: 0 0 0 1px var(--ui-accent) inset;
+}
+
+.league-playoff .po-head{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem 1rem;
+}
+
+.league-playoff h3{
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+}
+
+.league-playoff .po-head p{
+    margin: 0;
+    color: var(--ui-muted);
+    font-size: 88%;
+}
+
+.po-rounds{
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.po-round h4{
+    margin: 0 0 0.4rem;
+    color: var(--ui-muted);
+    font-size: 78%;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.po-tie{
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--ui-line);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.po-tie.own{
+    border-color: var(--ui-accent);
+}
+
+.po-side{
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    padding: 0.4rem 0.6rem;
+}
+
+.po-side + .po-side{
+    border-top: 1px solid var(--ui-line);
+}
+
+.po-side canvas{
+    flex: none;
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+.po-side .po-name{
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.po-side small.po-seed{
+    flex: none;
+    color: var(--ui-muted);
+}
+
+.po-side.lost{
+    opacity: 0.55;
+}
+
+.po-side.won .po-name, .po-side.mine .po-name{
+    font-weight: 700;
+}
+
+.po-side.mine .po-name{
+    color: var(--ui-accent-text);
+}
+
+.po-side b{
+    flex: none;
+    font-family: var(--font-display);
+}
+
+.po-note{
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+@media (max-width: 560px){
+    .po-rounds{
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.tab-badge{
+    white-space: nowrap;
 }

@@ -45,6 +45,40 @@ class Cup{
         return this.getOwnIndex() >= 0;
     }
 
+    //what differs between the Continental Cup and the National Cup (national-cup.js)
+    get name(){
+        return "Continental Cup";
+    }
+
+    //the Match field that holds the round of this cup's matches
+    get matchKey(){
+        return "cup";
+    }
+
+    //prize for winning each round, in wins of your Division
+    get prizes(){
+        return CupRounds.prizes;
+    }
+
+    get recordKeys(){
+        return {finals: "cupFinals", wins: "cups"};
+    }
+
+    get winXp(){
+        return 200;
+    }
+
+    //another competition holds your league match or plays first: this cup waits for the next league match
+    isBlocked(){
+        let others = [game.cup, game.nationalCup, game.worldCup].filter(c => c && c !== this);
+        return others.some(c => c.leagueMatch) || game.worldCup.running || (game.playoff && game.playoff.active);
+    }
+
+    //home and away for your match: team1 plays at home
+    getHomeAway(a, b){
+        return [this.getTeam(a), this.getTeam(b)];
+    }
+
     //league matches your club plays before each round
     getSchedule(){
         let days = game.league.divisions[game.team.divisionRank].matchDays;
@@ -209,7 +243,7 @@ class Cup{
     //called after every league match of yours: when a round is due, the other ties are played
     //and your cup match comes before the next league match
     check(){
-        if(this.isOver() || this.leagueMatch){
+        if(this.isOver() || this.leagueMatch || this.isBlocked()){
             return;
         }
         let played = game.league.divisions[game.team.divisionRank].matchDay - 1;
@@ -230,14 +264,14 @@ class Cup{
         }
         if(ownPair){
             this.pending = results;
-            let team1 = this.getTeam(ownPair[0]), team2 = this.getTeam(ownPair[1]);
+            let [team1, team2] = this.getHomeAway(ownPair[0], ownPair[1]);
             for(let t of [team1, team2]){
                 if(t !== game.team){
                     t.players.forEach(p => p.currentStamina = 1);
                 }
             }
             let m = new Match(team1, team2, game.team.divisionRank);
-            m.cup = this.round;
+            m[this.matchKey] = this.round;
             this.leagueMatch = game.nextMatch;
             game.nextMatch = m;
         }
@@ -248,7 +282,12 @@ class Cup{
     }
 
     playAiTie(a, b){
-        let tie = Object.assign({a, b, p1: null, p2: null}, Cup.simulateTie(this.getTeam(a), this.getTeam(b)));
+        let [team1, team2] = this.getHomeAway(a, b);
+        let result = Cup.simulateTie(team1, team2);
+        if(team1 !== this.getTeam(a)){
+            result = {s1: result.s2, s2: result.s1, p1: result.p2, p2: result.p1};
+        }
+        let tie = Object.assign({a, b, p1: null, p2: null}, result);
         tie.winner = Cup.tieWinner(tie);
         return tie;
     }
@@ -260,7 +299,11 @@ class Cup{
         let results = this.pending || pairs.map(([a, b]) => (a === own || b === own) ? null : this.playAiTie(a, b));
         let i = pairs.findIndex(([a, b]) => a === own || b === own);
         let [a, b] = pairs[i];
-        let tie = {a, b, s1: match.score1, s2: match.score2, p1: match.penalties ? match.penalties[0] : null, p2: match.penalties ? match.penalties[1] : null};
+        //the match may have the clubs the other way round (the smaller club at home)
+        let flip = match.team1 !== this.getTeam(a);
+        let score = flip ? [match.score2, match.score1] : [match.score1, match.score2];
+        let pens = match.penalties ? (flip ? [match.penalties[1], match.penalties[0]] : match.penalties) : [null, null];
+        let tie = {a, b, s1: score[0], s2: score[1], p1: pens[0], p2: pens[1]};
         tie.winner = Cup.tieWinner(tie);
         results[i] = tie;
         this.ties.push(results);
@@ -268,10 +311,10 @@ class Cup{
         this.round++;
         let won = tie.winner === own;
         if(won && this.round === CupRounds.count - 1){
-            game.records.cupFinals = (game.records.cupFinals || 0) + 1;
+            game.records[this.recordKeys.finals] = (game.records[this.recordKeys.finals] || 0) + 1;
         }
         if(won && this.round === CupRounds.count){
-            game.records.cups = (game.records.cups || 0) + 1;
+            game.records[this.recordKeys.wins] = (game.records[this.recordKeys.wins] || 0) + 1;
         }
         game.nextMatch = this.leagueMatch;
         this.leagueMatch = null;
@@ -280,7 +323,7 @@ class Cup{
 
     //prize for winning this round
     getPrize(round){
-        return game.league.divisions[game.team.divisionRank].getRewards().win.mul(CupRounds.prizes[round]);
+        return game.league.divisions[game.team.divisionRank].getRewards().win.mul(this.prizes[round]);
     }
 
     //Season end: rounds that are left get played, the cup goes into the history and a new draw is made
@@ -301,7 +344,7 @@ class Cup{
             this.round++;
         }
         let played = this.isQualified();
-        let news = {qualified: played, reached: played ? this.getReached() : "Not qualified", won: this.hasWon(), xp: this.hasWon() ? 200 : 0};
+        let news = {qualified: played, reached: played ? this.getReached() : "Not qualified", won: this.hasWon(), xp: this.hasWon() ? this.winXp : 0};
         if(this.entries.length){
             this.history.unshift({season: this.season, reached: news.reached, won: news.won});
             this.history = this.history.slice(0, 30);

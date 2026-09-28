@@ -81,9 +81,16 @@ class Division {
         return nextDivision ? 2 : 0;
     }
 
+    //the 2 direct places and the play-off winner from the Division below take their places
     getRelegationRanks(){
         let prevDivision = game.league.divisions.find(d => d.rank < this.rank);
-        return prevDivision ? 2 : 0;
+        return prevDivision ? 3 : 0;
+    }
+
+    //3rd to 6th play for the last promotion place
+    getPlayoffRanks(){
+        let first = this.getPromotionRanks();
+        return first > 0 ? [first + 1, first + PlayoffRounds.places] : null;
     }
 
     simulate() {

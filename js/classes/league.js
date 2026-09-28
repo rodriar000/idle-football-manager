@@ -12,9 +12,15 @@ class League {
     moveTeams(){
         let promotingTeams = [];
         let relegatingTeams = [];
+        //the top 2 go up directly and the play-off winner (3rd to 6th) goes with them
+        let playoffWinners = game.playoff.resolveAll();
         for(let [i, d] of this.divisions.entries()){
             d.sort();
             promotingTeams[i + 1] = d.getPromotionRanks() > 0 ? d.teams.splice(0, d.getPromotionRanks()) : [];
+            let winner = playoffWinners[i];
+            if(winner && d.teams.includes(winner)){
+                promotingTeams[i + 1].push(d.teams.splice(d.teams.indexOf(winner), 1)[0]);
+            }
             relegatingTeams[i - 1] = d.getRelegationRanks() > 0 ? d.teams.splice(-d.getRelegationRanks()) : [];
         }
         for(let [i, d] of this.divisions.entries()){

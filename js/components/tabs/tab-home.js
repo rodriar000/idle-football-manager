@@ -29,8 +29,11 @@ app.component("tab-home", {
             else if(m.qualifier !== null && m.qualifier !== undefined){
                 label = "World Cup qualifying";
             }
-            else if(m.cup !== null && m.cup !== undefined){
-                label = "Continental Cup · " + CupRounds.names[m.cup];
+            else if((m.cup !== null && m.cup !== undefined) || (m.domestic !== null && m.domestic !== undefined)){
+                label = m.getCup().name + " · " + CupRounds.names[m.getCupRound()];
+            }
+            else if(m.playoff !== null && m.playoff !== undefined){
+                label = PlayoffRounds.names[m.playoff];
             }
             else{
                 label = this.division.getName() + " · Matchday " + (this.division.matchDay);
@@ -87,18 +90,16 @@ app.component("tab-home", {
             return list;
         },
         cupText(){
-            let cup = this.$root.cup;
-            cup.ties.length; cup.round; cup.entries;
-            if(!cup.isQualified()){
-                return "Not qualified";
-            }
-            if(cup.hasWon()){
-                return "Winner";
-            }
-            if(cup.isOut()){
-                return "Out · " + cup.getReached();
-            }
-            return "In the " + CupRounds.names[Math.min(cup.round, CupRounds.count - 1)];
+            return this.cupState(this.$root.cup);
+        },
+        nationalCupText(){
+            return this.cupState(this.$root.nationalCup);
+        },
+        //the play-off after the league, while it's on
+        playoffText(){
+            let p = this.$root.playoff;
+            p.ties.length; p.round;
+            return p.active ? "Play-off · " + PlayoffRounds.short[Math.min(p.round, 1)] : "";
         },
         worldCupText(){
             let wc = this.$root.worldCup;
@@ -116,6 +117,19 @@ app.component("tab-home", {
     },
     methods: {
         formatNumber: functions.formatNumber,
+        cupState(cup){
+            cup.ties.length; cup.round; cup.entries;
+            if(!cup.isQualified()){
+                return "Not qualified";
+            }
+            if(cup.hasWon()){
+                return "Winner";
+            }
+            if(cup.isOut()){
+                return "Out · " + cup.getReached();
+            }
+            return "In the " + CupRounds.names[Math.min(cup.round, CupRounds.count - 1)];
+        },
         formatTime: functions.formatTime,
         open(tab){
             this.$root.tab = tab;
@@ -157,6 +171,11 @@ app.component("tab-home", {
             <b>{{position}}<sup>{{["st", "nd", "rd"][position - 1] || "th"}}</sup></b>
             <span>{{team.getPoints()}} pts · {{Math.max(0, division.matchDay - 1)}}/{{division.matchDays}} played</span>
             <span class="form" v-if="form.length"><i v-for="(r, i) in form" :key="i" :class="r">{{r}}</i></span>
+            <span class="home-playoff" v-if="playoffText"><ui-icon name="promo"></ui-icon> {{playoffText}}</span>
+        </button>
+        <button class="home-tile" @click="open('tab-national-cup')">
+            <small>National Cup</small>
+            <b class="home-tile-text">{{nationalCupText}}</b>
         </button>
         <button class="home-tile" @click="open('tab-cup')">
             <small>Continental Cup</small>

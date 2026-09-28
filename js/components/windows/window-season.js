@@ -65,6 +65,8 @@ app.component("window-season", {
             <p v-if="season.academy.promoted.length"><ui-icon name="academy"></ui-icon> Joined the Team from the Academy: {{season.academy.promoted.join(", ")}}</p>
             <p v-if="season.managerXp"><ui-icon name="manager"></ui-icon> +{{season.managerXp}} Manager XP for the Season</p>
             <p v-if="season.academy.joined.length"><ui-icon name="star"></ui-icon> New prospects: {{season.academy.joined.join(", ")}}</p>
+            <p class="ws-playoff" v-if="season.playoff && season.playoff.played"><ui-icon name="promo"></ui-icon> Promotion play-off: {{season.playoff.won ? "you won it and go up!" : season.playoff.reached.toLowerCase() + (season.playoff.winner ? ", " + season.playoff.winner + " went up" : "")}}</p>
+            <p v-if="season.nationalCup"><ui-icon name="natcup"></ui-icon> National Cup: {{season.nationalCup.won ? "Winner! +" + season.nationalCup.xp + " Manager XP" : "out in the " + season.nationalCup.reached}}</p>
             <p v-if="season.cup && season.cup.qualified !== false"><ui-icon name="cup"></ui-icon> Continental Cup: {{season.cup.won ? "Winner! +" + season.cup.xp + " Manager XP" : "out in the " + season.cup.reached}}</p>
             <p v-if="season.cup && season.cup.next === true"><ui-icon name="cup"></ui-icon> Top 3: you play the Continental Cup next Season</p>
             <p v-else-if="season.cup && season.cup.next === false"><ui-icon name="cup"></ui-icon> No Continental Cup next Season: it takes a top 3 finish</p>

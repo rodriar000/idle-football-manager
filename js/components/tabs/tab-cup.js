@@ -36,7 +36,10 @@ app.component("tab-cup", {
             return rounds;
         },
         status(){
-            this.cup.ties.length; this.cup.round;
+            this.cup.ties.length; this.cup.round; this.cup.entries;
+            if(!this.cup.isQualified()){
+                return {name: "out", text: "Not qualified"};
+            }
             if(this.cup.hasWon()){
                 return {name: "won", text: "Champion"};
             }
@@ -114,12 +117,20 @@ app.component("tab-cup", {
         <template v-slot:header><div class="icon-flex"><ui-icon name="cup"></ui-icon> Continental Cup</div></template>
         <template v-slot:body>
             <p>Every Season, <b>16 clubs</b> play a knockout Cup alongside the league: 8 from your Division and 8 guest clubs from abroad at the same level.</p>
+            <p>You only play it if you finished the Season before in the <b>top 3</b>.</p>
             <p>The rounds are played <b>between matchdays</b>: when a round is due, your Cup match comes before your next league match. A draw goes to <b>penalties</b>.</p>
             <p>Every round you win pays a <b>prize</b>, and winning the Final gives extra Manager XP at the Season end. A new draw is made every Season.</p>
         </template>
     </window>
 </transition>
-<section class="cup-next" v-if="next">
+<section class="cup-next out" v-if="!cup.isQualified()">
+    <div class="cn-text">
+        <small>Season {{cup.season}}</small>
+        <p class="cn-vs"><ui-icon name="cup"></ui-icon><b>You didn't qualify this Season</b></p>
+        <p class="cn-when"><ui-icon name="league"></ui-icon> Finish in the top 3 of your league to play it next Season</p>
+    </div>
+</section>
+<section class="cup-next" v-else-if="next">
     <div class="cn-text">
         <small>Next: {{next.round}}</small>
         <p class="cn-vs"><team-logo v-if="next.opponent.logo" :logo="next.opponent.logo"></team-logo><b>{{next.opponent.name}}</b><span class="cup-flag" v-if="next.opponent.nation" :style="{background: next.opponent.flag}" :title="next.opponent.nation.name"></span></p>

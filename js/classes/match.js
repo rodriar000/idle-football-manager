@@ -17,12 +17,16 @@ class Match {
         this.stadiumReward = new Decimal(0); //used for display
         this.managerXp = 0; //used for display
         this.staffWages = new Decimal(0); //used for display
+        this.playerWages = new Decimal(0); //used for display
+        this.injuries = []; //used for display: {name, matches}
+        this.suspensions = []; //used for display: names out for 5 yellow cards
         this.sponsorPay = new Decimal(0); //used for display
         this.sponsorsReached = []; //used for display
         this.offerNote = ""; //used for display: a new bid for one of your players
         this.cup = null; //the Continental Cup round, null for league matches
         this.penalties = null; //[team1, team2] when a cup match ends level
         this.worldCup = null; //the World Cup step, null for other matches
+        this.qualifier = null; //the World Cup qualifying round, null for other matches
         this.worldCupLine = ""; //used for display: where the World Cup match left you
 
         this.ballX = 0; //-1 to 1
@@ -80,6 +84,38 @@ class Match {
         }
     }
 
+    addYellowCard(team, player, minute){
+        let teamIndex = team === this.team2 ? 1 : 0;
+        let second = this.gameEvents.some(e => e.event === 5 && e.teamIndex === teamIndex && e.name === player.name);
+        this.gameEvents.push({teamIndex, event: 5, name: player.name, minute});
+        if(team === game.team){
+            player.yellows = (player.yellows || 0) + 1;
+        }
+        //a second yellow is a red
+        if(second){
+            this.addRedCard(team, player, minute);
+        }
+    }
+
+    //only your players get injured: out for 1 to 4 matches, the physio makes it shorter
+    addInjury(team, player, minute){
+        let matches = 1 + Math.floor(4 * Math.random() ** 1.6);
+        matches = Math.max(1, matches - Math.floor(game.staff.stars("physio") / 2));
+        player.injury = matches + 1; //counted down at the end of this match
+        this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 4, name: player.name, minute});
+        this.injuries.push({name: player.name, matches});
+        //the auto substitution brings someone on
+        if(game.settings.team.autoSubstitute){
+            let bench = team.getInactivePlayers().filter(p => !p.isUnavailable());
+            if(bench.length){
+                let best = team.getBestFor(player.position, bench);
+                player.active = false;
+                best.active = true;
+                this.addSubstitution(team, player, best, minute);
+            }
+        }
+    }
+
     addRedCard(team, player, minute){
         this.gameEvents.push({teamIndex: team === this.team2 ? 1 : 0, event: 1, name: player.name, minute});
         player.redCard = 2;
@@ -93,6 +129,11 @@ class Match {
         att2 = att2.eq(0) ? 0 : att2.log10();
         def1 = def1.eq(0) ? 0 : def1.log10();
         def2 = def2.eq(0) ? 0 : def2.log10();
+        //home advantage: the home side (team1) plays about 12 % stronger, the World Cup is on neutral ground
+        if(this.worldCup === null && att1 > 0){
+            att1 += Match.homeAdvantage;
+            def1 += Match.homeAdvantage;
+        }
 
         let team1 = 1 + Math.max(0, (att1 - def2));
         let team2 = 1 + Math.max(0, (att2 - def1));
@@ -122,12 +163,22 @@ class Match {
         this.restoreStrategy();
         for(let p of this.team1.players.concat(this.team2.players)){
             p.redCard = Math.max(0, p.redCard - 1);
+            p.injury = Math.max(0, (p.injury || 0) - 1);
+        }
+        //5 yellow cards in a Season: out for the next match
+        let own = this.getPlayerTeam();
+        if(own){
+            for(let p of own.players.filter(p => p.yellows >= 5)){
+                p.yellows -= 5;
+                p.redCard = Math.max(p.redCard, 1);
+                this.suspensions.push(p.name);
+            }
         }
         if(this.cup !== null){
             this.endCupGame();
             return;
         }
-        if(this.worldCup !== null){
+        if(this.worldCup !== null || this.qualifier !== null){
             this.endWorldCupGame();
             return;
         }
@@ -169,7 +220,7 @@ class Match {
             this.offerNote = offer ? offer.club + " bid " + functions.formatNumber(offer.amount) + " $ for " + offer.player.name : "";
 
             for(let p of playerTeam.getActivePlayers()){
-                if(p.hasRedCard()){
+                if(p.isUnavailable()){
                     p.active = false;
                 }
             }
@@ -194,16 +245,17 @@ class Match {
                 game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome) + game.lastSeason.cup.xp;
                 game.career.addXp(game.lastSeason.managerXp);
                 game.playerMarket.refresh();
+                game.team.players.forEach(p => p.yellows = 0);
                 game.lastSeason.worldCup = game.worldCup.afterSeason();
             }
             else{
                 game.league.simulate();
                 game.cup.check();
+                game.worldCup.checkQualifier();
             }
             game.money = game.money.add(this.getRewardMoney());
             //the staff take their wages from every match
-            this.staffWages = Decimal.min(game.money, game.staff.getWages());
-            game.money = game.money.sub(this.staffWages);
+            this.payWages();
 
             if(seasonEnded){
                 gameNotifications.seasonEnded(game.lastSeason);
@@ -214,6 +266,14 @@ class Match {
         }
 
         this.ended = true;
+    }
+
+    //the staff and your players take their wages from every match
+    payWages(){
+        this.staffWages = Decimal.min(game.money, game.staff.getWages());
+        game.money = game.money.sub(this.staffWages);
+        this.playerWages = Decimal.min(game.money, PlayerWages.getBill());
+        game.money = game.money.sub(this.playerWages);
     }
 
     paySponsors(){
@@ -246,7 +306,7 @@ class Match {
             this.managerXp = ManagerCareer.matchXp(own, other);
             game.career.addXp(this.managerXp);
             for(let p of playerTeam.getActivePlayers()){
-                if(p.hasRedCard()){
+                if(p.isUnavailable()){
                     p.active = false;
                 }
             }
@@ -254,8 +314,7 @@ class Match {
                 playerTeam.refillPlayers();
             }
             game.money = game.money.add(this.getRewardMoney());
-            this.staffWages = Decimal.min(game.money, game.staff.getWages());
-            game.money = game.money.sub(this.staffWages);
+            this.payWages();
             game.cup.finishOwnTie(this);
             this.paySponsors();
             gameNotifications.matchEnded(this);
@@ -265,7 +324,7 @@ class Match {
 
     //World Cup: group games can end level, knockout games go to penalties; the league waits until it ends
     endWorldCupGame(){
-        if(this.score1 === this.score2 && game.worldCup.isKnockout(this.worldCup)){
+        if(this.worldCup !== null && this.score1 === this.score2 && game.worldCup.isKnockout(this.worldCup)){
             let power = this.getNormPower();
             this.penalties = Cup.penalties(power.team1, power.team2);
         }
@@ -278,11 +337,11 @@ class Match {
                 result: this.getGameResult(),
                 goals: this.gameEvents.filter(e => e.event === 0).map(e => ({teamIndex: e.teamIndex, name: e.name, minute: e.minute})),
                 reward: this.getRewardMoney()
-            }, "World Cup");
+            }, this.qualifier !== null ? "World Cup qualifying" : "World Cup");
             this.managerXp = ManagerCareer.matchXp(own, other);
             game.career.addXp(this.managerXp);
             for(let p of playerTeam.getActivePlayers()){
-                if(p.hasRedCard()){
+                if(p.isUnavailable()){
                     p.active = false;
                 }
             }
@@ -290,10 +349,9 @@ class Match {
                 playerTeam.refillPlayers();
             }
             game.money = game.money.add(this.getRewardMoney());
-            this.staffWages = Decimal.min(game.money, game.staff.getWages());
-            game.money = game.money.sub(this.staffWages);
+            this.payWages();
             this.paySponsors();
-            this.worldCupLine = game.worldCup.finishOwnMatch(this);
+            this.worldCupLine = this.qualifier !== null ? game.worldCup.finishOwnQualifier(this) : game.worldCup.finishOwnMatch(this);
             gameNotifications.matchEnded(this);
         }
         this.ended = true;
@@ -302,7 +360,7 @@ class Match {
     //in the World Cup your club plays as your nation
     getTeamName(index){
         let team = index === 0 ? this.team1 : this.team2;
-        if(this.worldCup !== null && team === game.team){
+        if((this.worldCup !== null || this.qualifier !== null) && team === game.team){
             return WorldCup.getOwnNation().name;
         }
         return team.name;
@@ -373,8 +431,9 @@ class Match {
         if(this.cup !== null){
             return result === MATCH_WIN ? game.cup.getPrize(this.cup) : rewards.lose;
         }
-        if(this.worldCup !== null){
-            return result === MATCH_WIN ? game.worldCup.getPrize(this.worldCup) : result === MATCH_DRAW ? rewards.draw : rewards.lose;
+        if(this.worldCup !== null || this.qualifier !== null){
+            let step = this.worldCup !== null ? this.worldCup : 0;
+            return result === MATCH_WIN ? game.worldCup.getPrize(step) : result === MATCH_DRAW ? rewards.draw : rewards.lose;
         }
         if(result === MATCH_WIN){
             return rewards.win;
@@ -423,6 +482,21 @@ class Match {
                     }
                 }
 
+                for(let team of [this.team1, this.team2]){
+                    let yellow = team.getRedCardChance() * 7;
+                    for(let p of team.getActivePlayingPlayers()){
+                        if(Math.random() < yellow * p.aggressivity * dt * tm){
+                            this.addYellowCard(team, p, this.getMinute());
+                        }
+                    }
+                }
+                let ownTeam = this.getPlayerTeam();
+                for(let p of ownTeam.getActivePlayingPlayers()){
+                    if(Math.random() < Match.injuryChance * dt * tm){
+                        this.addInjury(ownTeam, p, this.getMinute());
+                    }
+                }
+
                 for(let p of this.getPlayerTeam().getActivePlayingPlayers()){
                     p.currentStamina = Math.max(0, p.currentStamina - Math.random() * 3e-5 * dt * tm * (1 / p.stamina) * game.staff.tireMul());
                 }
@@ -466,6 +540,9 @@ class Match {
         this.stadiumReward = obj.stadiumReward || new Decimal(0);
         this.managerXp = Number(obj.managerXp) || 0;
         this.staffWages = obj.staffWages || new Decimal(0);
+        this.playerWages = obj.playerWages || new Decimal(0);
+        this.injuries = obj.injuries || [];
+        this.suspensions = obj.suspensions || [];
         this.sponsorPay = obj.sponsorPay || new Decimal(0);
         this.sponsorsReached = obj.sponsorsReached || [];
         this.offerNote = obj.offerNote || "";
@@ -480,6 +557,11 @@ class Match {
             this.team1 = game.worldCup.getTeam(obj.team1Wc);
             this.team2 = game.worldCup.getTeam(obj.team2Wc);
             this.penalties = obj.penalties || null;
+        }
+        if(obj.qualifier !== undefined && obj.qualifier !== null){
+            this.qualifier = Number(obj.qualifier);
+            this.team1 = game.worldCup.getQualTeam(obj.team1Wq);
+            this.team2 = game.worldCup.getQualTeam(obj.team2Wq);
         }
         this.worldCupLine = obj.worldCupLine || "";
         this.ended = obj.ended;
@@ -500,6 +582,15 @@ class Match {
             goals: this.gameEvents.filter(e => e.event === 0).map(e => ({teamIndex: e.teamIndex, name: e.name, minute: e.minute})),
             reward: this.getRewardMoney().add(this.stadiumReward)
         });
+    }
+
+    static get homeAdvantage(){
+        return 0.05;
+    }
+
+    //per player and second of play: about one injury in four matches
+    static get injuryChance(){
+        return 0.25 / (11 * 5400);
     }
 
     static get emptyRecords(){
@@ -611,6 +702,7 @@ class Match {
         let m = new Match(match.team1, match.team2, match.divisionRank);
         m.cup = match.cup ?? null;
         m.worldCup = match.worldCup ?? null;
+        m.qualifier = match.qualifier ?? null;
         return m;
     }
 }

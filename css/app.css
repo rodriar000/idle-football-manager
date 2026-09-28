@@ -7122,3 +7122,49 @@ button.home-tile:hover{
         height: 1.1rem;
     }
 }
+
+/*Realism: injuries, cards, wages, squad limit*/
+
+.p-injury{
+    display: inline-flex;
+    align-items: center;
+    gap: 0.1rem;
+    color: var(--ui-neg);
+    font-size: 80%;
+    font-weight: 800;
+}
+
+.p-injury .ico{
+    width: 1em;
+    height: 1em;
+}
+
+.ft-injury{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    color: var(--ui-neg);
+    font-weight: 700;
+    text-align: center;
+}
+
+.ft-injury .ico{
+    flex: none;
+    width: 1.15rem;
+    height: 1.15rem;
+}
+
+.full-time .ft-money li.muted{
+    opacity: 0.6;
+}
+
+.squad-line.full{
+    color: var(--ui-neg);
+    font-weight: 700;
+}
+
+.wc-group.wc-qual{
+    max-width: 560px;
+}

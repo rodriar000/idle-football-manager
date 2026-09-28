@@ -130,7 +130,7 @@ class Academy{
     }
 
     promote(prospect){
-        if(this.prospects.includes(prospect)){
+        if(this.prospects.includes(prospect) && !Player.isSquadFull()){
             this.prospects = this.prospects.filter(p => p !== prospect);
             let player = prospect.toPlayer();
             game.team.players.push(player);
@@ -170,8 +170,8 @@ class Academy{
         //19 year olds are ready: they join the Team's bench
         for(let p of Array.from(this.prospects)){
             p.grow();
-            if(p.age >= 19){
-                this.promote(p);
+            //with a full squad they wait in the Academy
+            if(p.age >= 19 && this.promote(p)){
                 news.promoted.push(p.name);
             }
         }

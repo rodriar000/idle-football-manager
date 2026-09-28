@@ -70,7 +70,7 @@ class Team {
     }
 
     getActivePlayingPlayers() {
-        return this.players.filter(p => p.active && !p.hasRedCard());
+        return this.players.filter(p => p.active && !p.isUnavailable());
     }
 
     getActivePlayers() {
@@ -207,7 +207,7 @@ class Team {
     }
 
     refillPlayers(){
-        let available = () => this.getInactivePlayers().filter(p => !p.hasRedCard());
+        let available = () => this.getInactivePlayers().filter(p => !p.isUnavailable());
         while(this.getActivePlayers().length < 11 && available().length > 0){
             let open = this.getOpenPlaces();
             let place = open.find(pl => available().some(p => p.position === pl)) || open[0] || "MID";
@@ -220,9 +220,9 @@ class Team {
         //sent off players can't leave the pitch while a match is running
         let matchRunning = game.currentMatch && !game.currentMatch.ended;
         //protected players already in the team stay there too
-        let keep = this.players.filter(p => p.active && (p.locked || matchRunning && p.hasRedCard()));
+        let keep = this.players.filter(p => p.active && (p.locked && !p.isUnavailable() || matchRunning && p.isUnavailable()));
         let slots = 11 - keep.length;
-        let available = this.players.filter(p => !p.hasRedCard() && !keep.includes(p));
+        let available = this.players.filter(p => !p.isUnavailable() && !keep.includes(p));
         let rested = available.filter(p => p.currentStamina >= minStamina);
         //places the kept players don't already take, keeper first
         let open = Formations.places(this.formation);
@@ -272,7 +272,7 @@ class Team {
         let tired = this.getActivePlayingPlayers().filter(p => p.currentStamina < minStamina && !p.locked)
             .sort((p1, p2) => p1.currentStamina - p2.currentStamina);
         for(let out of tired){
-            let bench = this.getInactivePlayers().filter(p => !p.hasRedCard() && p.currentStamina >= minStamina);
+            let bench = this.getInactivePlayers().filter(p => !p.isUnavailable() && p.currentStamina >= minStamina);
             if(bench.length === 0){
                 break;
             }

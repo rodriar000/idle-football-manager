@@ -53,6 +53,10 @@ let functions = {
                     value.team1Cup = game.cup.indexOf(value.team1);
                     value.team2Cup = game.cup.indexOf(value.team2);
                 }
+                if(value.domestic !== null && value.domestic !== undefined){
+                    value.team1Dc = game.nationalCup.indexOf(value.team1);
+                    value.team2Dc = game.nationalCup.indexOf(value.team2);
+                }
                 if(value.worldCup !== null && value.worldCup !== undefined){
                     value.team1Wc = game.worldCup.indexOf(value.team1);
                     value.team2Wc = game.worldCup.indexOf(value.team2);
@@ -136,6 +140,12 @@ let functions = {
             //before the matches: a cup match finds its clubs in the cup
             if(obj.cup){
                 game.cup.load(obj.cup);
+            }
+            if(obj.nationalCup){
+                game.nationalCup.load(obj.nationalCup);
+            }
+            if(obj.playoff){
+                game.playoff.load(obj.playoff);
             }
             if(obj.worldCup){
                 game.worldCup.load(obj.worldCup);

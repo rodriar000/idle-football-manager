@@ -1,8 +1,24 @@
-app.component("tab-cup", {
+//the Continental Cup page; the National Cup page (tab-national-cup.js) is the same page for the other cup
+const TabCup = {
     mixins: [mixinHelp],
     computed: {
         cup(){
             return this.$root.cup;
+        },
+        info(){
+            return {
+                icon: "cup",
+                title: "Continental Cup",
+                won: "You won the Continental Cup!",
+                honours: ["Continental Cup won", "Continental Cups won"],
+                wins: this.$root.records.cups || 0,
+                help: [
+                    "Every Season, <b>16 clubs</b> play a knockout Cup alongside the league: 8 from your Division and 8 guest clubs from abroad at the same level.",
+                    "You only play it if you finished the Season before in the <b>top 3</b>.",
+                    "The rounds are played <b>between matchdays</b>: when a round is due, your Cup match comes before your next league match. A draw goes to <b>penalties</b>.",
+                    "Every round you win pays a <b>prize</b>, and winning the Final gives extra Manager XP at the Season end. A new draw is made every Season."
+                ]
+            };
         },
         own(){
             return this.cup.getOwnIndex();
@@ -81,9 +97,6 @@ app.component("tab-cup", {
             }
             return null;
         },
-        cupsWon(){
-            return this.$root.records.cups || 0;
-        },
         history(){
             return this.cup.history;
         }
@@ -94,9 +107,14 @@ app.component("tab-cup", {
             let team = this.cup.getTeam(idx);
             let entry = this.cup.entries[idx] || {};
             let nation = entry.seed !== undefined ? CupNations[entry.nation % CupNations.length] : null;
+            let divisions = this.$root.league.divisions;
+            let other = team && entry.seed === undefined && team.divisionRank !== this.$root.team.divisionRank;
             return {
                 name: team ? team.name : entry.name,
                 logo: team ? team.logo : null,
+                //clubs from another Division show which one
+                tier: other ? "Div " + (divisions.length - team.divisionRank) : null,
+                higher: other && team.divisionRank > this.$root.team.divisionRank,
                 own: idx === this.own,
                 nation,
                 flag: nation ? "linear-gradient(to bottom, " + nation.colors[0] + " 0 33%, " + nation.colors[1] + " 33% 67%, " + nation.colors[2] + " 67%)" : null
@@ -108,18 +126,15 @@ app.component("tab-cup", {
     },
     template: `<div class="tab-cup">
 <div class="page-head">
-    <span class="page-icon"><ui-icon name="cup"></ui-icon></span>
-    <div class="page-title"><p class="eyebrow">Season {{cup.season}}</p><h2>Continental Cup <button class="help" @click="showHelpDialog()" aria-label="How the Cup works"><ui-icon name="help"></ui-icon></button></h2></div>
+    <span class="page-icon"><ui-icon :name="info.icon"></ui-icon></span>
+    <div class="page-title"><p class="eyebrow">Season {{cup.season}}</p><h2>{{info.title}} <button class="help" @click="showHelpDialog()" aria-label="How the Cup works"><ui-icon name="help"></ui-icon></button></h2></div>
     <p class="cup-status" :class="status.name">{{status.text}}</p>
 </div>
 <transition name="window-grow">
     <window v-if="helpDialogActive" @closed="hideHelpDialog()">
-        <template v-slot:header><div class="icon-flex"><ui-icon name="cup"></ui-icon> Continental Cup</div></template>
+        <template v-slot:header><div class="icon-flex"><ui-icon :name="info.icon"></ui-icon> {{info.title}}</div></template>
         <template v-slot:body>
-            <p>Every Season, <b>16 clubs</b> play a knockout Cup alongside the league: 8 from your Division and 8 guest clubs from abroad at the same level.</p>
-            <p>You only play it if you finished the Season before in the <b>top 3</b>.</p>
-            <p>The rounds are played <b>between matchdays</b>: when a round is due, your Cup match comes before your next league match. A draw goes to <b>penalties</b>.</p>
-            <p>Every round you win pays a <b>prize</b>, and winning the Final gives extra Manager XP at the Season end. A new draw is made every Season.</p>
+            <p v-for="(line, i) in info.help" :key="i" v-html="line"></p>
         </template>
     </window>
 </transition>
@@ -133,7 +148,7 @@ app.component("tab-cup", {
 <section class="cup-next" v-else-if="next">
     <div class="cn-text">
         <small>Next: {{next.round}}</small>
-        <p class="cn-vs"><team-logo v-if="next.opponent.logo" :logo="next.opponent.logo"></team-logo><b>{{next.opponent.name}}</b><span class="cup-flag" v-if="next.opponent.nation" :style="{background: next.opponent.flag}" :title="next.opponent.nation.name"></span></p>
+        <p class="cn-vs"><team-logo v-if="next.opponent.logo" :logo="next.opponent.logo"></team-logo><b>{{next.opponent.name}}</b><span class="cup-flag" v-if="next.opponent.nation" :style="{background: next.opponent.flag}" :title="next.opponent.nation.name"></span><small class="cup-tier" v-if="next.opponent.tier" :class="{higher: next.opponent.higher}">{{next.opponent.tier}}</small></p>
         <p class="cn-when" v-if="next.ready"><ui-icon name="play"></ui-icon> Ready to play in the Match tab</p>
         <p class="cn-when" v-else><ui-icon name="calendar"></ui-icon> After {{next.left}} more league {{next.left === 1 ? "match" : "matches"}}</p>
     </div>
@@ -141,7 +156,7 @@ app.component("tab-cup", {
     <button class="kick" v-if="next.ready" @click="goToMatch()"><ui-icon name="play"></ui-icon> Go to the Match</button>
 </section>
 <section class="cup-next done" v-else-if="cup.hasWon()">
-    <div class="cn-text"><small>Season {{cup.season}}</small><p class="cn-vs"><ui-icon name="cup"></ui-icon><b>You won the Continental Cup!</b></p></div>
+    <div class="cn-text"><small>Season {{cup.season}}</small><p class="cn-vs"><ui-icon :name="info.icon"></ui-icon><b>{{info.won}}</b></p></div>
 </section>
 <section class="cup-next out" v-else-if="knockedOutBy">
     <div class="cn-text"><small>Knocked out in the {{cup.getReached()}}</small>
@@ -159,6 +174,7 @@ app.component("tab-cup", {
                         <team-logo v-if="s.entry.logo" :logo="s.entry.logo"></team-logo>
                         <span class="cb-name" :title="s.entry.name">{{s.entry.name}}</span>
                         <span class="cup-flag" v-if="s.entry.nation" :style="{background: s.entry.flag}" :title="s.entry.nation.name"></span>
+                        <small class="cup-tier" v-if="s.entry.tier" :class="{higher: s.entry.higher}">{{s.entry.tier}}</small>
                     </template>
                     <span class="cb-name tbd" v-else>To be decided</span>
                     <b class="cb-score" v-if="s.score !== null">{{s.score}}<small v-if="s.pens !== null"> ({{s.pens}})</small></b>
@@ -169,7 +185,7 @@ app.component("tab-cup", {
 </div>
 <section class="cup-honours">
     <h3 class="section-title">Honours</h3>
-    <div class="cup-trophies"><ui-icon name="cup"></ui-icon><b>{{cupsWon}}</b><span>{{cupsWon === 1 ? "Continental Cup won" : "Continental Cups won"}}</span></div>
+    <div class="cup-trophies"><ui-icon :name="info.icon"></ui-icon><b>{{info.wins}}</b><span>{{info.wins === 1 ? info.honours[0] : info.honours[1]}}</span></div>
     <div class="retired-list" v-if="history.length">
         <div class="retired" v-for="(h, i) in history" :key="i">
             <b>Season {{h.season}}</b>
@@ -178,4 +194,6 @@ app.component("tab-cup", {
     </div>
 </section>
 </div>`
-});
+};
+
+app.component("tab-cup", TabCup);

@@ -10,6 +10,9 @@ app.component("division", {
         },
         relegation(){
             return this.division.getRelegationRanks();
+        },
+        playoff(){
+            return this.division.getPlayoffRanks();
         }
     },
     methods: {
@@ -36,7 +39,7 @@ app.component("division", {
     <th class="num pts">Pts</th>
 </tr></thead>
 <tbody>
-<tr :class="{'own-team': isOwnTeam(team), promotion: i < promotion, relegation: i > sortedTeams.length - relegation - 1}" v-for="(team, i) in sortedTeams" :key="i" @click="selectTeam(team)">
+<tr :class="{'own-team': isOwnTeam(team), promotion: i < promotion, playoff: playoff && i + 1 >= playoff[0] && i + 1 <= playoff[1], relegation: i > sortedTeams.length - relegation - 1}" v-for="(team, i) in sortedTeams" :key="i" @click="selectTeam(team)">
     <td class="pos">{{i + 1}}</td>
     <td class="team" :title="getStatsDisplay(team)"><team-logo :logo="team.logo"></team-logo> <span>{{team.name}}</span></td>
     <td class="num games">{{team.getTotalGames()}}</td>

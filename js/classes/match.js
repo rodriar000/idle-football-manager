@@ -24,10 +24,13 @@ class Match {
         this.sponsorsReached = []; //used for display
         this.offerNote = ""; //used for display: a new bid for one of your players
         this.cup = null; //the Continental Cup round, null for league matches
+        this.domestic = null; //the National Cup round, null for other matches
+        this.playoff = null; //the promotion play-off round, null for other matches
         this.penalties = null; //[team1, team2] when a cup match ends level
         this.worldCup = null; //the World Cup step, null for other matches
         this.qualifier = null; //the World Cup qualifying round, null for other matches
         this.worldCupLine = ""; //used for display: where the World Cup match left you
+        this.playoffLine = ""; //used for display: where the play-off match left you
 
         this.ballX = 0; //-1 to 1
         this.ballSpeed = 0;
@@ -174,8 +177,12 @@ class Match {
                 this.suspensions.push(p.name);
             }
         }
-        if(this.cup !== null){
+        if(this.cup !== null || this.domestic !== null){
             this.endCupGame();
+            return;
+        }
+        if(this.playoff !== null){
+            this.endPlayoffGame();
             return;
         }
         if(this.worldCup !== null || this.qualifier !== null){
@@ -230,27 +237,16 @@ class Match {
             }
 
             if(game.league.divisions[playerTeam.divisionRank].hasEnded()){
-                if(game.league.divisions[game.team.divisionRank].getSortedTeams()[0] === game.team && playerTeam.divisionRank === game.league.divisions.length - 1){
-                    game.canEnterNextCountry = true;
+                //3rd to 6th: the promotion play-off comes first, the Season ends after it
+                if(!game.playoff.start()){
+                    Match.endSeason();
+                    seasonEnded = true;
                 }
-                Match.createSeasonSummary();
-                game.lastSeason.sponsors = game.sponsors.endSeason(game.lastSeason);
-                seasonEnded = true;
-                game.league.moveTeams();
-                game.lastSeason.world = game.world.endSeason();
-                game.lastSeason.academy = game.academy.endSeason();
-                game.lastSeason.staff = game.staff.endSeason();
-                game.lastSeason.cup = game.cup.endSeason();
-                game.sponsors.makeOffers();
-                game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome) + game.lastSeason.cup.xp;
-                game.career.addXp(game.lastSeason.managerXp);
-                game.playerMarket.refresh();
-                game.team.players.forEach(p => p.yellows = 0);
-                game.lastSeason.worldCup = game.worldCup.afterSeason();
             }
             else{
                 game.league.simulate();
                 game.cup.check();
+                game.nationalCup.check();
                 game.worldCup.checkQualifier();
             }
             game.money = game.money.add(this.getRewardMoney());
@@ -282,7 +278,16 @@ class Match {
         this.sponsorsReached = paid.reached;
     }
 
-    //Continental Cup: no table, a level score goes to penalties and the league match comes next
+    //the cup this match is for
+    getCup(){
+        return this.domestic !== null ? game.nationalCup : this.cup !== null ? game.cup : null;
+    }
+
+    getCupRound(){
+        return this.domestic !== null ? this.domestic : this.cup;
+    }
+
+    //Continental and National Cup: no table, a level score goes to penalties and the league match comes next
     endCupGame(){
         if(this.score1 === this.score2){
             let power = this.getNormPower();
@@ -302,7 +307,7 @@ class Match {
                 result: this.getGameResult(),
                 goals: this.gameEvents.filter(e => e.event === 0).map(e => ({teamIndex: e.teamIndex, name: e.name, minute: e.minute})),
                 reward: this.getRewardMoney().add(this.stadiumReward)
-            }, "Continental Cup");
+            }, this.getCup().name);
             this.managerXp = ManagerCareer.matchXp(own, other);
             game.career.addXp(this.managerXp);
             for(let p of playerTeam.getActivePlayers()){
@@ -315,9 +320,57 @@ class Match {
             }
             game.money = game.money.add(this.getRewardMoney());
             this.payWages();
-            game.cup.finishOwnTie(this);
+            this.getCup().finishOwnTie(this);
             this.paySponsors();
             gameNotifications.matchEnded(this);
+        }
+        this.ended = true;
+    }
+
+    //promotion play-off: a level score goes to penalties, and the Season ends when the play-off is over for you
+    endPlayoffGame(){
+        if(this.score1 === this.score2){
+            let power = this.getNormPower();
+            this.penalties = Cup.penalties(power.team1, power.team2);
+        }
+        if(this.getPlayerTeam()){
+            let playerTeam = this.getPlayerTeam();
+            game.stadium.changeFans(this.getGameResult());
+            let reward = game.stadium.getPaidMoney().mul(game.career.mul("tickets"));
+            game.money = game.money.add(reward);
+            this.stadiumReward = reward;
+            game.stadium.emptyStadium();
+            let ownIndex = this.team1 === playerTeam ? 0 : 1;
+            let own = ownIndex === 0 ? this.score1 : this.score2, other = ownIndex === 0 ? this.score2 : this.score1;
+            Match.updateRecords({
+                team1: this.team1.name, team2: this.team2.name, score1: this.score1, score2: this.score2, ownIndex,
+                result: this.getGameResult(),
+                goals: this.gameEvents.filter(e => e.event === 0).map(e => ({teamIndex: e.teamIndex, name: e.name, minute: e.minute})),
+                reward: this.getRewardMoney().add(this.stadiumReward)
+            }, "Promotion play-off");
+            this.managerXp = ManagerCareer.matchXp(own, other);
+            game.career.addXp(this.managerXp);
+            for(let p of playerTeam.getActivePlayers()){
+                if(p.isUnavailable()){
+                    p.active = false;
+                }
+            }
+            if(game.settings.team.refillPlayers){
+                playerTeam.refillPlayers();
+            }
+            game.money = game.money.add(this.getRewardMoney());
+            this.payWages();
+            this.paySponsors();
+            let more = game.playoff.finishOwnTie(this);
+            let won = this.getGameResult() === MATCH_WIN;
+            this.playoffLine = won ? (more ? "Through to the play-off final" : "Promoted through the play-off!") : "Out of the play-off in the " + PlayoffRounds.short[this.playoff];
+            if(more){
+                gameNotifications.matchEnded(this);
+            }
+            else{
+                Match.endSeason();
+                gameNotifications.seasonEnded(game.lastSeason);
+            }
         }
         this.ended = true;
     }
@@ -428,8 +481,11 @@ class Match {
     getRewardMoney(){
         let rewards = game.league.divisions[this.divisionRank].getRewards();
         let result = this.getGameResult();
-        if(this.cup !== null){
-            return result === MATCH_WIN ? game.cup.getPrize(this.cup) : rewards.lose;
+        if(this.cup !== null || this.domestic !== null){
+            return result === MATCH_WIN ? this.getCup().getPrize(this.getCupRound()) : rewards.lose;
+        }
+        if(this.playoff !== null){
+            return result === MATCH_WIN ? game.playoff.getPrize(this.playoff) : rewards.lose;
         }
         if(this.worldCup !== null || this.qualifier !== null){
             let step = this.worldCup !== null ? this.worldCup : 0;
@@ -552,6 +608,16 @@ class Match {
             this.team2 = game.cup.getTeam(obj.team2Cup);
             this.penalties = obj.penalties || null;
         }
+        if(obj.domestic !== undefined && obj.domestic !== null){
+            this.domestic = Number(obj.domestic);
+            this.team1 = game.nationalCup.getTeam(obj.team1Dc);
+            this.team2 = game.nationalCup.getTeam(obj.team2Dc);
+            this.penalties = obj.penalties || null;
+        }
+        if(obj.playoff !== undefined && obj.playoff !== null){
+            this.playoff = Number(obj.playoff);
+            this.penalties = obj.penalties || null;
+        }
         if(obj.worldCup !== undefined && obj.worldCup !== null){
             this.worldCup = Number(obj.worldCup);
             this.team1 = game.worldCup.getTeam(obj.team1Wc);
@@ -564,6 +630,7 @@ class Match {
             this.team2 = game.worldCup.getQualTeam(obj.team2Wq);
         }
         this.worldCupLine = obj.worldCupLine || "";
+        this.playoffLine = obj.playoffLine || "";
         this.ended = obj.ended;
         this.baseStrategy = obj.baseStrategy ?? null;
     }
@@ -641,12 +708,34 @@ class Match {
     }
 
     //called before teams are promoted / relegated
+    //the league (and your play-off) is over: summary, teams move, the new Season is drawn
+    static endSeason(){
+        if(game.league.divisions[game.team.divisionRank].getSortedTeams()[0] === game.team && game.team.divisionRank === game.league.divisions.length - 1){
+            game.canEnterNextCountry = true;
+        }
+        Match.createSeasonSummary();
+        game.lastSeason.sponsors = game.sponsors.endSeason(game.lastSeason);
+        game.league.moveTeams();
+        game.lastSeason.playoff = game.playoff.getNews();
+        game.lastSeason.world = game.world.endSeason();
+        game.lastSeason.academy = game.academy.endSeason();
+        game.lastSeason.staff = game.staff.endSeason();
+        game.lastSeason.cup = game.cup.endSeason();
+        game.lastSeason.nationalCup = game.nationalCup.endSeason();
+        game.sponsors.makeOffers();
+        game.lastSeason.managerXp = ManagerCareer.seasonXp(game.lastSeason.outcome) + game.lastSeason.cup.xp + game.lastSeason.nationalCup.xp;
+        game.career.addXp(game.lastSeason.managerXp);
+        game.playerMarket.refresh();
+        game.team.players.forEach(p => p.yellows = 0);
+        game.lastSeason.worldCup = game.worldCup.afterSeason();
+    }
+
     static createSeasonSummary(){
         let division = game.league.divisions[game.team.divisionRank];
         let sorted = division.getSortedTeams();
         let position = sorted.indexOf(game.team) + 1;
         let outcome = "stayed";
-        if(position <= division.getPromotionRanks()){
+        if(position <= division.getPromotionRanks() || (game.playoff.season === game.records.seasons + 1 && game.playoff.hasWon())){
             outcome = "promoted";
         }
         else if(position > sorted.length - division.getRelegationRanks()){
@@ -701,6 +790,8 @@ class Match {
     static from(match){
         let m = new Match(match.team1, match.team2, match.divisionRank);
         m.cup = match.cup ?? null;
+        m.domestic = match.domestic ?? null;
+        m.playoff = match.playoff ?? null;
         m.worldCup = match.worldCup ?? null;
         m.qualifier = match.qualifier ?? null;
         return m;

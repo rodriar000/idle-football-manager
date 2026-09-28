@@ -161,7 +161,7 @@ class WorldCup{
     //after every league match of yours (and the Cup): a qualifying round may be due
     checkQualifier(){
         let q = this.getQual();
-        if(!q || this.running || this.leagueMatch || game.cup.leagueMatch){
+        if(!q || this.running || this.leagueMatch || game.cup.leagueMatch || game.nationalCup.leagueMatch || game.playoff.active){
             return;
         }
         let played = game.league.divisions[game.team.divisionRank].matchDay - 1;

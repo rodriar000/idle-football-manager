@@ -8,7 +8,8 @@ const NavTabs = {
     "tab-transfers": {name: "Transfers", icon: "transfer"},
     "tab-match": {name: "Match", icon: "match"},
     "tab-league": {name: "League", icon: "league"},
-    "tab-cup": {name: "Cup", icon: "cup"},
+    "tab-national-cup": {name: "National Cup", icon: "natcup"},
+    "tab-cup": {name: "Continental", icon: "cup"},
     "tab-worldcup": {name: "World Cup", icon: "worldcup"},
     "tab-stadium": {name: "Stadium", icon: "stadium", unlocked: () => Stadium.isUnlocked},
     "tab-sponsors": {name: "Sponsors", icon: "sponsor"},
@@ -26,7 +27,7 @@ const NavSections = [
     {id: "squad", name: "Squad", icon: "team", tabs: ["tab-team", "tab-player-training", "tab-academy"]},
     {id: "market", name: "Market", icon: "market", tabs: ["tab-player-market", "tab-transfers"]},
     {id: "match", name: "Match", icon: "match", tabs: ["tab-match"]},
-    {id: "compete", name: "Competitions", short: "Compete", icon: "trophy", tabs: ["tab-league", "tab-cup", "tab-worldcup"]},
+    {id: "compete", name: "Competitions", short: "Compete", icon: "trophy", tabs: ["tab-league", "tab-national-cup", "tab-cup", "tab-worldcup"]},
     {id: "club", name: "Club", icon: "stadium", tabs: ["tab-stadium", "tab-sponsors", "tab-staff", "tab-upgrades", "tab-tv-channels"]},
     {id: "manager", name: "Manager", icon: "manager", tabs: ["tab-manager", "tab-achievements", "tab-countries"]},
     {id: "settings", name: "Settings", icon: "settings", tabs: ["tab-settings"], hidden: true}
@@ -70,13 +71,14 @@ function getNavBadges(root){
             "tab-match": live ? {text: live} : null,
             "tab-transfers": offers ? {text: offers, points: true, title: offers + " bids for your Players"} : null,
             "tab-manager": points ? {text: points, points: true, title: points + " skill points to spend"} : null,
+            "tab-league": root.playoff.active ? {text: "Play-off", title: "You play the promotion play-off"} : null,
             "tab-worldcup": root.worldCup.running ? {text: "Live", title: "The World Cup is on"} : null
         },
         sections: {
             match: live ? {text: live} : null,
             market: offers ? {text: offers, points: true} : null,
             manager: points ? {text: points, points: true} : null,
-            compete: root.worldCup.running ? {text: "Live"} : null
+            compete: root.worldCup.running ? {text: "Live"} : root.playoff.active ? {text: "Play-off"} : null
         }
     };
 }

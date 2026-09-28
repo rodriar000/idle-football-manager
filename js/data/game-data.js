@@ -45,6 +45,8 @@ let game = {
     career: new ManagerCareer(),
     staff: new Staff(),
     cup: new Cup(),
+    nationalCup: new NationalCup(),
+    playoff: new Playoff(),
     sponsors: new Sponsors(),
     world: new World(),
     worldCup: new WorldCup(),

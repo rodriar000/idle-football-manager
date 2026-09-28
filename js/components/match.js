@@ -147,8 +147,11 @@ app.component("match", {
             return list;
         },
         divisionName(){
-            if(this.match.cup !== null){
-                return "Continental Cup · " + CupRounds.names[this.match.cup];
+            if(this.match.cup !== null || this.match.domestic !== null){
+                return this.match.getCup().name + " · " + CupRounds.names[this.match.getCupRound()];
+            }
+            if(this.match.playoff !== null){
+                return PlayoffRounds.names[this.match.playoff];
             }
             if(this.match.qualifier !== null){
                 return "World Cup qualifying · Round " + (this.match.qualifier + 1);
@@ -162,11 +165,17 @@ app.component("match", {
             return division ? division.getName() : "";
         },
         cupLine(){
-            let round = this.match.cup;
+            let round = this.match.getCupRound();
+            let name = this.match.getCup().name;
             if(this.match.getGameResult() !== MATCH_WIN){
-                return "Out of the Continental Cup in the " + CupRounds.names[round];
+                return "Out of the " + name + " in the " + CupRounds.names[round];
             }
-            return round === CupRounds.count - 1 ? "You won the Continental Cup!" : "Through to the " + CupRounds.names[round + 1];
+            return round === CupRounds.count - 1 ? "You won the " + name + "!" : "Through to the " + CupRounds.names[round + 1];
+        },
+        //the icon of the competition
+        compIcon(){
+            let m = this.match;
+            return m.worldCup !== null || m.qualifier !== null ? "worldcup" : m.domestic !== null ? "natcup" : m.cup !== null ? "cup" : m.playoff !== null ? "promo" : "trophy";
         },
         restTime(){
             return this.$root.team.getTimeUntilRested();
@@ -183,10 +192,10 @@ app.component("match", {
         <p class="goal-scorer"><ui-icon name="ball"></ui-icon> {{goal.scorer || goal.team}}</p>
     </div>
 </transition>
-<section class="scoreboard" :class="[state.name, {cup: match.cup !== null || match.worldCup !== null || match.qualifier !== null}]">
+<section class="scoreboard" :class="[state.name, {cup: match.cup !== null || match.domestic !== null || match.playoff !== null || match.worldCup !== null || match.qualifier !== null}]">
     <div class="sb-top">
         <span class="sb-state" :class="state.name"><i></i>{{state.text}}</span>
-        <span class="sb-meta" v-if="divisionName"><ui-icon :name="match.worldCup !== null || match.qualifier !== null ? 'worldcup' : match.cup !== null ? 'cup' : 'trophy'"></ui-icon> {{divisionName}}</span>
+        <span class="sb-meta" v-if="divisionName"><ui-icon :name="compIcon"></ui-icon> {{divisionName}}</span>
     </div>
     <div class="sb-main">
         <div class="sb-team" :class="{own: ownIndex === 0}">
@@ -275,10 +284,11 @@ app.component("match", {
                 <span class="ft-team away"><b>{{match.getTeamName(1)}}</b><team-logo :logo="match.team2.logo"></team-logo></span>
             </div>
             <p class="ft-pens" v-if="match.penalties">Penalties {{match.penalties[0]}} - {{match.penalties[1]}}</p>
-            <p class="ft-cup" v-if="match.cup !== null"><ui-icon name="cup"></ui-icon> {{cupLine}}</p>
+            <p class="ft-cup" v-if="match.cup !== null || match.domestic !== null"><ui-icon :name="compIcon"></ui-icon> {{cupLine}}</p>
+            <p class="ft-cup" v-if="match.playoffLine"><ui-icon name="promo"></ui-icon> {{match.playoffLine}}</p>
             <p class="ft-cup" v-if="match.worldCupLine"><ui-icon name="worldcup"></ui-icon> {{match.worldCupLine}}</p>
             <ul class="ft-money">
-                <li><ui-icon :name="match.worldCup !== null ? 'worldcup' : match.cup !== null ? 'cup' : 'match'"></ui-icon><span>{{result.name === "win" && (match.worldCup !== null || match.qualifier !== null) ? "World Cup prize" : match.cup !== null && result.name === "win" ? "Cup prize" : "Match reward"}}</span><b class="pos">+{{formatNumber(reward)}} $</b></li>
+                <li><ui-icon :name="compIcon === 'trophy' ? 'match' : compIcon"></ui-icon><span>{{result.name === "win" && (match.worldCup !== null || match.qualifier !== null) ? "World Cup prize" : (match.cup !== null || match.domestic !== null) && result.name === "win" ? "Cup prize" : match.playoff !== null && result.name === "win" ? "Play-off prize" : "Match reward"}}</span><b class="pos">+{{formatNumber(reward)}} $</b></li>
                 <li v-if="stadiumUnlocked && ownIndex === 0 && match.worldCup === null && match.qualifier === null"><ui-icon name="stadium"></ui-icon><span>Stadium tickets</span><b class="pos">+{{formatNumber(match.stadiumReward)}} $</b></li>
                 <li v-else-if="stadiumUnlocked" class="muted"><ui-icon name="stadium"></ui-icon><span>{{match.worldCup !== null ? "Neutral ground: no tickets" : match.qualifier !== null ? "National team: no club tickets" : "Away match: no tickets"}}</span><b>0 $</b></li>
                 <li v-if="match.sponsorPay.gt(0)"><ui-icon name="sponsor"></ui-icon><span>{{match.sponsorsReached.length ? "Sponsors + goal bonus" : "Sponsors"}}</span><b class="pos">+{{formatNumber(match.sponsorPay)}} $</b></li>

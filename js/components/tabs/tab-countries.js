@@ -6,12 +6,15 @@ app.component("tab-countries", {
     },
     methods: {
         enterNextCountry(){
-            if(game.canEnterNextCountry && !game.worldCup.running && !game.worldCup.leagueMatch){
+            if(game.canEnterNextCountry && !this.worldCupRunning){
                 game.country++;
                 game.league = GeneratorUtils.generateLeague(0, game.country);
                 game.league.divisions[0].teams[0] = game.team;
                 game.team.divisionRank = 0;
                 game.league.simulate();
+                //the cups are drawn again with the clubs of the new country
+                game.cup.draw();
+                game.nationalCup.draw();
                 game.playerMarket.refresh();
                 game.canEnterNextCountry = false;
                 game.matchHistory = [];
@@ -26,7 +29,7 @@ app.component("tab-countries", {
             return game.canEnterNextCountry && game.team.divisionRank === game.league.divisions.length - 1;
         },
         worldCupRunning(){
-            return game.worldCup.running || game.worldCup.leagueMatch !== null;
+            return game.worldCup.running || game.worldCup.leagueMatch !== null || game.cup.leagueMatch !== null || game.nationalCup.leagueMatch !== null || game.playoff.active;
         },
         country(){
             return game.country;
@@ -42,7 +45,7 @@ app.component("tab-countries", {
 <div class="next-country">
     <button disabled v-if="canEnterNextCountry && worldCupRunning">
         <h4>Next Country</h4>
-        <p>Finish your World Cup match first: you can move once it is played.</p>
+        <p>Finish your cup, play-off or World Cup match first: you can move once it is played.</p>
     </button>
     <button :disabled="!canEnterNextCountry" v-else-if="canEnterNextCountry" @click="enterNextCountry()">
         <h4>Next Country</h4>
